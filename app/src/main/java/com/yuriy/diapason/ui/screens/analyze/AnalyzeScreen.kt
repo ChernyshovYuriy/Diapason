@@ -104,7 +104,7 @@ fun AnalyzeScreen(
         AnimatedVisibility(visible = isIdle && lastResult != null) {
             lastResult?.let { result ->
                 PreviousResultBanner(
-                    voiceType = result.matches.firstOrNull()?.fach?.name
+                    voiceType = result.matches.firstOrNull()?.fach?.let { stringResource(it.nameRes) }
                         ?: stringResource(R.string.analyze_unknown),
                     minNote = FachClassifier.hzToNoteName(result.profile.absoluteMinHz),
                     maxNote = FachClassifier.hzToNoteName(result.profile.absoluteMaxHz),

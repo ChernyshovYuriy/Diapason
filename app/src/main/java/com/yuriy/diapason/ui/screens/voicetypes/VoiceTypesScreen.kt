@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,14 +44,22 @@ import com.yuriy.diapason.analyzer.FachDefinition
 
 // Fach grouped by category in display order
 private val CATEGORY_ORDER = listOf(
-    "Soprano", "Mezzo-Soprano", "Contralto", "Countertenor", "Tenor", "Baritone", "Bass"
+    R.string.fach_category_soprano,
+    R.string.fach_category_mezzo_soprano,
+    R.string.fach_category_contralto,
+    R.string.fach_category_countertenor,
+    R.string.fach_category_tenor,
+    R.string.fach_category_baritone,
+    R.string.fach_category_bass
 )
 
 @Composable
 fun VoiceTypesScreen() {
 
     val grouped = remember {
-        CATEGORY_ORDER.associateWith { cat -> ALL_FACH.filter { it.category == cat } }
+        CATEGORY_ORDER.associateWith { categoryRes ->
+            ALL_FACH.filter { it.categoryRes == categoryRes }
+        }
     }
 
     LazyColumn(
@@ -74,20 +83,20 @@ fun VoiceTypesScreen() {
             )
         }
 
-        CATEGORY_ORDER.forEach { category ->
-            val fachwList = grouped[category] ?: return@forEach
+        CATEGORY_ORDER.forEach { categoryRes ->
+            val fachwList = grouped[categoryRes] ?: return@forEach
             if (fachwList.isEmpty()) return@forEach
 
-            item(key = "header_$category") {
-                CategoryHeader(category = category)
+            item(key = "header_$categoryRes") {
+                CategoryHeader(categoryRes = categoryRes)
             }
 
-            items(fachwList.size, key = { fachwList[it].name }) { index ->
+            items(fachwList.size, key = { fachwList[it].nameRes }) { index ->
                 FachCard(fach = fachwList[index])
                 Spacer(Modifier.height(8.dp))
             }
 
-            item(key = "spacer_$category") {
+            item(key = "spacer_$categoryRes") {
                 Spacer(Modifier.height(8.dp))
             }
         }
@@ -99,9 +108,9 @@ fun VoiceTypesScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
-private fun CategoryHeader(category: String) {
+private fun CategoryHeader(categoryRes: Int) {
     Text(
-        text = category.uppercase(),
+        text = stringResource(categoryRes).uppercase(),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Bold,
@@ -135,7 +144,7 @@ private fun FachCard(fach: FachDefinition) {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = fach.name,
+                        text = stringResource(fach.nameRes),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -170,7 +179,7 @@ private fun FachCard(fach: FachDefinition) {
                     HorizontalDivider(modifier = Modifier.padding(bottom = 10.dp))
 
                     Text(
-                        fach.description,
+                        stringResource(fach.descriptionRes),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -180,13 +189,14 @@ private fun FachCard(fach: FachDefinition) {
                     RangeGrid(fach)
 
                     // Famous roles
-                    if (fach.famousRoles.isNotEmpty()) {
+                    val famousRoles = stringArrayResource(fach.famousRolesRes)
+                    if (famousRoles.isNotEmpty()) {
                         Spacer(Modifier.height(10.dp))
                         DetailSectionLabel(
                             icon = Icons.Filled.MusicNote,
                             label = stringResource(R.string.voice_types_label_famous_roles)
                         )
-                        fach.famousRoles.forEach { role ->
+                        famousRoles.forEach { role ->
                             Text(
                                 stringResource(R.string.common_bullet_item, role),
                                 style = MaterialTheme.typography.bodySmall,
@@ -197,14 +207,15 @@ private fun FachCard(fach: FachDefinition) {
                     }
 
                     // Example singers
-                    if (fach.exampleSingers.isNotEmpty()) {
+                    val exampleSingers = stringArrayResource(fach.exampleSingersRes)
+                    if (exampleSingers.isNotEmpty()) {
                         Spacer(Modifier.height(10.dp))
                         DetailSectionLabel(
                             icon = Icons.Filled.Person,
                             label = stringResource(R.string.voice_types_label_example_singers)
                         )
                         Text(
-                            text = fach.exampleSingers.joinToString(stringResource(R.string.voice_types_separator_dot)),
+                            text = exampleSingers.joinToString(stringResource(R.string.voice_types_separator_dot)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

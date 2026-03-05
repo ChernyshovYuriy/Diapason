@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -154,20 +155,20 @@ private fun TopMatchCard(match: FachMatch) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = match.fach.name,
+                text = stringResource(match.fach.nameRes),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = match.fach.category,
+                text = stringResource(match.fach.categoryRes),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = match.fach.description,
+                text = stringResource(match.fach.descriptionRes),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
                 textAlign = TextAlign.Center
@@ -182,14 +183,15 @@ private fun TopMatchCard(match: FachMatch) {
 
             Spacer(Modifier.height(14.dp))
 
-            if (match.fach.famousRoles.isNotEmpty()) {
+            val famousRoles = stringArrayResource(match.fach.famousRolesRes)
+            if (famousRoles.isNotEmpty()) {
                 Text(
                     text = stringResource(R.string.results_famous_roles_subheading),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
-                match.fach.famousRoles.forEach { role ->
+                famousRoles.forEach { role ->
                     Text(
                         text = stringResource(R.string.common_bullet_item, role),
                         style = MaterialTheme.typography.bodySmall,
@@ -290,12 +292,12 @@ private fun RunnerUpRow(rank: Int, match: FachMatch) {
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                match.fach.name,
+                stringResource(match.fach.nameRes),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
             Text(
-                match.fach.category,
+                stringResource(match.fach.categoryRes),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -169,5 +169,277 @@
     <string name="results_percent_format">%1$d%%</string>
     <string name="voice_types_separator_dot"> · </string>
     <string name="voice_types_detail_label_format">  %1$s</string>
+    <!-- ══ Fach Definitions ═══════════════════════════════════════════════ -->
+    <string name="fach_category_soprano">Soprano</string>
+    <string name="fach_category_mezzo_soprano">Mezzo-Soprano</string>
+    <string name="fach_category_contralto">Contralto</string>
+    <string name="fach_category_countertenor">Countertenor</string>
+    <string name="fach_category_tenor">Tenor</string>
+    <string name="fach_category_baritone">Baritone</string>
+    <string name="fach_category_bass">Bass</string>
+    <string name="fach_name_coloratura_soprano">Coloratura Soprano</string>
+    <string name="fach_description_coloratura_soprano">Extremely agile, stratospheric range, light and crystalline tone.</string>
+    <string-array name="fach_famous_roles_coloratura_soprano">
+        <item>Queen of the Night — The Magic Flute (Mozart)</item>
+        <item>Lucia — Lucia di Lammermoor (Donizetti)</item>
+        <item>Zerbinetta — Ariadne auf Naxos (R. Strauss)</item>
+        <item>Olympia — The Tales of Hoffmann (Offenbach)</item>
+    </string-array>
+    <string-array name="fach_example_singers_coloratura_soprano">
+        <item>Diana Damrau</item>
+        <item>Natalie Dessay</item>
+        <item>Ruth Ann Swenson</item>
+        <item>Edita Gruberová</item>
+    </string-array>
+    <string name="fach_name_lyric_coloratura_soprano">Lyric Coloratura Soprano</string>
+    <string name="fach_description_lyric_coloratura_soprano">Brilliant upper range with warmth and expressive legato.</string>
+    <string-array name="fach_famous_roles_lyric_coloratura_soprano">
+        <item>Gilda — Rigoletto (Verdi)</item>
+        <item>Norina — Don Pasquale (Donizetti)</item>
+        <item>Rosina — The Barber of Seville (Rossini)</item>
+        <item>Adina — L'elisir d'amore (Donizetti)</item>
+    </string-array>
+    <string-array name="fach_example_singers_lyric_coloratura_soprano">
+        <item>Cecilia Bartoli</item>
+        <item>Sumi Jo</item>
+        <item>Anna Netrebko (early career)</item>
+        <item>Beverly Sills</item>
+    </string-array>
+    <string name="fach_name_lyric_soprano">Lyric Soprano</string>
+    <string name="fach_description_lyric_soprano">Warm, flowing, emotionally expressive — the most common soprano type.</string>
+    <string-array name="fach_famous_roles_lyric_soprano">
+        <item>Mimì — La Bohème (Puccini)</item>
+        <item>Tatyana — Eugene Onegin (Tchaikovsky)</item>
+        <item>Countess Almaviva — The Marriage of Figaro (Mozart)</item>
+        <item>Violetta — La Traviata (Verdi)</item>
+    </string-array>
+    <string-array name="fach_example_singers_lyric_soprano">
+        <item>Renée Fleming</item>
+        <item>Angela Gheorghiu</item>
+        <item>Mirella Freni</item>
+        <item>Ileana Cotrubaș</item>
+    </string-array>
+    <string name="fach_name_spinto_soprano">Spinto Soprano</string>
+    <string name="fach_description_spinto_soprano">Lyric foundation pushed with dramatic intensity and darker colour.</string>
+    <string-array name="fach_famous_roles_spinto_soprano">
+        <item>Tosca — Tosca (Puccini)</item>
+        <item>Desdemona — Otello (Verdi)</item>
+        <item>Leonora — Il Trovatore (Verdi)</item>
+        <item>Aida — Aida (Verdi)</item>
+    </string-array>
+    <string-array name="fach_example_singers_spinto_soprano">
+        <item>Renata Tebaldi</item>
+        <item>Leontyne Price</item>
+        <item>Montserrat Caballé</item>
+        <item>Karita Mattila</item>
+    </string-array>
+    <string name="fach_name_dramatic_soprano">Dramatic Soprano</string>
+    <string name="fach_description_dramatic_soprano">Powerful, heavy, penetrating tone built to fill large halls over big orchestras.</string>
+    <string-array name="fach_famous_roles_dramatic_soprano">
+        <item>Brünnhilde — The Ring Cycle (Wagner)</item>
+        <item>Isolde — Tristan und Isolde (Wagner)</item>
+        <item>Elektra — Elektra (R. Strauss)</item>
+        <item>Turandot — Turandot (Puccini)</item>
+    </string-array>
+    <string-array name="fach_example_singers_dramatic_soprano">
+        <item>Birgit Nilsson</item>
+        <item>Gwyneth Jones</item>
+        <item>Nina Stemme</item>
+        <item>Hildegard Behrens</item>
+    </string-array>
+    <string name="fach_name_lyric_mezzo_soprano">Lyric Mezzo-Soprano</string>
+    <string name="fach_description_lyric_mezzo_soprano">Rich mid-range with agility, often cast in trouser roles.</string>
+    <string-array name="fach_famous_roles_lyric_mezzo_soprano">
+        <item>Cherubino — The Marriage of Figaro (Mozart)</item>
+        <item>Dorabella — Così fan tutte (Mozart)</item>
+        <item>Rosina — The Barber of Seville (Rossini)</item>
+        <item>Carmen — Carmen (Bizet, lighter interpretation)</item>
+    </string-array>
+    <string-array name="fach_example_singers_lyric_mezzo_soprano">
+        <item>Cecilia Bartoli</item>
+        <item>Joyce DiDonato</item>
+        <item>Susan Graham</item>
+        <item>Frederica von Stade</item>
+    </string-array>
+    <string name="fach_name_dramatic_mezzo_soprano">Dramatic Mezzo-Soprano</string>
+    <string name="fach_description_dramatic_mezzo_soprano">Dark, weighty, imposing — commands villains, witches and tragic mothers.</string>
+    <string-array name="fach_famous_roles_dramatic_mezzo_soprano">
+        <item>Carmen — Carmen (Bizet)</item>
+        <item>Amneris — Aida (Verdi)</item>
+        <item>Azucena — Il Trovatore (Verdi)</item>
+        <item>Kundry — Parsifal (Wagner)</item>
+    </string-array>
+    <string-array name="fach_example_singers_dramatic_mezzo_soprano">
+        <item>Shirley Verrett</item>
+        <item>Grace Bumbry</item>
+        <item>Olga Borodina</item>
+        <item>Fiorenza Cossotto</item>
+    </string-array>
+    <string name="fach_name_contralto">Contralto</string>
+    <string name="fach_description_contralto">The rarest female voice — earthy, resonant, profound low register.</string>
+    <string-array name="fach_famous_roles_contralto">
+        <item>Erda — Das Rheingold (Wagner)</item>
+        <item>Ulrica — Un Ballo in Maschera (Verdi)</item>
+        <item>Mistress Quickly — Falstaff (Verdi)</item>
+        <item>La Cieca — La Gioconda (Ponchielli)</item>
+    </string-array>
+    <string-array name="fach_example_singers_contralto">
+        <item>Marian Anderson</item>
+        <item>Kathleen Ferrier</item>
+        <item>Ewa Podleś</item>
+        <item>Nathalie Stutzmann</item>
+    </string-array>
+    <string name="fach_name_countertenor">Countertenor</string>
+    <string name="fach_description_countertenor">Male voice using falsetto/head voice in the alto–mezzo range, specialising in Baroque.</string>
+    <string-array name="fach_famous_roles_countertenor">
+        <item>Julius Caesar — Giulio Cesare (Handel)</item>
+        <item>Oberon — A Midsummer Night's Dream (Britten)</item>
+        <item>Ottone — L'incoronazione di Poppea (Monteverdi)</item>
+        <item>Bertarido — Rodelinda (Handel)</item>
+    </string-array>
+    <string-array name="fach_example_singers_countertenor">
+        <item>Andreas Scholl</item>
+        <item>David Daniels</item>
+        <item>Philippe Jaroussky</item>
+        <item>Alfred Deller</item>
+    </string-array>
+    <string name="fach_name_lyric_tenor">Lyric Tenor</string>
+    <string name="fach_description_lyric_tenor">Bright, sweet, elegant — the quintessential romantic lead.</string>
+    <string-array name="fach_famous_roles_lyric_tenor">
+        <item>Tamino — The Magic Flute (Mozart)</item>
+        <item>Alfredo — La Traviata (Verdi)</item>
+        <item>Rodolfo — La Bohème (Puccini)</item>
+        <item>Don Ottavio — Don Giovanni (Mozart)</item>
+    </string-array>
+    <string-array name="fach_example_singers_lyric_tenor">
+        <item>Nicolai Gedda</item>
+        <item>Fritz Wunderlich</item>
+        <item>Rolando Villazón</item>
+        <item>Juan Diego Flórez</item>
+    </string-array>
+    <string name="fach_name_spinto_tenor">Spinto Tenor</string>
+    <string name="fach_description_spinto_tenor">Lyric core with dramatic edge — can sustain powerful high notes.</string>
+    <string-array name="fach_famous_roles_spinto_tenor">
+        <item>Cavaradossi — Tosca (Puccini)</item>
+        <item>Don Alvaro — La Forza del Destino (Verdi)</item>
+        <item>Radamès — Aida (Verdi)</item>
+        <item>Manrico — Il Trovatore (Verdi)</item>
+    </string-array>
+    <string-array name="fach_example_singers_spinto_tenor">
+        <item>Plácido Domingo</item>
+        <item>José Carreras</item>
+        <item>Carlo Bergonzi</item>
+        <item>Jussi Björling</item>
+    </string-array>
+    <string name="fach_name_dramatic_tenor_heldentenor">Dramatic Tenor (Heldentenor)</string>
+    <string name="fach_description_dramatic_tenor_heldentenor">Massive, heroic, built for Wagner — endurance over agility.</string>
+    <string-array name="fach_famous_roles_dramatic_tenor_heldentenor">
+        <item>Siegfried — Siegfried / Götterdämmerung (Wagner)</item>
+        <item>Tristan — Tristan und Isolde (Wagner)</item>
+        <item>Tannhäuser — Tannhäuser (Wagner)</item>
+        <item>Parsifal — Parsifal (Wagner)</item>
+    </string-array>
+    <string-array name="fach_example_singers_dramatic_tenor_heldentenor">
+        <item>Lauritz Melchior</item>
+        <item>Wolfgang Windgassen</item>
+        <item>Ben Heppner</item>
+        <item>Jon Vickers</item>
+    </string-array>
+    <string name="fach_name_lyric_baritone">Lyric Baritone</string>
+    <string name="fach_description_lyric_baritone">Smooth, warm, noble — charming leading men and romantic anti-heroes.</string>
+    <string-array name="fach_famous_roles_lyric_baritone">
+        <item>Papageno — The Magic Flute (Mozart)</item>
+        <item>Count Almaviva — The Marriage of Figaro (Mozart)</item>
+        <item>Marcello — La Bohème (Puccini)</item>
+        <item>Valentin — Faust (Gounod)</item>
+    </string-array>
+    <string-array name="fach_example_singers_lyric_baritone">
+        <item>Hermann Prey</item>
+        <item>Dietrich Fischer-Dieskau</item>
+        <item>Thomas Allen</item>
+        <item>Bo Skovhus</item>
+    </string-array>
+    <string name="fach_name_kavalierbariton">Kavalierbariton</string>
+    <string name="fach_description_kavalierbariton">The elegant, aristocratic baritone — authoritative yet refined.</string>
+    <string-array name="fach_famous_roles_kavalierbariton">
+        <item>Don Giovanni — Don Giovanni (Mozart)</item>
+        <item>Onegin — Eugene Onegin (Tchaikovsky)</item>
+        <item>Rodrigo — Don Carlos (Verdi)</item>
+        <item>Hans Sachs — Die Meistersinger (Wagner, lighter cast)</item>
+    </string-array>
+    <string-array name="fach_example_singers_kavalierbariton">
+        <item>Eberhard Wächter</item>
+        <item>Simon Keenlyside</item>
+        <item>Dmitri Hvorostovsky</item>
+        <item>Matthias Goerne</item>
+    </string-array>
+    <string name="fach_name_dramatic_baritone">Dramatic Baritone</string>
+    <string name="fach_description_dramatic_baritone">Dark, powerful, intense — the archetypal Verdi villain and tragic father.</string>
+    <string-array name="fach_famous_roles_dramatic_baritone">
+        <item>Rigoletto — Rigoletto (Verdi)</item>
+        <item>Iago — Otello (Verdi)</item>
+        <item>Scarpia — Tosca (Puccini)</item>
+        <item>Macbeth — Macbeth (Verdi)</item>
+    </string-array>
+    <string-array name="fach_example_singers_dramatic_baritone">
+        <item>Tito Gobbi</item>
+        <item>Leonard Warren</item>
+        <item>Cornell MacNeil</item>
+        <item>Leo Nucci</item>
+    </string-array>
+    <string name="fach_name_bass_baritone">Bass-Baritone</string>
+    <string name="fach_description_bass_baritone">Bridges bass depth with baritone agility — ideal for Wagner's heroic villains.</string>
+    <string-array name="fach_famous_roles_bass_baritone">
+        <item>Wotan — The Ring Cycle (Wagner)</item>
+        <item>Hans Sachs — Die Meistersinger (Wagner)</item>
+        <item>Amfortas — Parsifal (Wagner)</item>
+        <item>Don Pizarro — Fidelio (Beethoven)</item>
+    </string-array>
+    <string-array name="fach_example_singers_bass_baritone">
+        <item>James Morris</item>
+        <item>John Tomlinson</item>
+        <item>René Pape (early)</item>
+        <item>Franz Ferdinand Nentwig</item>
+    </string-array>
+    <string name="fach_name_basso_cantante">Basso Cantante</string>
+    <string name="fach_description_basso_cantante">Singing bass — warm, lyrical, legato; wise kings and benevolent fathers.</string>
+    <string-array name="fach_famous_roles_basso_cantante">
+        <item>Sarastro — The Magic Flute (Mozart)</item>
+        <item>King Philip II — Don Carlos (Verdi)</item>
+        <item>Gurnemanz — Parsifal (Wagner)</item>
+        <item>Banco — Macbeth (Verdi)</item>
+    </string-array>
+    <string-array name="fach_example_singers_basso_cantante">
+        <item>Boris Christoff</item>
+        <item>Nicolai Ghiaurov</item>
+        <item>René Pape</item>
+        <item>Ferruccio Furlanetto</item>
+    </string-array>
+    <string name="fach_name_basso_profundo">Basso Profundo</string>
+    <string name="fach_description_basso_profundo">The deepest orchestral voice — imposing, cavernous, thunderous low notes.</string>
+    <string-array name="fach_famous_roles_basso_profundo">
+        <item>Méphistophélès — Faust (Gounod)</item>
+        <item>Boris Godunov — Boris Godunov (Mussorgsky)</item>
+        <item>Hagen — Götterdämmerung (Wagner)</item>
+        <item>Grand Inquisitor — Don Carlos (Verdi)</item>
+    </string-array>
+    <string-array name="fach_example_singers_basso_profundo">
+        <item>Martti Talvela</item>
+        <item>Kurt Moll</item>
+        <item>Matti Salminen</item>
+        <item>Alexander Kipnis</item>
+    </string-array>
+    <string name="fach_name_contrabass_oktavist">Contrabass (Oktavist)</string>
+    <string name="fach_description_contrabass_oktavist">Extraordinarily rare — sub-bass specialists in Russian Orthodox choral tradition.</string>
+    <string-array name="fach_famous_roles_contrabass_oktavist">
+        <item>Russian Orthodox liturgical chant (specialist role)</item>
+        <item>Certain Russian opera choral parts (Mussorgsky, Rimsky-Korsakov)</item>
+        <item>Subdeacon roles in religious music</item>
+    </string-array>
+    <string-array name="fach_example_singers_contrabass_oktavist">
+        <item>Tim Storms (world record holder)</item>
+        <item>Vladimir Paschchenko</item>
+        <item>Leonid Kharitonov</item>
+    </string-array>
 
 </resources>

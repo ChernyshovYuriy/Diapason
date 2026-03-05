@@ -168,11 +168,11 @@ object FachClassifier {
         }.sortedByDescending { it.score }
 
         Log.i(TAG, "  FULL SCORING TABLE:")
-        results.forEach { Log.d(TAG, "  [%2d/14] ${it.fach.name}".format(it.score)) }
+        results.forEach { Log.d(TAG, "  [%2d/14] fachRes=${it.fach.nameRes}".format(it.score)) }
 
         Log.i(TAG, "  TOP 3 MATCHES:")
         results.take(3).forEachIndexed { i, m ->
-            Log.i(TAG, "  #${i + 1}: ${m.fach.name} — ${m.score}/14")
+            Log.i(TAG, "  #${i + 1}: fachRes=${m.fach.nameRes} — ${m.score}/14")
             m.scoreBreakdown.forEach { Log.i(TAG, "         $it") }
         }
         Log.i(TAG, "═══════════════════════════════════════════════════")

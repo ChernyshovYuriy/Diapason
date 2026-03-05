@@ -40,10 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.LocaleListCompat
-import androidx.core.net.toUri
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
+import androidx.core.os.LocaleListCompat
+import androidx.core.net.toUri
 import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 
@@ -181,21 +181,9 @@ fun AboutScreen() {
 
                 val languageOptions = remember {
                     listOf(
-                        LanguageOption(
-                            tag = "en",
-                            labelRes = R.string.about_language_english,
-                            flagEmoji = "🇬🇧"
-                        ),
-                        LanguageOption(
-                            tag = "fr",
-                            labelRes = R.string.about_language_french,
-                            flagEmoji = "🇫🇷"
-                        ),
-                        LanguageOption(
-                            tag = "it",
-                            labelRes = R.string.about_language_italian,
-                            flagEmoji = "🇮🇹"
-                        )
+                        LanguageOption("en", R.string.about_language_english, "🇬🇧"),
+                        LanguageOption("fr", R.string.about_language_french, "🇫🇷"),
+                        LanguageOption("it", R.string.about_language_italian, "🇮🇹")
                     )
                 }
                 val selectedLanguageTag = AppCompatDelegate.getApplicationLocales()

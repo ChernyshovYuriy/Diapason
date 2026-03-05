@@ -114,6 +114,7 @@
     <string name="about_language_english">English</string>
     <string name="about_language_french">Français</string>
     <string name="about_language_italian">Italiano</string>
+
     <string name="about_section_references">Références</string>
     <string name="about_reference_yin_label">Article YIN</string>
     <string name="about_reference_fach_label">Taxonomie Fach</string>

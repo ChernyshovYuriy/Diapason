@@ -108,8 +108,12 @@
     <string name="about_creator_pitch_detection_label">Rilevamento dell’intonazione</string>
     <string name="about_creator_voice_taxonomy_label">Tassonomia vocale</string>
     <string name="about_section_localization">Lingue e localizzazione</string>
-    <string name="about_localization_current_language">Attualmente solo in inglese</string>
-    <string name="about_localization_plan">La localizzazione è pianificata.</string>
+    <string name="about_localization_current_language">Disponibile in 3 lingue</string>
+    <string name="about_localization_available_languages">Sono disponibili inglese, francese e italiano.</string>
+    <string name="about_localization_choose_language">Scegli la lingua dell’app</string>
+    <string name="about_language_english">English</string>
+    <string name="about_language_french">Français</string>
+    <string name="about_language_italian">Italiano</string>
     <string name="about_section_references">Riferimenti</string>
     <string name="about_reference_yin_label">Articolo YIN</string>
     <string name="about_reference_fach_label">Tassonomia Fach</string>

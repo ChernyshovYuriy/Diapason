@@ -24,11 +24,13 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,7 +40,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.LocaleListCompat
 import androidx.core.net.toUri
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 
@@ -163,10 +169,57 @@ fun AboutScreen() {
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.about_localization_plan),
+                    text = stringResource(R.string.about_localization_available_languages),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.about_localization_choose_language),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                )
+
+                val languageOptions = remember {
+                    listOf(
+                        LanguageOption(
+                            tag = "en",
+                            labelRes = R.string.about_language_english
+                        ),
+                        LanguageOption(
+                            tag = "fr",
+                            labelRes = R.string.about_language_french
+                        ),
+                        LanguageOption(
+                            tag = "it",
+                            labelRes = R.string.about_language_italian
+                        )
+                    )
+                }
+                val selectedLanguageTag = AppCompatDelegate.getApplicationLocales()
+                    .toLanguageTags()
+                    .substringBefore(',')
+                    .ifBlank { "en" }
+
+                Spacer(Modifier.height(10.dp))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    languageOptions.forEach { option ->
+                        FilterChip(
+                            selected = selectedLanguageTag.startsWith(option.tag),
+                            onClick = {
+                                AppCompatDelegate.setApplicationLocales(
+                                    LocaleListCompat.forLanguageTags(option.tag)
+                                )
+                            },
+                            label = {
+                                Text(text = stringResource(option.labelRes))
+                            }
+                        )
+                    }
+                }
             }
         }
 
@@ -295,6 +348,11 @@ fun AboutScreen() {
         Spacer(Modifier.height(24.dp))
     }
 }
+
+private data class LanguageOption(
+    val tag: String,
+    val labelRes: Int
+)
 
 // ─────────────────────────────────────────────────────────────────────────────
 

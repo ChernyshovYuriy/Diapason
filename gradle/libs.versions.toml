@@ -1,6 +1,7 @@
 [versions]
 accompanistPermissions = "0.37.3"
 activityCompose = "1.12.4"
+appcompat = "1.7.1"
 agp = "9.0.1"
 composeBom = "2026.02.01"
 coreKtx = "1.17.0"
@@ -14,6 +15,7 @@ navigationCompose = "2.9.7"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleViewmodelCompose" }

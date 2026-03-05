@@ -160,10 +160,10 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
         data class Band(val label: String, val lo: Float, val hi: Float)
 
         val bands = listOf(
-            Band("C2–B2  ( 65–123 Hz)", 65f, 123f),
-            Band("C3–B3  (130–246 Hz)", 123f, 246f),
-            Band("C4–B4  (261–493 Hz)", 246f, 493f),
-            Band("C5–B5  (523–987 Hz)", 493f, 987f),
+            Band("C2–B2    (65–123 Hz)", 65f, 123f),
+            Band("C3–B3   (130–246 Hz)", 123f, 246f),
+            Band("C4–B4   (261–493 Hz)", 246f, 493f),
+            Band("C5–B5   (523–987 Hz)", 493f, 987f),
             Band("C6–B6 (1047–1975 Hz)", 987f, 2100f)
         )
         val maxCount =

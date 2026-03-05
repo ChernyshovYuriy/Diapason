@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">Classificateur d’étendue vocale</string>
+    <string name="nav_analyze">Analyser</string>
+    <string name="nav_guide">Guide</string>
+    <string name="nav_voice_types">Types de voix</string>
+    <string name="nav_about">À propos</string>
+    <string name="analyze_idle_prompt">Appuyez sur Démarrer et chantez sur toute votre tessiture</string>
+    <string name="analyze_complete">Analyse terminée !</string>
+    <string name="analyze_stat_samples">Échantillons</string>
+    <string name="analyze_stat_hz">Hz</string>
+    <string name="analyze_btn_grant_permission">Autoriser le micro</string>
+    <string name="analyze_btn_start">Démarrer</string>
+    <string name="analyze_btn_stop">Arrêter</string>
+    <string name="analyze_btn_try_again">Réessayer</string>
+    <string name="analyze_unknown">Inconnu</string>
+    <string name="analyze_view">Voir</string>
+    <string name="analyze_last_result_type">Dernier résultat : %1$s</string>
+    <string name="analyze_range">Étendue : %1$s - %2$s</string>
+    <string name="analyze_status_listening">Écoute… chantez de votre note la plus grave à la plus aiguë, puis redescendez</string>
+    <string name="analyze_status_listening_short">Écoute… chantez de votre note la plus grave à la plus aiguë</string>
+    <string name="analyze_status_analyzing">Analyse de votre voix…</string>
+    <string name="analyze_status_mic_error">Échec d’initialisation du micro — vérifiez l’autorisation</string>
+    <string name="analyze_status_too_few_samples">Trop peu d’échantillons — chantez plus longtemps</string>
+    <string name="analyze_error_insufficient">Données insuffisantes. Veuillez tenir des notes pendant au moins 20–30 secondes.</string>
+    <string name="voice_types_title">Types de voix</string>
+    <string name="voice_types_subtitle">Touchez un type de voix pour explorer son étendue, son répertoire et des chanteurs célèbres</string>
+    <string name="voice_types_label_range">Étendue</string>
+    <string name="voice_types_label_tessitura">Tessiture</string>
+    <string name="voice_types_label_passaggio">Passaggio</string>
+    <string name="voice_types_label_famous_roles">Rôles célèbres</string>
+    <string name="voice_types_label_example_singers">Chanteurs d’exemple</string>
+    <string name="voice_types_cd_collapse">Réduire</string>
+    <string name="voice_types_cd_expand">Développer</string>
+    <string name="results_title">Vos résultats</string>
+    <string name="results_best_match_label">Meilleure correspondance</string>
+    <string name="results_confidence_label">Confiance de classification</string>
+    <string name="results_famous_roles_subheading">Rôles célèbres pour cette voix</string>
+    <string name="results_section_range">Étendue mesurée</string>
+    <string name="results_section_other_matches">Autres correspondances possibles</string>
+    <string name="results_stat_lowest">Note la plus grave détectée</string>
+    <string name="results_stat_highest">Note la plus aiguë détectée</string>
+    <string name="results_stat_tessitura">Tessiture (zone confortable)</string>
+    <string name="results_stat_passaggio">Passaggio estimé</string>
+    <string name="results_stat_samples">Échantillons de hauteur valides</string>
+    <string name="results_stat_percentile_range">P20–P80</string>
+    <string name="results_stat_session_format">session de %1$.0fs</string>
+    <string name="results_runner_up_rank_format">#%1$d</string>
+    <string name="results_score_format">%1$d/%2$d</string>
+    <string name="results_btn_analyze_again">Analyser à nouveau</string>
+    <string name="results_disclaimer">La classification Fach dépend aussi du timbre et du poids vocal,
+        qui nécessitent une oreille entraînée. Utilisez ceci comme point de départ éclairé — pas
+        comme diagnostic définitif. Un professeur de chant donnera toujours l’évaluation la plus précise.</string>
+    <string name="results_cd_back">Retour</string>
+    <string name="guide_title">Comment utiliser Diapason</string>
+    <string name="guide_subtitle">Suivez ces étapes pour obtenir le résultat le plus précis</string>
+    <string name="guide_step1_title">Trouvez une pièce calme</string>
+    <string name="guide_step1_body">Le bruit de fond réduit la fiabilité de la détection de hauteur.
+        Fermez les fenêtres, éteignez les ventilateurs et éloignez-vous des téléviseurs ou de la musique.</string>
+    <string name="guide_step2_title">Échauffez-vous d’abord</string>
+    <string name="guide_step2_body">Faites 5 à 10 minutes d’échauffement vocal avant de commencer.
+        Les voix à froid donnent des résultats peu fiables et peuvent ne pas atteindre leurs véritables extrêmes.</string>
+    <string name="guide_step3_title">Chantez des notes tenues</string>
+    <string name="guide_step3_body">Tenez chaque note au moins 2 à 3 secondes. Diapason a besoin d’un
+        son stable et tenu pour détecter la hauteur de façon fiable — la parole et les glissandos entre notes
+        sont filtrés.</string>
+    <string name="guide_step4_title">Couvrez toute votre étendue</string>
+    <string name="guide_step4_body">Commencez par votre note confortable la plus grave puis montez
+        chromatiquement ou par gamme jusqu’à la plus aiguë. Redescendez ensuite. Cela aide à détecter
+        votre étendue absolue et votre passaggio (rupture de registre). Visez au moins 30 à 45 secondes
+        de chant.</string>
+    <string name="guide_step5_title">Appuyez sur Arrêter puis consultez</string>
+    <string name="guide_step5_body">Diapason affichera le type de voix le plus probable avec un score de
+        confiance, votre étendue mesurée, votre tessiture et votre passaggio estimé. Les détails complets du
+        score sont dans Logcat.</string>
+    <string name="guide_fach_section_title">Qu’est-ce que le Fach ?</string>
+    <string name="guide_fach_body1">"Fach" (prononcé /fax/, mot allemand signifiant "compartiment") est le
+        système classique utilisé dans les maisons d’opéra pour catégoriser les chanteurs par type de voix.
+        Connaître votre Fach vous aide à choisir un répertoire adapté, à protéger votre voix et à communiquer
+        avec les directeurs de casting et les professeurs de chant.</string>
+    <string name="guide_fach_body2">Au-delà de "soprano" ou "basse", le système Fach
+        distingue plus de 19 sous-types selon l’étendue, la tessiture (où la voix se place le plus
+        confortablement), le passaggio (la rupture entre voix de poitrine et voix de tête) et le timbre
+        (couleur de la voix).</string>
+    <string name="guide_measures_section_title">Ce que Diapason mesure</string>
+    <string name="guide_measure_range_term">Étendue absolue</string>
+    <string name="guide_measure_range_def">La hauteur propre la plus grave et la plus aiguë détectées pendant
+        votre session.</string>
+    <string name="guide_measure_tessitura_term">Tessiture</string>
+    <string name="guide_measure_tessitura_def">Le 20e–80e percentile de vos échantillons de hauteur —
+        là où votre voix passe naturellement et confortablement la majeure partie du temps.</string>
+    <string name="guide_measure_passaggio_term">Passaggio</string>
+    <string name="guide_measure_passaggio_def">Estimé à partir de la zone de plus forte instabilité de hauteur
+        de votre session — le point de transition entre registres de poitrine et de tête.</string>
+    <string name="guide_limitation_title">Ce que Diapason ne peut pas mesurer</string>
+    <string name="guide_limitation_body">Le timbre (couleur vocale) et le poids vocal sont essentiels à une
+        classification Fach précise mais ne peuvent pas être mesurés de manière fiable avec le micro d’un téléphone.
+        Une soprano dramatique et une soprano lyrique peuvent atteindre les mêmes notes — seule une oreille entraînée
+        peut les distinguer. Utilisez le résultat de Diapason comme un solide point de départ, pas comme verdict final.</string>
+    <string name="about_hero_subtitle">Classificateur d’étendue vocale</string>
+    <string name="about_version_format">Version %1$s (build %2$d)</string>
+    <string name="about_section_about">À propos</string>
+    <string name="about_body_1">Diapason aide les chanteurs et professeurs de chant à explorer et catégoriser l’étendue vocale avec le système allemand classique Fach. L’application écoute des notes tenues via le micro de votre appareil, construit un profil acoustique en temps réel et le compare à 19 types de voix documentés — de Coloratura Soprano à Contrabass Oktavist.</string>
+    <string name="about_body_2">L’application est conçue comme point de départ pédagogique. Le timbre et le poids vocal — essentiels pour un Fach définitif — nécessitent une oreille humaine entraînée et ne peuvent pas être captés par un micro seul.</string>
+    <string name="about_section_creator">Créateur</string>
+    <string name="about_creator_developer_label">Ingénieur logiciel</string>
+    <string name="about_creator_stack_label">Stack</string>
+    <string name="about_creator_pitch_detection_label">Détection de hauteur</string>
+    <string name="about_creator_voice_taxonomy_label">Taxonomie vocale</string>
+    <string name="about_section_localization">Langues et localisation</string>
+    <string name="about_localization_current_language">Actuellement en anglais uniquement</string>
+    <string name="about_localization_plan">La localisation est prévue.</string>
+    <string name="about_section_references">Références</string>
+    <string name="about_reference_yin_label">Article YIN</string>
+    <string name="about_reference_fach_label">Taxonomie Fach</string>
+    <string name="about_section_privacy">Confidentialité</string>
+    <string name="about_privacy_policy_label">Politique de confidentialité</string>
+    <string name="about_privacy_policy_value">Votre analyse vocale reste sur l’appareil. Aucun enregistrement audio n’est téléversé ni partagé.</string>
+    <string name="about_privacy_policy_cta">Touchez pour ouvrir la politique complète</string>
+    <string name="about_section_feedback">Retours et rapports de bugs</string>
+    <string name="about_feedback_body">Vous avez trouvé un bug ou une idée de fonctionnalité ? Ouvrez une issue sur le dépôt du projet.</string>
+    <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
+    <string name="about_translation_item_format">• %1$s</string>
+    <string name="common_bullet_item">• %1$s</string>
+    <string name="results_hz_format">%1$.0f Hz</string>
+    <string name="results_percent_format">%1$d%%</string>
+    <string name="voice_types_separator_dot"> · </string>
+    <string name="voice_types_detail_label_format">  %1$s</string>
+    <string name="fach_category_soprano">Soprano</string>
+    <string name="fach_category_mezzo_soprano">Mezzo-soprano</string>
+    <string name="fach_category_contralto">Contralto</string>
+    <string name="fach_category_countertenor">Contreténor</string>
+    <string name="fach_category_tenor">Ténor</string>
+    <string name="fach_category_baritone">Baryton</string>
+    <string name="fach_category_bass">Basse</string>
+    <string name="fach_name_coloratura_soprano">Colorature soprano</string>
+    <string name="fach_description_coloratura_soprano">Extrêmement agile, tessiture stratosphérique, timbre léger et cristallin.</string>
+    <string name="fach_name_lyric_coloratura_soprano">Soprano colorature lyrique</string>
+    <string name="fach_description_lyric_coloratura_soprano">Registre aigu brillant avec chaleur et legato expressif.</string>
+    <string name="fach_name_lyric_soprano">Soprano lyrique</string>
+    <string name="fach_description_lyric_soprano">Chaleureuse, fluide, expressive émotionnellement — le type de soprano le plus courant.</string>
+    <string name="fach_name_spinto_soprano">Soprano spinto</string>
+    <string name="fach_description_spinto_soprano">Base lyrique poussée avec intensité dramatique et couleur plus sombre.</string>
+    <string name="fach_name_dramatic_soprano">Soprano dramatique</string>
+    <string name="fach_description_dramatic_soprano">Timbre puissant, dense et perçant, conçu pour remplir de grandes salles au-dessus de grands orchestres.</string>
+    <string name="fach_name_lyric_mezzo_soprano">Mezzo-soprano lyrique</string>
+    <string name="fach_description_lyric_mezzo_soprano">Médium riche avec agilité, souvent distribuée dans des rôles en pantalon.</string>
+    <string name="fach_name_dramatic_mezzo_soprano">Mezzo-soprano dramatique</string>
+    <string name="fach_description_dramatic_mezzo_soprano">Sombre, ample, imposante — incarne méchants, sorcières et mères tragiques.</string>
+    <string name="fach_name_contralto">Contralto</string>
+    <string name="fach_description_contralto">La voix féminine la plus rare — grave terrien, résonant et profond.</string>
+    <string name="fach_name_countertenor">Contreténor</string>
+    <string name="fach_description_countertenor">Voix masculine utilisant le falsetto/registre de tête dans la zone alto–mezzo, spécialisée dans le baroque.</string>
+    <string name="fach_name_lyric_tenor">Ténor lyrique</string>
+    <string name="fach_description_lyric_tenor">Clair, doux, élégant — le premier rôle romantique par excellence.</string>
+    <string name="fach_name_spinto_tenor">Ténor spinto</string>
+    <string name="fach_description_spinto_tenor">Noyau lyrique avec arête dramatique — peut soutenir de puissantes notes aiguës.</string>
+    <string name="fach_name_dramatic_tenor_heldentenor">Ténor dramatique (Heldentenor)</string>
+    <string name="fach_description_dramatic_tenor_heldentenor">Massif, héroïque, conçu pour Wagner — endurance avant agilité.</string>
+    <string name="fach_name_lyric_baritone">Baryton lyrique</string>
+    <string name="fach_description_lyric_baritone">Lisse, chaleureux, noble — premiers rôles charmants et anti-héros romantiques.</string>
+    <string name="fach_name_kavalierbariton">Kavalierbariton</string>
+    <string name="fach_description_kavalierbariton">Le baryton élégant et aristocratique — autoritaire mais raffiné.</string>
+    <string name="fach_name_dramatic_baritone">Baryton dramatique</string>
+    <string name="fach_description_dramatic_baritone">Sombre, puissant, intense — l’archétype du méchant verdien et du père tragique.</string>
+    <string name="fach_name_bass_baritone">Basse-baryton</string>
+    <string name="fach_description_bass_baritone">Allie profondeur de basse et agilité de baryton — idéal pour les méchants héroïques de Wagner.</string>
+    <string name="fach_name_basso_cantante">Basso cantate</string>
+    <string name="fach_description_basso_cantante">Basse chantante — chaude, lyrique, legato ; rois sages et pères bienveillants.</string>
+    <string name="fach_name_basso_profundo">Basso profondo</string>
+    <string name="fach_description_basso_profundo">La voix orchestrale la plus grave — imposante, caverneuse, tonitruante dans le grave.</string>
+    <string name="fach_name_contrabass_oktavist">Contrebasse (Oktavist)</string>
+    <string name="fach_description_contrabass_oktavist">Extraordinairement rare — spécialistes sub-basse de la tradition chorale orthodoxe russe.</string>
+</resources>

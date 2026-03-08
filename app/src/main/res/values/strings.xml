@@ -195,4 +195,10 @@ Get Diapason: %4$s</string>
     <string name="fach_description_basso_profundo">The deepest orchestral voice — imposing, cavernous, thunderous low notes.</string>
     <string name="fach_name_contrabass_oktavist">Contrabass (Oktavist)</string>
     <string name="fach_description_contrabass_oktavist">Extraordinarily rare — sub-bass specialists in Russian Orthodox choral tradition.</string>
+    <string name="share_chooser_title">Share your voice type</string>
+    <string name="share_cd_button">Share your result</string>
+    <string name="share_unknown_voice_type">Unknown</string>
+    <string name="share_clipboard_label">Diapason voice type result</string>
+    <string name="share_clipboard_toast">Text copied — paste it if the app doesn\'t fill it automatically</string>
+    <string name="share_text">Ever wondered what your real singing voice type is? 🎶\nI just found out mine is: %1$s\nRange: %2$s–%3$s · Tessitura: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
 </resources>

@@ -13,8 +13,8 @@ android {
         applicationId = "com.yuriy.diapason"
         minSdk = 24
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.2"
+        versionCode = 10
+        versionName = "1.3"
     }
 
     buildFeatures {

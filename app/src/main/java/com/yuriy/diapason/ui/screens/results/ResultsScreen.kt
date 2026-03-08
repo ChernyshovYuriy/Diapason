@@ -1,11 +1,20 @@
 package com.yuriy.diapason.ui.screens.results
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,7 +44,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +61,26 @@ import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceProfile
 
+private fun shareResult(
+    context: Context,
+    text: String,
+    chooserTitle: String,
+    clipboardLabel: String,
+    toastMessage: String
+) {
+    // Copy to clipboard first — apps like Facebook strip Intent.EXTRA_TEXT,
+    // so the user can paste the text manually after tapping a Facebook post.
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    clipboard.setPrimaryClip(ClipData.newPlainText(clipboardLabel, text))
+    Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+    }
+    context.startActivity(Intent.createChooser(intent, chooserTitle))
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultsScreen(
@@ -56,23 +89,23 @@ fun ResultsScreen(
     onBack: () -> Unit,
     onAnalyzeAgain: () -> Unit
 ) {
-    val context = LocalContext.current
-    val shareText = remember(context, profile, matches) {
-        buildResultsShareText(context = context, profile = profile, matches = matches)
-    }
-
-    fun onShareResult() {
-        val chooserIntent = createResultsShareChooserIntent(
-            context = context,
-            chooserTitle = context.getString(R.string.results_share_chooser_title),
-            shareSubject = context.getString(R.string.results_share_subject),
-            shareText = shareText,
-            appLink = context.getString(R.string.app_google_play_link)
-        )
-        context.startActivity(chooserIntent)
-    }
 
     BackHandler(onBack = onBack)
+
+    val context = LocalContext.current
+    val topMatch = matches.firstOrNull()
+    val shareText = stringResource(
+        R.string.share_text,
+        stringResource(topMatch?.fach?.nameRes ?: R.string.share_unknown_voice_type),
+        FachClassifier.hzToNoteName(profile.absoluteMinHz),
+        FachClassifier.hzToNoteName(profile.absoluteMaxHz),
+        FachClassifier.hzToNoteName(profile.tessituraLowHz),
+        FachClassifier.hzToNoteName(profile.tessituraHighHz),
+        stringResource(R.string.share_app_link)
+    )
+    val shareChooserTitle = stringResource(R.string.share_chooser_title)
+    val shareClipboardLabel = stringResource(R.string.share_clipboard_label)
+    val shareToastMessage = stringResource(R.string.share_clipboard_toast)
 
     Scaffold(
         topBar = {
@@ -87,12 +120,17 @@ fun ResultsScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = ::onShareResult) {
-                        Icon(
-                            imageVector = Icons.Filled.Share,
-                            contentDescription = stringResource(R.string.results_cd_share)
-                        )
-                    }
+                    ShareButton(
+                        onClick = {
+                            shareResult(
+                                context,
+                                shareText,
+                                shareChooserTitle,
+                                shareClipboardLabel,
+                                shareToastMessage
+                            )
+                        }
+                    )
                 }
             )
         }
@@ -156,161 +194,56 @@ fun ResultsScreen(
     }
 }
 
-private fun createResultsShareChooserIntent(
-    context: Context,
-    chooserTitle: String,
-    shareSubject: String,
-    shareText: String,
-    appLink: String
-): Intent {
-    val baseShareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TEXT, shareText)
-        putExtra(Intent.EXTRA_SUBJECT, shareSubject)
-    }
-
-    val packageManager = context.packageManager
-    val resolvedActivities = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        packageManager.queryIntentActivities(
-            baseShareIntent,
-            android.content.pm.PackageManager.ResolveInfoFlags.of(0)
-        )
-    } else {
-        @Suppress("DEPRECATION")
-        packageManager.queryIntentActivities(baseShareIntent, 0)
-    }
-
-    val targetedIntents = resolvedActivities.mapNotNull { resolveInfo ->
-        val packageName = resolveInfo.activityInfo?.packageName ?: return@mapNotNull null
-
-        Intent(baseShareIntent).apply {
-            setPackage(packageName)
-        }
-    }
-
-    val explicitSocialIntents = mutableListOf<Intent>()
-
-    fun packageExists(packageName: String): Boolean {
-        return resolvedActivities.any { it.activityInfo?.packageName == packageName }
-    }
-
-    fun sendIntentForPackage(packageName: String): Intent? {
-        if (!packageExists(packageName)) return null
-        return Intent(baseShareIntent).apply {
-            setPackage(packageName)
-        }
-    }
-
-    val facebookPackages = listOf("com.facebook.katana", "com.facebook.lite")
-    val facebookQuote = shareText.replace(appLink, "").trim()
-
-    facebookPackages
-        .firstOrNull(::packageExists)
-        ?.let { packageName ->
-            val facebookShareUri = Uri.parse("https://www.facebook.com/sharer/sharer.php")
-                .buildUpon()
-                .appendQueryParameter("u", appLink)
-                .appendQueryParameter("quote", facebookQuote)
-                .build()
-
-            explicitSocialIntents += Intent(Intent.ACTION_VIEW, facebookShareUri).apply {
-                setPackage(packageName)
-            }
-        }
-
-    val preferredTextSharePackages = listOf(
-        "com.instagram.android",
-        "com.whatsapp",
-        "org.telegram.messenger",
-        "com.twitter.android",
-        "com.linkedin.android"
-    )
-
-    preferredTextSharePackages.forEach { packageName ->
-        sendIntentForPackage(packageName)?.let(explicitSocialIntents::add)
-    }
-
-    val combinedIntents = (explicitSocialIntents + targetedIntents)
-        .distinctBy { intent ->
-            "${intent.`package`}|${intent.action}|${intent.dataString ?: ""}"
-        }
-
-    if (combinedIntents.isEmpty()) {
-        return Intent.createChooser(baseShareIntent, chooserTitle)
-    }
-
-    val primaryIntent = combinedIntents.first()
-    val additionalIntents = combinedIntents.drop(1).toTypedArray()
-
-    return Intent.createChooser(primaryIntent, chooserTitle).apply {
-        putExtra(Intent.EXTRA_INITIAL_INTENTS, additionalIntents)
-    }
-}
-
-private enum class ResultsShareTemplate {
-    VIRAL_CURIOSITY,
-    CONFIDENT_REVEAL,
-    CHALLENGE_STYLE
-}
-
-private fun buildResultsShareText(
-    context: Context,
-    profile: VoiceProfile,
-    matches: List<FachMatch>
-): String {
-    val selectedTemplate = ResultsShareTemplate.VIRAL_CURIOSITY
-    val topMatch = matches.firstOrNull()
-
-    val voiceType = topMatch?.let { fachMatch ->
-        context.getString(
-            R.string.results_share_voice_type_format,
-            context.getString(fachMatch.fach.nameRes),
-            context.getString(fachMatch.fach.categoryRes)
-        )
-    } ?: context.getString(R.string.results_share_unknown_voice_type)
-
-    val range = "${FachClassifier.hzToNoteName(profile.absoluteMinHz)}–${FachClassifier.hzToNoteName(profile.absoluteMaxHz)}"
-    val tessitura = "${FachClassifier.hzToNoteName(profile.tessituraLowHz)}–${FachClassifier.hzToNoteName(profile.tessituraHighHz)}"
-    val appLink = context.getString(R.string.app_google_play_link)
-
-    // Candidate template 1 (default): curious + social + easy to skim.
-    val templateViralCuriosity = context.getString(
-        R.string.results_share_template_viral_curiosity,
-        voiceType,
-        range,
-        tessitura,
-        appLink
-    )
-
-    // Candidate template 2: short confidence reveal.
-    val templateConfidentReveal = context.getString(
-        R.string.results_share_template_confident_reveal,
-        voiceType,
-        range,
-        tessitura,
-        appLink
-    )
-
-    // Candidate template 3: challenge-style hook.
-    val templateChallengeStyle = context.getString(
-        R.string.results_share_template_challenge_style,
-        voiceType,
-        range,
-        tessitura,
-        appLink
-    )
-
-    return when (selectedTemplate) {
-        ResultsShareTemplate.VIRAL_CURIOSITY -> templateViralCuriosity
-        ResultsShareTemplate.CONFIDENT_REVEAL -> templateConfidentReveal
-        ResultsShareTemplate.CHALLENGE_STYLE -> templateChallengeStyle
-    }
-}
-
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Sub-composables
 // ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun ShareButton(onClick: () -> Unit) {
+    var hasBeenTapped by remember { mutableStateOf(false) }
+    val primaryColor = MaterialTheme.colorScheme.primary
+
+    // Beacon: a circle that expands outward and fades, restarting every 1.4s.
+    // Drives both radius and alpha from a single 0→1 progress value so they
+    // stay in sync. Stops rendering (but keeps running internally) after tap.
+    val infiniteTransition = rememberInfiniteTransition(label = "share_beacon")
+    val beaconProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "share_beacon_progress"
+    )
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(48.dp)
+    ) {
+        if (!hasBeenTapped) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val maxRadius = size.minDimension * 0.80f
+                val minRadius = size.minDimension * 0.28f
+                val radius = minRadius + (maxRadius - minRadius) * beaconProgress
+                val alpha = 0.55f * (1f - beaconProgress)   // bright → invisible
+                drawCircle(color = primaryColor, radius = radius, alpha = alpha)
+            }
+        }
+        IconButton(
+            onClick = {
+                hasBeenTapped = true
+                onClick()
+            }
+        ) {
+            Icon(
+                Icons.Filled.Share,
+                contentDescription = stringResource(R.string.share_cd_button),
+                tint = primaryColor
+            )
+        }
+    }
+}
 
 @Composable
 private fun TopMatchCard(match: FachMatch) {

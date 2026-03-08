@@ -176,4 +176,10 @@
     <string name="fach_description_basso_profundo">La voix orchestrale la plus grave — imposante, caverneuse, tonitruante dans le grave.</string>
     <string name="fach_name_contrabass_oktavist">Contrebasse (Oktavist)</string>
     <string name="fach_description_contrabass_oktavist">Extraordinairement rare — spécialistes sub-basse de la tradition chorale orthodoxe russe.</string>
+    <string name="share_chooser_title">Partager votre type de voix</string>
+    <string name="share_cd_button">Partager votre résultat</string>
+    <string name="share_unknown_voice_type">Inconnu</string>
+    <string name="share_clipboard_label">Résultat du type de voix Diapason</string>
+    <string name="share_clipboard_toast">Texte copié — collez-le si l\'application ne le remplit pas automatiquement</string>
+    <string name="share_text">Vous êtes-vous déjà demandé quel est votre véritable type de voix ? 🎶\nJe viens de découvrir que le mien est : %1$s\nÉtendue : %2$s–%3$s · Tessiture : %4$s–%5$s\n\nMaintenant je suis curieux — et vous ?\nEssayez Diapason : %6$s</string>
 </resources>

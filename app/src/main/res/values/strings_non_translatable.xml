@@ -235,4 +235,5 @@
         <item>Vladimir Paschchenko</item>
         <item>Leonid Kharitonov</item>
     </string-array>
+    <string name="share_app_link" translatable="false">https://play.google.com/store/apps/details?id=com.yuriy.diapason</string>
 </resources>

@@ -2,6 +2,8 @@ package com.yuriy.diapason.ui.screens.results
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,14 +62,14 @@ fun ResultsScreen(
     }
 
     fun onShareResult() {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, shareText)
-            putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.results_share_subject))
-        }
-        context.startActivity(
-            Intent.createChooser(shareIntent, context.getString(R.string.results_share_chooser_title))
+        val chooserIntent = createResultsShareChooserIntent(
+            context = context,
+            chooserTitle = context.getString(R.string.results_share_chooser_title),
+            shareSubject = context.getString(R.string.results_share_subject),
+            shareText = shareText,
+            appLink = context.getString(R.string.app_google_play_link)
         )
+        context.startActivity(chooserIntent)
     }
 
     BackHandler(onBack = onBack)
@@ -151,6 +153,65 @@ fun ResultsScreen(
 
             Spacer(Modifier.height(32.dp))
         }
+    }
+}
+
+private fun createResultsShareChooserIntent(
+    context: Context,
+    chooserTitle: String,
+    shareSubject: String,
+    shareText: String,
+    appLink: String
+): Intent {
+    val baseShareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        putExtra(Intent.EXTRA_SUBJECT, shareSubject)
+    }
+
+    val packageManager = context.packageManager
+    val resolvedActivities = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.queryIntentActivities(
+            baseShareIntent,
+            android.content.pm.PackageManager.ResolveInfoFlags.of(0)
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        packageManager.queryIntentActivities(baseShareIntent, 0)
+    }
+
+    val facebookPackages = setOf("com.facebook.katana", "com.facebook.lite")
+    val quote = shareText.replace(appLink, "").trim()
+
+    val targetedIntents = resolvedActivities.mapNotNull { resolveInfo ->
+        val packageName = resolveInfo.activityInfo?.packageName ?: return@mapNotNull null
+
+        if (packageName in facebookPackages) {
+            val facebookShareUri = Uri.parse("https://www.facebook.com/sharer/sharer.php")
+                .buildUpon()
+                .appendQueryParameter("u", appLink)
+                .appendQueryParameter("quote", quote)
+                .build()
+
+            Intent(Intent.ACTION_VIEW, facebookShareUri).apply {
+                setPackage(packageName)
+            }
+        } else {
+            Intent(baseShareIntent).apply {
+                setPackage(packageName)
+            }
+        }
+    }
+
+    if (targetedIntents.isEmpty()) {
+        return Intent.createChooser(baseShareIntent, chooserTitle)
+    }
+
+    val primaryIntent = targetedIntents.first()
+    val additionalIntents = targetedIntents.drop(1).toTypedArray()
+
+    return Intent.createChooser(primaryIntent, chooserTitle).apply {
+        putExtra(Intent.EXTRA_INITIAL_INTENTS, additionalIntents)
     }
 }
 

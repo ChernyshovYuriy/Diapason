@@ -1,5 +1,10 @@
 package com.yuriy.diapason.ui.screens.results
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,8 +35,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +57,30 @@ fun ResultsScreen(
     onBack: () -> Unit,
     onAnalyzeAgain: () -> Unit
 ) {
+    val context = LocalContext.current
+    val shareText = remember(context, profile, matches) {
+        buildResultsShareText(context = context, profile = profile, matches = matches)
+    }
+
+    fun onShareResult() {
+        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboardManager.setPrimaryClip(
+            ClipData.newPlainText(context.getString(R.string.results_share_subject), shareText)
+        )
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.results_share_subject))
+            putExtra(Intent.EXTRA_TITLE, context.getString(R.string.results_share_subject))
+            putExtra(Intent.EXTRA_HTML_TEXT, shareText.replace("\n", "<br/>"))
+        }
+
+        Toast.makeText(context, R.string.results_share_clipboard_hint, Toast.LENGTH_SHORT).show()
+        context.startActivity(
+            Intent.createChooser(shareIntent, context.getString(R.string.results_share_chooser_title))
+        )
+    }
 
     BackHandler(onBack = onBack)
 
@@ -61,6 +93,14 @@ fun ResultsScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.results_cd_back)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = ::onShareResult) {
+                        Icon(
+                            imageVector = Icons.Filled.Share,
+                            contentDescription = stringResource(R.string.results_cd_share)
                         )
                     }
                 }
@@ -125,6 +165,67 @@ fun ResultsScreen(
         }
     }
 }
+
+private enum class ResultsShareTemplate {
+    VIRAL_CURIOSITY,
+    CONFIDENT_REVEAL,
+    CHALLENGE_STYLE
+}
+
+private fun buildResultsShareText(
+    context: Context,
+    profile: VoiceProfile,
+    matches: List<FachMatch>
+): String {
+    val selectedTemplate = ResultsShareTemplate.VIRAL_CURIOSITY
+    val topMatch = matches.firstOrNull()
+
+    val voiceType = topMatch?.let { fachMatch ->
+        context.getString(
+            R.string.results_share_voice_type_format,
+            context.getString(fachMatch.fach.nameRes),
+            context.getString(fachMatch.fach.categoryRes)
+        )
+    } ?: context.getString(R.string.results_share_unknown_voice_type)
+
+    val range = "${FachClassifier.hzToNoteName(profile.absoluteMinHz)}–${FachClassifier.hzToNoteName(profile.absoluteMaxHz)}"
+    val tessitura = "${FachClassifier.hzToNoteName(profile.tessituraLowHz)}–${FachClassifier.hzToNoteName(profile.tessituraHighHz)}"
+    val appLink = context.getString(R.string.app_google_play_link)
+
+    // Candidate template 1 (default): curious + social + easy to skim.
+    val templateViralCuriosity = context.getString(
+        R.string.results_share_template_viral_curiosity,
+        voiceType,
+        range,
+        tessitura,
+        appLink
+    )
+
+    // Candidate template 2: short confidence reveal.
+    val templateConfidentReveal = context.getString(
+        R.string.results_share_template_confident_reveal,
+        voiceType,
+        range,
+        tessitura,
+        appLink
+    )
+
+    // Candidate template 3: challenge-style hook.
+    val templateChallengeStyle = context.getString(
+        R.string.results_share_template_challenge_style,
+        voiceType,
+        range,
+        tessitura,
+        appLink
+    )
+
+    return when (selectedTemplate) {
+        ResultsShareTemplate.VIRAL_CURIOSITY -> templateViralCuriosity
+        ResultsShareTemplate.CONFIDENT_REVEAL -> templateConfidentReveal
+        ResultsShareTemplate.CHALLENGE_STYLE -> templateChallengeStyle
+    }
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sub-composables

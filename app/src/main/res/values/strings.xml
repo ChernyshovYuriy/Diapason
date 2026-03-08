@@ -52,6 +52,24 @@
         which require a trained ear. Use this as an informed starting point — not a definitive
         diagnosis. A voice teacher will always give the most accurate assessment.</string>
     <string name="results_cd_back">Back</string>
+    <string name="results_cd_share">Share result</string>
+    <string name="results_share_subject">My Diapason voice result</string>
+    <string name="results_share_chooser_title">Share your result</string>
+    <string name="results_share_unknown_voice_type">Unknown voice type</string>
+    <string name="results_share_voice_type_format">%1$s (%2$s)</string>
+    <string name="results_share_template_viral_curiosity">Ever wondered what your singing voice really is? 🎤
+I tested mine with Diapason and got: %1$s.
+Range: %2$s. Comfortable zone: %3$s.
+Now I’m curious — what’s yours?
+Try Diapason: %4$s</string>
+    <string name="results_share_template_confident_reveal">I just ran a voice check in Diapason and my result was: %1$s 🎶
+Vocal range: %2$s (comfortable zone %3$s).
+If you sing, you should definitely test yours too:
+%4$s</string>
+    <string name="results_share_template_challenge_style">Vocal type challenge: I tried Diapason and got %1$s 👀
+My range is %2$s and my tessitura is %3$s.
+Think yours would surprise you too?
+Get Diapason: %4$s</string>
     <string name="guide_title">How to Use Diapason</string>
     <string name="guide_subtitle">Follow these steps for the most accurate result</string>
     <string name="guide_step1_title">Find a quiet room</string>

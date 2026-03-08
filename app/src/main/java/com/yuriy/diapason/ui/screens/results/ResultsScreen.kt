@@ -180,35 +180,67 @@ private fun createResultsShareChooserIntent(
         packageManager.queryIntentActivities(baseShareIntent, 0)
     }
 
-    val facebookPackages = setOf("com.facebook.katana", "com.facebook.lite")
-    val quote = shareText.replace(appLink, "").trim()
-
     val targetedIntents = resolvedActivities.mapNotNull { resolveInfo ->
         val packageName = resolveInfo.activityInfo?.packageName ?: return@mapNotNull null
 
-        if (packageName in facebookPackages) {
-            val facebookShareUri = Uri.parse("https://www.facebook.com/sharer/sharer.php")
-                .buildUpon()
-                .appendQueryParameter("u", appLink)
-                .appendQueryParameter("quote", quote)
-                .build()
-
-            Intent(Intent.ACTION_VIEW, facebookShareUri).apply {
-                setPackage(packageName)
-            }
-        } else {
-            Intent(baseShareIntent).apply {
-                setPackage(packageName)
-            }
+        Intent(baseShareIntent).apply {
+            setPackage(packageName)
         }
     }
 
-    if (targetedIntents.isEmpty()) {
+    val explicitSocialIntents = mutableListOf<Intent>()
+
+    fun packageExists(packageName: String): Boolean {
+        return resolvedActivities.any { it.activityInfo?.packageName == packageName }
+    }
+
+    fun sendIntentForPackage(packageName: String): Intent? {
+        if (!packageExists(packageName)) return null
+        return Intent(baseShareIntent).apply {
+            setPackage(packageName)
+        }
+    }
+
+    val facebookPackages = listOf("com.facebook.katana", "com.facebook.lite")
+    val facebookQuote = shareText.replace(appLink, "").trim()
+
+    facebookPackages
+        .firstOrNull(::packageExists)
+        ?.let { packageName ->
+            val facebookShareUri = Uri.parse("https://www.facebook.com/sharer/sharer.php")
+                .buildUpon()
+                .appendQueryParameter("u", appLink)
+                .appendQueryParameter("quote", facebookQuote)
+                .build()
+
+            explicitSocialIntents += Intent(Intent.ACTION_VIEW, facebookShareUri).apply {
+                setPackage(packageName)
+            }
+        }
+
+    val preferredTextSharePackages = listOf(
+        "com.instagram.android",
+        "com.whatsapp",
+        "org.telegram.messenger",
+        "com.twitter.android",
+        "com.linkedin.android"
+    )
+
+    preferredTextSharePackages.forEach { packageName ->
+        sendIntentForPackage(packageName)?.let(explicitSocialIntents::add)
+    }
+
+    val combinedIntents = (explicitSocialIntents + targetedIntents)
+        .distinctBy { intent ->
+            "${intent.`package`}|${intent.action}|${intent.dataString ?: ""}"
+        }
+
+    if (combinedIntents.isEmpty()) {
         return Intent.createChooser(baseShareIntent, chooserTitle)
     }
 
-    val primaryIntent = targetedIntents.first()
-    val additionalIntents = targetedIntents.drop(1).toTypedArray()
+    val primaryIntent = combinedIntents.first()
+    val additionalIntents = combinedIntents.drop(1).toTypedArray()
 
     return Intent.createChooser(primaryIntent, chooserTitle).apply {
         putExtra(Intent.EXTRA_INITIAL_INTENTS, additionalIntents)

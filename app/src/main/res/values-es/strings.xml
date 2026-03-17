@@ -106,13 +106,9 @@
     <string name="about_creator_pitch_detection_label">Detección de tono</string>
     <string name="about_creator_voice_taxonomy_label">Taxonomía vocal</string>
     <string name="about_section_localization">Idiomas y localización</string>
-    <string name="about_localization_current_language">Disponible en 4 idiomas</string>
+    <string name="about_localization_current_language">Disponible en 5 idiomas</string>
     <string name="about_localization_available_languages">Inglés, francés e italiano disponibles.</string>
     <string name="about_localization_choose_language">Elegir idioma de la app</string>
-    <string name="about_language_english">English</string>
-    <string name="about_language_french">Français</string>
-    <string name="about_language_italian">Italiano</string>
-    <string name="about_language_spanish">Español</string>
     <string name="about_section_references">Referencias</string>
     <string name="about_reference_yin_label">Artículo YIN</string>
     <string name="about_reference_fach_label">Taxonomía Fach</string>

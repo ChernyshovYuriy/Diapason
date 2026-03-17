@@ -201,6 +201,11 @@ fun AboutScreen() {
                             tag = "es",
                             labelRes = R.string.about_language_spanish,
                             flagEmoji = "🇪🇸"
+                        ),
+                        LanguageOption(
+                            tag = "pt",
+                            labelRes = R.string.about_language_portuguese,
+                            flagEmoji = "🇵🇹"
                         )
                     )
                 }

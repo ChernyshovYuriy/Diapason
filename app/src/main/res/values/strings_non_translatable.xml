@@ -236,4 +236,9 @@
         <item>Leonid Kharitonov</item>
     </string-array>
     <string name="share_app_link" translatable="false">https://play.google.com/store/apps/details?id=com.yuriy.diapason</string>
+    <string name="about_language_english" translatable="false">English</string>
+    <string name="about_language_french" translatable="false">Français</string>
+    <string name="about_language_italian" translatable="false">Italiano</string>
+    <string name="about_language_spanish" translatable="false">Español</string>
+    <string name="about_language_portuguese" translatable="false">Português</string>
 </resources>

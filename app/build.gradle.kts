@@ -66,6 +66,10 @@ android {
             excludes += "/META-INF/NOTICE*"
         }
     }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {

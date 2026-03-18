@@ -34,6 +34,40 @@ Planned localisation support will use Android string resources (`res/values-xx/s
 - Google Cloud Translation API: pay-per-use, 100+ languages
 - DeepL API (free tier): 500k chars/month, 31 languages
 
+## Development
+
+### Running the tests
+
+All analyzer tests are pure JVM — no device or emulator needed:
+
+```bash
+./gradlew :app:test
+```
+
+To run a specific test class:
+
+```bash
+./gradlew :app:test --tests "*.FachClassifierClassifyTest"
+./gradlew :app:test --tests "*.YinPitchDetectorTest"
+./gradlew :app:test --tests "*.FixtureRegressionTest"
+```
+
+### Test structure
+
+| File | What it covers |
+|---|---|
+| `FachClassifierTest` | `hzToNoteName`, `estimateComfortableRange`, `estimateDetectedExtremes`, `estimatePassaggio` — unit cases and edge cases |
+| `FachClassifierClassifyTest` | `classify()` scoring — perfect-match profiles, cross-category separation, result invariants |
+| `YinPitchDetectorTest` | YIN pitch detection — accuracy, confidence, silence, noise, edge-case buffers |
+| `AnalyzerScenarioTest` | End-to-end vocal scenarios using the DSL fixture builder |
+| `AnalyzerInvariantTest` | Properties that must hold for all inputs (e.g. comfortable ⊆ detected) |
+| `FixtureRegressionTest` | Parameterised regression against five JSON fixtures in `src/test/resources/fixtures/` |
+| `FixtureLoaderTest` | JSON loader, assertion helper, and `toPitchSamples` bridge |
+
+### Adding a regression fixture from a real session
+
+See **[CAPTURING.md](CAPTURING.md)** for the full workflow: exporting pitch data from Logcat, converting it to the fixture JSON format, writing behavioural assertions, and registering the fixture in `FixtureRegressionTest`.
+
 ## References
 
 - de Cheveigné & Kawahara — *JASA 111(4), 2002* (YIN paper)

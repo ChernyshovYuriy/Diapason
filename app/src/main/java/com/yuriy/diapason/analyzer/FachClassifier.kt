@@ -23,7 +23,7 @@ object FachClassifier {
     // Because every accepted sample represents approximately equal duration (~160 ms),
     // the sorted-percentile approach is time-weighted: P20 is the pitch below which the
     // singer spent only the bottom 20% of their time, and P80 the mirror at the top.
-    // This is a defensible proxy for "comfortable range" for Phase 1.
+    // This is a defensible proxy for "comfortable range".
 
     fun estimateComfortableRange(pitches: List<Float>): Pair<Float, Float> {
         if (pitches.size < 10) return Pair(pitches.minOrNull() ?: 0f, pitches.maxOrNull() ?: 0f)

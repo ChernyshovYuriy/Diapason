@@ -5,7 +5,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Unit tests for Phase 1 analyzer logic.
+ * Unit tests for analyzer logic.
  *
  * These tests are pure JVM — no Android framework needed.
  *

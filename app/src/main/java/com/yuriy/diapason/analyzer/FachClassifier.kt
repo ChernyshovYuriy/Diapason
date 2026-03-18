@@ -18,12 +18,48 @@ object FachClassifier {
         return "${noteNames[midi % 12]}${(midi / 12) - 1}"
     }
 
-    // ── Tessitura (20th–80th percentile) ─────────────────────────────────────
+    // ── Comfortable range (20th–80th percentile) ─────────────────────────────
+    //
+    // Because every accepted sample represents approximately equal duration (~160 ms),
+    // the sorted-percentile approach is time-weighted: P20 is the pitch below which the
+    // singer spent only the bottom 20% of their time, and P80 the mirror at the top.
+    // This is a defensible proxy for "comfortable range" for Phase 1.
 
-    fun estimateTessitura(pitches: List<Float>): Pair<Float, Float> {
+    fun estimateComfortableRange(pitches: List<Float>): Pair<Float, Float> {
         if (pitches.size < 10) return Pair(pitches.minOrNull() ?: 0f, pitches.maxOrNull() ?: 0f)
         val sorted = pitches.sorted()
         return Pair(sorted[(sorted.size * 0.20).toInt()], sorted[(sorted.size * 0.80).toInt()])
+    }
+
+    // ── Detected extremes (neighbor-validated min/max) ────────────────────────
+    //
+    // A pitch qualifies as the detected extreme only when at least one other accepted
+    // sample sits within 2 semitones of it (frequency ratio ≤ 2^(2/12) ≈ 1.1225).
+    // This prevents a single stray high-confidence frame from claiming the floor or
+    // ceiling of the session.  If no neighbor exists (very sparse dataset) we fall
+    // back to the raw min/max so the function always returns a valid result.
+
+    fun estimateDetectedExtremes(pitches: List<Float>): Pair<Float, Float> {
+        if (pitches.size < 4) {
+            return Pair(pitches.minOrNull() ?: 0f, pitches.maxOrNull() ?: 0f)
+        }
+        val sorted = pitches.sorted()
+        val twoSemitones = 1.1225f   // 2^(2/12)
+
+        // A candidate is "stable" when at least one other sample (including duplicate
+        // values at the same pitch) sits within 2 semitones of it.  We count rather
+        // than search directionally so that a cluster of identical values (e.g. five
+        // frames all at 523 Hz) correctly qualifies each member as having a neighbor.
+        fun hasNeighbor(candidate: Float): Boolean =
+            sorted.count { other ->
+                val ratio = if (other >= candidate) other / candidate else candidate / other
+                ratio <= twoSemitones
+            } >= 2
+
+        val stableMin = sorted.firstOrNull { hasNeighbor(it) } ?: sorted.first()
+        val stableMax = sorted.lastOrNull  { hasNeighbor(it) } ?: sorted.last()
+
+        return Pair(stableMin, stableMax)
     }
 
     // ── Passaggio (zone of highest pitch instability) ─────────────────────────
@@ -61,11 +97,11 @@ object FachClassifier {
         Log.i(TAG, "  FACH CLASSIFICATION")
         Log.i(
             TAG,
-            "  Abs range  : ${hzToNoteName(profile.absoluteMinHz)}–${hzToNoteName(profile.absoluteMaxHz)}"
+            "  Detected   : ${hzToNoteName(profile.detectedMinHz)}–${hzToNoteName(profile.detectedMaxHz)}"
         )
         Log.i(
             TAG,
-            "  Tessitura  : ${hzToNoteName(profile.tessituraLowHz)}–${hzToNoteName(profile.tessituraHighHz)}"
+            "  Comfortable: ${hzToNoteName(profile.comfortableLowHz)}–${hzToNoteName(profile.comfortableHighHz)}"
         )
         Log.i(
             TAG,
@@ -79,7 +115,7 @@ object FachClassifier {
             var score = 0
 
             // 1. Upper ceiling
-            val maxRatio = profile.absoluteMaxHz / fach.rangeMaxHz
+            val maxRatio = profile.detectedMaxHz / fach.rangeMaxHz
             when (maxRatio) {
                 in 0.90f..1.10f -> {
                     score += 3; breakdown += "+3 upper ceiling ≈ ${hzToNoteName(fach.rangeMaxHz)}"
@@ -97,7 +133,7 @@ object FachClassifier {
             }
 
             // 2. Lower floor
-            val minRatio = profile.absoluteMinHz / fach.rangeMinHz
+            val minRatio = profile.detectedMinHz / fach.rangeMinHz
             when (minRatio) {
                 in 0.85f..1.15f -> {
                     score += 2; breakdown += "+2 lower floor ≈ ${hzToNoteName(fach.rangeMinHz)}"
@@ -110,8 +146,8 @@ object FachClassifier {
                 else -> breakdown += "  0 lower floor far from ${hzToNoteName(fach.rangeMinHz)}"
             }
 
-            // 3. Tessitura high
-            val tessHighRatio = profile.tessituraHighHz / fach.tessituraMaxHz
+            // 3. Comfortable range high
+            val tessHighRatio = profile.comfortableHighHz / fach.tessituraMaxHz
             when (tessHighRatio) {
                 in 0.90f..1.10f -> {
                     score += 3; breakdown += "+3 tessitura high ≈ ${hzToNoteName(fach.tessituraMaxHz)}"
@@ -128,8 +164,8 @@ object FachClassifier {
                 else -> breakdown += "  0 tessitura high far from ${hzToNoteName(fach.tessituraMaxHz)}"
             }
 
-            // 4. Tessitura low
-            val tessLowRatio = profile.tessituraLowHz / fach.tessituraMinHz
+            // 4. Comfortable range low
+            val tessLowRatio = profile.comfortableLowHz / fach.tessituraMinHz
             when (tessLowRatio) {
                 in 0.90f..1.10f -> {
                     score += 3; breakdown += "+3 tessitura low ≈ ${hzToNoteName(fach.tessituraMinHz)}"

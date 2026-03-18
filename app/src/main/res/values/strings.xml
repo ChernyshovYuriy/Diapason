@@ -40,10 +40,11 @@
     <string name="results_section_other_matches">Other Possible Matches</string>
     <string name="results_stat_lowest">Lowest note detected</string>
     <string name="results_stat_highest">Highest note detected</string>
-    <string name="results_stat_tessitura">Tessitura (comfortable zone)</string>
+    <string name="results_stat_tessitura">Comfortable range (P20–P80)</string>
     <string name="results_stat_passaggio">Estimated passaggio</string>
     <string name="results_stat_samples">Valid pitch samples</string>
     <string name="results_stat_percentile_range">P20–P80</string>
+    <string name="results_comfortable_range_hz">%1$.0f – %2$.0f Hz</string>
     <string name="results_stat_session_format">%1$.0fs session</string>
     <string name="results_runner_up_rank_format">#%1$d</string>
     <string name="results_score_format">%1$d/%2$d</string>
@@ -101,9 +102,10 @@ Get Diapason: %4$s</string>
         comfortably), passaggio (the register break between chest and head voice), and timbre
         (tone colour).</string>
     <string name="guide_measures_section_title">What Diapason Measures</string>
-    <string name="guide_measure_range_term">Absolute Range</string>
-    <string name="guide_measure_range_def">The lowest and highest clean pitch detected during
-        your session.</string>
+    <string name="guide_measure_range_term">Detected Range</string>
+    <string name="guide_measure_range_def">The lowest and highest pitch detected in your session,
+        each validated by the presence of at least one neighboring sample within two semitones.
+        A single stray note at the edge of your range will not set the floor or ceiling on its own.</string>
     <string name="guide_measure_tessitura_term">Tessitura</string>
     <string name="guide_measure_tessitura_def">The 20th–80th percentile of your pitch samples —
         where your voice naturally and comfortably spends most of its time.</string>

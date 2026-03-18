@@ -97,10 +97,10 @@ fun ResultsScreen(
     val shareText = stringResource(
         R.string.share_text,
         stringResource(topMatch?.fach?.nameRes ?: R.string.share_unknown_voice_type),
-        FachClassifier.hzToNoteName(profile.absoluteMinHz),
-        FachClassifier.hzToNoteName(profile.absoluteMaxHz),
-        FachClassifier.hzToNoteName(profile.tessituraLowHz),
-        FachClassifier.hzToNoteName(profile.tessituraHighHz),
+        FachClassifier.hzToNoteName(profile.detectedMinHz),
+        FachClassifier.hzToNoteName(profile.detectedMaxHz),
+        FachClassifier.hzToNoteName(profile.comfortableLowHz),
+        FachClassifier.hzToNoteName(profile.comfortableHighHz),
         stringResource(R.string.share_app_link)
     )
     val shareChooserTitle = stringResource(R.string.share_chooser_title)
@@ -330,22 +330,26 @@ private fun RangeStatsCard(profile: VoiceProfile) {
         Column(modifier = Modifier.padding(16.dp)) {
             StatRow(
                 label = stringResource(R.string.results_stat_lowest),
-                value = FachClassifier.hzToNoteName(profile.absoluteMinHz),
-                sub = stringResource(R.string.results_hz_format, profile.absoluteMinHz)
+                value = FachClassifier.hzToNoteName(profile.detectedMinHz),
+                sub = stringResource(R.string.results_hz_format, profile.detectedMinHz)
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
             StatRow(
                 label = stringResource(R.string.results_stat_highest),
-                value = FachClassifier.hzToNoteName(profile.absoluteMaxHz),
-                sub = stringResource(R.string.results_hz_format, profile.absoluteMaxHz)
+                value = FachClassifier.hzToNoteName(profile.detectedMaxHz),
+                sub = stringResource(R.string.results_hz_format, profile.detectedMaxHz)
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
             StatRow(
                 label = stringResource(R.string.results_stat_tessitura),
-                value = "${FachClassifier.hzToNoteName(profile.tessituraLowHz)} – ${
-                    FachClassifier.hzToNoteName(profile.tessituraHighHz)
+                value = "${FachClassifier.hzToNoteName(profile.comfortableLowHz)} – ${
+                    FachClassifier.hzToNoteName(profile.comfortableHighHz)
                 }",
-                sub = stringResource(R.string.results_stat_percentile_range)
+                sub = stringResource(
+                    R.string.results_comfortable_range_hz,
+                    profile.comfortableLowHz,
+                    profile.comfortableHighHz
+                )
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
             StatRow(

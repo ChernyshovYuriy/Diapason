@@ -45,9 +45,16 @@ I/VoiceAnalyzer: [  5.3s] E4    329.6 Hz  conf=0.930  n=42
 5. Press **Stop** when finished.
 6. In Logcat, select all lines containing `Hz  conf=` and copy them.
 
-> **Tip:** for a clean passaggio-detection fixture, sing a slow chromatic glide
-> through your register break; for a range fixture, sing from your lowest to
-> your highest comfortable note and back.
+> **Tip — range fixtures:** sing from your lowest to your highest comfortable
+> note and back.  Leave `passaggioNote` null for these; see the passaggio
+> guidance in Step 3 for why.
+>
+> **Tip — passaggio fixtures:** do *not* use a scale or glide.  Instead, sing
+> two stable sustained phrases (one below the break, one above) with a repeated
+> oscillation between two notes that straddle the break in between.  For
+> example: hold C4 for several seconds, then rapidly alternate A3↔G4 for
+> several seconds, then hold F4.  This ensures the max-variance window falls
+> inside the oscillation zone, not at the top of a rising scale.
 
 ---
 
@@ -81,10 +88,12 @@ Discard everything else (timestamp, elapsed time, note name, sample counter).
 Create a new file `app/src/test/resources/fixtures/<id>.json`.
 The filename stem is the fixture's `id` and is also what you add to the test.
 
+**Range fixture** (scale or arpeggio — leave `passaggioNote` null):
+
 ```jsonc
 {
-  "id": "lyric_baritone_arpeggio",
-  "description": "Lyric baritone arpeggio exercise C3–G4. Comfortable zone E3–E4. Passaggio around C4.",
+  "id": "lyric_baritone_range",
+  "description": "Lyric baritone range exercise C3–G4. Comfortable zone E3–E4.",
   "voiceType": "Lyric Baritone",
   "source": "logcat_export",
   "capturedAt": "2025-03-01",
@@ -99,8 +108,41 @@ The filename stem is the fixture's `id` and is also what you add to the test.
     "detectedMaxNote":     "G4",
     "comfortableLowNote":  "E3",
     "comfortableHighNote": "E4",
-    "passaggioNote":       "C4",
+    "passaggioNote":       null,
     "minAcceptedFrames":   35,
+    "semitoneTol":         2
+  }
+}
+```
+
+**Passaggio fixture** (stable blocks flanking an oscillation — see Step 1 tip):
+
+```jsonc
+{
+  "id": "baritone_passaggio",
+  "description": "Baritone passaggio exercise: stable E3, then oscillation B2 to F3 (straddling the break), then stable A3. The oscillation zone has the highest variance.",
+  "voiceType": "Lyric Baritone",
+  "source": "logcat_export",
+  "capturedAt": "2025-03-01",
+  "frames": [
+    {"hz": 164.8, "confidence": 0.93},
+    {"hz": 164.8, "confidence": 0.92},
+    ...
+    {"hz": 123.5, "confidence": 0.89},
+    {"hz": 174.6, "confidence": 0.90},
+    {"hz": 123.5, "confidence": 0.91},
+    ...
+    {"hz": 220.0, "confidence": 0.93},
+    {"hz": 220.0, "confidence": 0.92},
+    ...
+  ],
+  "assertions": {
+    "detectedMinNote":     "B2",
+    "detectedMaxNote":     "A3",
+    "comfortableLowNote":  "E3",
+    "comfortableHighNote": "A3",
+    "passaggioNote":       "C3",
+    "minAcceptedFrames":   50,
     "semitoneTol":         2,
     "passaggioTol":        3
   }
@@ -115,7 +157,7 @@ The filename stem is the fixture's `id` and is also what you add to the test.
 | `detectedMaxNote` | ±2 semitones | The highest note with at least two clean frames. |
 | `comfortableLowNote` | ±2 semitones | The approximate P20 note — where the bottom 20% of your session falls. |
 | `comfortableHighNote` | ±2 semitones | The approximate P80 note. |
-| `passaggioNote` | ±3–4 semitones | The register-break area — use a wider tolerance (3–4 st) because passaggio spans a small band, not a single pitch. |
+| `passaggioNote` | ±3–4 semitones | **Only assert this for dedicated passaggio fixtures** (stable block / oscillation / stable block structure — see Step 1 tip). On scale or arpeggio fixtures leave it `null`: `estimatePassaggio` finds the window of highest *raw Hz variance*, and Hz gaps grow with pitch, so the high end of any ascending run always scores higher than a narrow wobble at the register break. |
 | `minAcceptedFrames` | — | Set to ~75–80% of your raw frame count.  This guards against the filter becoming over-aggressive. |
 
 **Omit any assertion field you cannot determine confidently** — the corresponding
@@ -146,7 +188,7 @@ fun fixtureNames(): List<String> = listOf(
     "dramatic_mezzo_full_range",
     "bass_baritone_exercise",
     "mezzo_passaggio_exercise",
-    "lyric_baritone_arpeggio"    // ← add here
+    "lyric_baritone_range"       // ← add here
 )
 ```
 
@@ -160,8 +202,8 @@ Each fixture runs 10 parameterized test cases.  The output shows the fixture
 name in parentheses so failures are immediately locatable:
 
 ```
-fixture detected min matches expected note[lyric_baritone_arpeggio] PASSED
-fixture passaggio matches expected note[lyric_baritone_arpeggio]    PASSED
+fixture detected min matches expected note[lyric_baritone_range] PASSED
+fixture passaggio matches expected note[lyric_baritone_range]    PASSED
 ...
 ```
 
@@ -251,6 +293,12 @@ and apply [FachClassifier.estimateDetectedExtremes] manually (or add a debug pri
 in a local test run) to see what the algorithm produces.
 
 **Passaggio test fails consistently**
-Increase `passaggioTol` to 4 or 5 for this fixture.  The passaggio algorithm is
-a heuristic based on sliding-window variance and is inherently noisier than the
-percentile-based range calculations.
+First check whether your fixture is a scale or arpeggio — if so, set
+`passaggioNote` to `null`.  `estimatePassaggio` finds the window of highest raw
+Hz variance; because Hz intervals grow with pitch, the top of any ascending run
+always dominates over a narrow register-break wobble.  A passaggio assertion
+only works reliably with the **stable / oscillation / stable** session structure
+described in the Step 1 tip.  If your fixture already has that structure and the
+test still fails, widen `passaggioTol` by 1–2 semitones — but investigate first;
+a large semitone error usually means the oscillation amplitude is too small to
+dominate the boundary windows.

@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
-    id("com.google.firebase.crashlytics")
-    id("com.google.gms.google-services")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -68,19 +69,25 @@ android {
     }
 
     testOptions {
-        unitTests.isReturnDefaultValues = true
+        unitTests {
+            isReturnDefaultValues = true
+            isIncludeAndroidResources = true
+        }
     }
+}
+
+// Room schema export — commit these JSON files alongside migrations
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.firebase.bom))
-
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
-
     implementation(libs.material)
-
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.ui.graphics)
@@ -92,12 +99,19 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
-
     implementation(libs.kotlinx.coroutines.android)
-
     implementation(libs.accompanist.permissions)
 
     debugImplementation(libs.androidx.ui.tooling)
 
+    // Room — local SQLite persistence
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Test
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.core)
 }

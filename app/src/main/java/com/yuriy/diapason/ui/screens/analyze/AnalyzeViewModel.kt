@@ -4,16 +4,22 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.yuriy.diapason.MainApp
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceProfile
+import com.yuriy.diapason.data.SessionRecord
+import com.yuriy.diapason.data.repository.SessionRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 private const val TAG = "AnalyzeViewModel"
 
@@ -46,6 +52,9 @@ sealed interface AnalyzeUiState {
 class AnalyzeViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun getString(resId: Int): String = getApplication<Application>().getString(resId)
+
+    private val repository: SessionRepository = (application as MainApp).sessionRepository
+
     private val _uiState = MutableStateFlow<AnalyzeUiState>(AnalyzeUiState.Idle)
     val uiState: StateFlow<AnalyzeUiState> = _uiState.asStateFlow()
     private val analyzer = VoiceAnalyzer(viewModelScope)
@@ -120,6 +129,29 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
         _lastResult.value = result // persist across back-navigation
         _uiState.value = result
+
+        // ── Persist session to local database ─────────────────────────────
+        viewModelScope.launch(Dispatchers.IO) {
+            val topMatch = matches.firstOrNull()
+            val record = SessionRecord(
+                id = UUID.randomUUID().toString(),
+                timestampMs = System.currentTimeMillis(),
+                durationSeconds = profile.durationSeconds,
+                detectedMinHz = profile.detectedMinHz,
+                detectedMaxHz = profile.detectedMaxHz,
+                comfortableLowHz = profile.comfortableLowHz,
+                comfortableHighHz = profile.comfortableHighHz,
+                passaggioHz = profile.estimatedPassaggioHz,
+                sampleCount = profile.sampleCount,
+                topFachKey = topMatch?.let { getString(it.fach.nameRes) },
+                topFachScore = topMatch?.score,
+                topFachMaxScore = topMatch?.maxScore,
+                isPartial = false,
+            )
+            runCatching { repository.save(record) }
+                .onSuccess { Log.i(TAG, "Session saved: ${record.topFachKey} (${record.id})") }
+                .onFailure { Log.e(TAG, "Failed to save session", it) }
+        }
     }
 
     fun resetToIdle() {

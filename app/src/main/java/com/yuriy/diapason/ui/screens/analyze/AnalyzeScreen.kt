@@ -106,8 +106,8 @@ fun AnalyzeScreen(
                 PreviousResultBanner(
                     voiceType = result.matches.firstOrNull()?.fach?.let { stringResource(it.nameRes) }
                         ?: stringResource(R.string.analyze_unknown),
-                    minNote = FachClassifier.hzToNoteName(result.profile.absoluteMinHz),
-                    maxNote = FachClassifier.hzToNoteName(result.profile.absoluteMaxHz),
+                    minNote = FachClassifier.hzToNoteName(result.profile.detectedMinHz),
+                    maxNote = FachClassifier.hzToNoteName(result.profile.detectedMaxHz),
                     onClick = onNavigateToResults
                 )
             }

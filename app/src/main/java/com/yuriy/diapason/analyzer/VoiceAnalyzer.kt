@@ -131,25 +131,24 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
             return null
         }
 
-        val minHz = pitchSamples.min()
-        val maxHz = pitchSamples.max()
-        val (tessLow, tessHigh) = FachClassifier.estimateTessitura(pitchSamples)
+        val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(pitchSamples)
+        val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(pitchSamples)
         val passaggio = FachClassifier.estimatePassaggio(pitchSamples)
 
         logHistogram(pitchSamples)
 
         Log.i(
             TAG,
-            "Profile: min=${FachClassifier.hzToNoteName(minHz)} max=${FachClassifier.hzToNoteName(maxHz)} " +
-                    "tess=${FachClassifier.hzToNoteName(tessLow)}–${FachClassifier.hzToNoteName(tessHigh)} " +
+            "Profile: detected=${FachClassifier.hzToNoteName(detectedMin)}–${FachClassifier.hzToNoteName(detectedMax)} " +
+                    "comfortable=${FachClassifier.hzToNoteName(comfortableLow)}–${FachClassifier.hzToNoteName(comfortableHigh)} " +
                     "pass=${FachClassifier.hzToNoteName(passaggio)}"
         )
 
         return VoiceProfile(
-            absoluteMinHz = minHz,
-            absoluteMaxHz = maxHz,
-            tessituraLowHz = tessLow,
-            tessituraHighHz = tessHigh,
+            detectedMinHz = detectedMin,
+            detectedMaxHz = detectedMax,
+            comfortableLowHz = comfortableLow,
+            comfortableHighHz = comfortableHigh,
             estimatedPassaggioHz = passaggio,
             sampleCount = pitchSamples.size,
             durationSeconds = duration

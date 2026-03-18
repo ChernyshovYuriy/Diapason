@@ -28,10 +28,31 @@ data class FachDefinition(
 )
 
 data class VoiceProfile(
-    val absoluteMinHz: Float,
-    val absoluteMaxHz: Float,
-    val tessituraLowHz: Float,
-    val tessituraHighHz: Float,
+    /**
+     * Lowest pitch reliably detected during the session.
+     * Neighbor-validated: the pitch must have at least one other accepted sample
+     * within 2 semitones above it, so a single isolated frame cannot set the floor.
+     */
+    val detectedMinHz: Float,
+    /**
+     * Highest pitch reliably detected during the session.
+     * Neighbor-validated: the pitch must have at least one other accepted sample
+     * within 2 semitones below it, so a single isolated frame cannot set the ceiling.
+     */
+    val detectedMaxHz: Float,
+    /**
+     * Lower bound of the comfortable singing range (20th-percentile of accepted samples).
+     * Because every sample represents roughly equal duration, this is the pitch below which
+     * the singer spent only the bottom 20% of their recorded time — a defensible proxy for
+     * the lower edge of comfortable range.
+     */
+    val comfortableLowHz: Float,
+    /**
+     * Upper bound of the comfortable singing range (80th-percentile of accepted samples).
+     * The pitch above which the singer spent only the top 20% of their recorded time —
+     * a defensible proxy for the upper edge of comfortable range.
+     */
+    val comfortableHighHz: Float,
     val estimatedPassaggioHz: Float,
     val sampleCount: Int,
     val durationSeconds: Float

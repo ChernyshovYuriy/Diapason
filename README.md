@@ -25,14 +25,15 @@ It helps users explore and categorise vocal range using the classical **German F
 
 ## Languages & localisation
 
-Currently, the app is available in **English only**.
+The app is localised into **5 languages** via Android string resources (`res/values-xx/strings.xml`):
 
-Planned localisation support will use Android string resources (`res/values-xx/strings.xml`) for static UI text. Potential translation approaches for dynamic content include:
-
-- Android built-in (`strings.xml`): free, zero runtime cost
-- Google ML Kit Translation: free, on-device, 58 languages
-- Google Cloud Translation API: pay-per-use, 100+ languages
-- DeepL API (free tier): 500k chars/month, 31 languages
+| Code | Language   |
+|------|------------|
+| `en` | English    |
+| `fr` | French     |
+| `it` | Italian    |
+| `es` | Spanish    |
+| `pt` | Portuguese |
 
 ## Development
 

@@ -1,10 +1,10 @@
 # Diapason
 
-Available at [Google Play](https://play.google.com/store/apps/details?id=com.yuriy.diapason)
+[![Get it on Google Play](https://img.shields.io/badge/Google_Play-Download-green?logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.yuriy.diapason)
 
 ## Project status
 
-> 🚧 **This is a brand-new project.** Development has just started, it is a work in progress, and it is **not released on Google Play** yet.
+> 🌱 **New and actively developed.** The app is live on Google Play and evolving — expect new features and improvements regularly.
 
 **Diapason** is a **Voice Range Classifier** for singers and voice teachers.
 

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Stop
@@ -60,7 +61,8 @@ import com.yuriy.diapason.analyzer.FachClassifier
 @Composable
 fun AnalyzeScreen(
     viewModel: AnalyzeViewModel,
-    onNavigateToResults: () -> Unit
+    onNavigateToResults: () -> Unit,
+    onNavigateToComparison: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lastResult by viewModel.lastResultFlow.collectAsStateWithLifecycle()
@@ -212,6 +214,23 @@ fun AnalyzeScreen(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) { Text(stringResource(R.string.analyze_btn_try_again)) }
+        }
+
+        // Compare before/after warm-up — only visible when not recording
+        AnimatedVisibility(visible = uiState is AnalyzeUiState.Idle || uiState is AnalyzeUiState.InsufficientData) {
+            OutlinedButton(
+                onClick = onNavigateToComparison,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                Icon(
+                    Icons.Filled.CompareArrows,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(stringResource(R.string.compare_btn_start))
+            }
         }
 
         Spacer(Modifier.height(24.dp))

@@ -18,11 +18,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.yuriy.diapason.comparison.WarmUpComparisonViewModel
 import com.yuriy.diapason.ui.navigation.Screen
 import com.yuriy.diapason.ui.navigation.bottomNavItems
 import com.yuriy.diapason.ui.screens.about.AboutScreen
 import com.yuriy.diapason.ui.screens.analyze.AnalyzeScreen
 import com.yuriy.diapason.ui.screens.analyze.AnalyzeViewModel
+import com.yuriy.diapason.ui.screens.comparison.WarmUpFlowScreen
 import com.yuriy.diapason.ui.screens.guide.GuideScreen
 import com.yuriy.diapason.ui.screens.history.HistoryScreen
 import com.yuriy.diapason.ui.screens.history.HistoryViewModel
@@ -38,7 +40,10 @@ fun DiapasonAppMainView() {
     // Determine if the bottom bar should be visible
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val showBottomBar = currentDestination?.route != Screen.Results.route
+    val showBottomBar = currentDestination?.route !in setOf(
+        Screen.Results.route,
+        Screen.WarmUpComparison.route,
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -89,6 +94,9 @@ fun DiapasonAppMainView() {
                     viewModel = analyzeViewModel,
                     onNavigateToResults = {
                         navController.navigate(Screen.Results.route)
+                    },
+                    onNavigateToComparison = {
+                        navController.navigate(Screen.WarmUpComparison.route)
                     }
                 )
             }
@@ -112,6 +120,15 @@ fun DiapasonAppMainView() {
             // ── About ────────────────────────────────────────────────────────
             composable(Screen.About.route) {
                 AboutScreen()
+            }
+
+            // ── Warm-up comparison (full-screen, no bottom bar) ──────────────
+            composable(Screen.WarmUpComparison.route) {
+                val comparisonViewModel: WarmUpComparisonViewModel = viewModel()
+                WarmUpFlowScreen(
+                    viewModel = comparisonViewModel,
+                    onExit = { navController.popBackStack() }
+                )
             }
 
             // ── Results (full-screen, no bottom bar) ─────────────────────────

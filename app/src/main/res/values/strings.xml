@@ -215,4 +215,63 @@ Get Diapason: %4$s</string>
     <string name="history_label_passaggio">Passaggio</string>
     <string name="history_range_format">%1$s – %2$s</string>
     <string name="history_confidence_format">%1$d / %2$d</string>
+
+    <!-- Warm-up comparison flow -->
+    <string name="compare_btn_start">Compare Before / After Warm-up</string>
+    <string name="compare_intro_title">Before / After Warm-up</string>
+    <string name="compare_intro_headline">Compare two sessions</string>
+    <string name="compare_intro_body">This flow records your voice twice — once before a warm-up
+        and once after — so you can see how the two sessions compare.</string>
+    <string name="compare_intro_step1">Baseline recording — sing across your full range</string>
+    <string name="compare_intro_step2">Warm-up timer — 5 minutes of guided exercises</string>
+    <string name="compare_intro_step3">Retest recording — repeat the same pattern</string>
+    <string name="compare_intro_step4">Compare the two sessions side by side</string>
+    <string name="compare_intro_disclaimer">Based on these sessions only. Results reflect
+        measurement, not medical or training conclusions.</string>
+    <string name="compare_intro_btn_start">Start Baseline Recording</string>
+    <string name="compare_intro_btn_cancel">Cancel</string>
+
+    <string name="compare_baseline_title">Before Warm-up</string>
+    <string name="compare_baseline_instruction">Sing from your lowest to highest note, then back down.</string>
+    <string name="compare_retest_title">After Warm-up</string>
+    <string name="compare_retest_instruction">Sing the same pattern — lowest to highest, then back down.</string>
+    <string name="compare_record_btn_stop">Stop Recording</string>
+    <string name="compare_record_btn_exit">Exit Comparison</string>
+
+    <string name="compare_insufficient_title">Not Enough Data</string>
+    <string name="compare_insufficient_btn_retry">Try Again</string>
+    <string name="compare_insufficient_btn_exit">Exit Comparison</string>
+
+    <string name="compare_warmup_title">Warm-up</string>
+    <string name="compare_warmup_baseline_done">Baseline recorded.</string>
+    <string name="compare_warmup_prompt">Now warm up your voice, then record again.</string>
+    <string name="compare_warmup_timer_hint">Press Start when you\'re ready to begin the timer.</string>
+    <string name="compare_warmup_timer_running">Timer running…</string>
+    <string name="compare_warmup_exercises_heading">Suggested warm-up exercises</string>
+    <string name="compare_warmup_disclaimer">These are general suggestions only. Follow your own
+        warm-up routine if you have one.</string>
+    <string name="compare_warmup_btn_start_timer">Start 5-Minute Timer</string>
+    <string name="compare_warmup_btn_skip_running">Skip Timer &amp; Start Retest</string>
+    <string name="compare_warmup_btn_skip_idle">Skip Timer</string>
+    <string name="compare_warmup_btn_exit">Exit Comparison</string>
+
+    <string name="compare_result_title">Comparison Result</string>
+    <string name="compare_result_sessions_recorded">Two sessions recorded</string>
+    <string name="compare_result_before_range">Before warm-up comfortable range: %1$s</string>
+    <string name="compare_result_after_range">After warm-up comfortable range: %1$s</string>
+    <string name="compare_result_section_comfortable">Comfortable Range</string>
+    <string name="compare_result_section_extremes">Detected Extremes</string>
+    <string name="compare_result_section_passaggio">Estimated Passaggio</string>
+    <string name="compare_result_section_voice_type">Voice Type Match</string>
+    <string name="compare_result_label_comfortable_low">Lower end (P20)</string>
+    <string name="compare_result_label_comfortable_high">Upper end (P80)</string>
+    <string name="compare_result_label_detected_min">Lowest detected</string>
+    <string name="compare_result_label_detected_max">Highest detected</string>
+    <string name="compare_result_label_passaggio">Passaggio estimate</string>
+    <string name="compare_result_before_label">Before warm-up</string>
+    <string name="compare_result_after_label">After warm-up</string>
+    <string name="compare_result_disclaimer">Based on these two sessions only. Changes between
+        sessions reflect measurement, not guaranteed physiological or training outcomes.</string>
+    <string name="compare_result_btn_done">Done</string>
+    <string name="compare_result_btn_again">Compare Again</string>
 </resources>

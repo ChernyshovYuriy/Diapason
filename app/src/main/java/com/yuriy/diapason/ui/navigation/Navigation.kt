@@ -25,6 +25,7 @@ sealed class Screen(val route: String) {
 
     // Full-screen destinations (pushed on top)
     object Results : Screen("results")
+    object WarmUpComparison : Screen("warm_up_comparison")
 }
 
 data class BottomNavItem(

@@ -328,28 +328,19 @@ private fun RangeStatsCard(profile: VoiceProfile) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+
+            // ── PRIMARY: Comfortable range ────────────────────────────────
+            RangeSubheading(stringResource(R.string.results_section_comfortable_range))
             StatRow(
-                label = stringResource(R.string.results_stat_lowest),
-                value = FachClassifier.hzToNoteName(profile.detectedMinHz),
-                sub = stringResource(R.string.results_hz_format, profile.detectedMinHz)
+                label = stringResource(R.string.results_stat_comfortable_low),
+                value = FachClassifier.hzToNoteName(profile.comfortableLowHz),
+                sub = stringResource(R.string.results_hz_format, profile.comfortableLowHz)
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
             StatRow(
-                label = stringResource(R.string.results_stat_highest),
-                value = FachClassifier.hzToNoteName(profile.detectedMaxHz),
-                sub = stringResource(R.string.results_hz_format, profile.detectedMaxHz)
-            )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
-            StatRow(
-                label = stringResource(R.string.results_stat_tessitura),
-                value = "${FachClassifier.hzToNoteName(profile.comfortableLowHz)} – ${
-                    FachClassifier.hzToNoteName(profile.comfortableHighHz)
-                }",
-                sub = stringResource(
-                    R.string.results_comfortable_range_hz,
-                    profile.comfortableLowHz,
-                    profile.comfortableHighHz
-                )
+                label = stringResource(R.string.results_stat_comfortable_high),
+                value = FachClassifier.hzToNoteName(profile.comfortableHighHz),
+                sub = stringResource(R.string.results_hz_format, profile.comfortableHighHz)
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
             StatRow(
@@ -357,7 +348,40 @@ private fun RangeStatsCard(profile: VoiceProfile) {
                 value = FachClassifier.hzToNoteName(profile.estimatedPassaggioHz),
                 sub = stringResource(R.string.results_hz_format, profile.estimatedPassaggioHz)
             )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+
+            Spacer(Modifier.height(12.dp))
+
+            // ── SECONDARY: Detected extremes (visually muted) ─────────────
+            RangeSubheading(
+                stringResource(R.string.results_section_detected_extremes),
+                muted = true
+            )
+            StatRow(
+                label = stringResource(R.string.results_stat_lowest),
+                value = FachClassifier.hzToNoteName(profile.detectedMinHz),
+                sub = stringResource(R.string.results_hz_format, profile.detectedMinHz),
+                muted = true
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 6.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)
+            )
+            StatRow(
+                label = stringResource(R.string.results_stat_highest),
+                value = FachClassifier.hzToNoteName(profile.detectedMaxHz),
+                sub = stringResource(R.string.results_hz_format, profile.detectedMaxHz),
+                muted = true
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
+
+            // ── Session metadata ──────────────────────────────────────────
+            Text(
+                text = stringResource(R.string.results_session_note),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.padding(bottom = 6.dp)
+            )
             StatRow(
                 label = stringResource(R.string.results_stat_samples),
                 value = profile.sampleCount.toString(),
@@ -371,7 +395,22 @@ private fun RangeStatsCard(profile: VoiceProfile) {
 }
 
 @Composable
-private fun StatRow(label: String, value: String, sub: String) {
+private fun RangeSubheading(text: String, muted: Boolean = false) {
+    Text(
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.SemiBold,
+        color = if (muted)
+            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+        else
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+}
+
+@Composable
+private fun StatRow(label: String, value: String, sub: String, muted: Boolean = false) {
+    val contentAlpha = if (muted) 0.55f else 1f
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -380,16 +419,21 @@ private fun StatRow(label: String, value: String, sub: String) {
         Text(
             label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = contentAlpha),
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.End) {
-            Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            Text(
+                value,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha)
+            )
             Text(
                 sub,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f * contentAlpha)
             )
         }
     }

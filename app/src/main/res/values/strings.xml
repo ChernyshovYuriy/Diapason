@@ -36,14 +36,19 @@
     <string name="results_best_match_label">Best Match</string>
     <string name="results_confidence_label">Classification confidence</string>
     <string name="results_famous_roles_subheading">Famous roles for this voice</string>
-    <string name="results_section_range">Measured Range</string>
+    <string name="results_section_range">Voice Range — This Session</string>
     <string name="results_section_other_matches">Other Possible Matches</string>
-    <string name="results_stat_lowest">Lowest note detected</string>
-    <string name="results_stat_highest">Highest note detected</string>
+    <string name="results_section_comfortable_range">Comfortable range</string>
+    <string name="results_section_detected_extremes">Detected extremes</string>
+    <string name="results_stat_comfortable_low">Lower end</string>
+    <string name="results_stat_comfortable_high">Upper end</string>
+    <string name="results_stat_lowest">Lowest pitch detected</string>
+    <string name="results_stat_highest">Highest pitch detected</string>
     <string name="results_stat_tessitura">Comfortable range (P20–P80)</string>
     <string name="results_stat_passaggio">Estimated passaggio</string>
     <string name="results_stat_samples">Valid pitch samples</string>
     <string name="results_stat_percentile_range">P20–P80</string>
+    <string name="results_session_note">Based on this session · reliable notes only</string>
     <string name="results_comfortable_range_hz">%1$.0f – %2$.0f Hz</string>
     <string name="results_stat_session_format">%1$.0fs session</string>
     <string name="results_runner_up_rank_format">#%1$d</string>
@@ -68,7 +73,7 @@ Vocal range: %2$s (comfortable zone %3$s).
 If you sing, you should definitely test yours too:
 %4$s</string>
     <string name="results_share_template_challenge_style">Vocal type challenge: I tried Diapason and got %1$s 👀
-My range is %2$s and my tessitura is %3$s.
+My detected range is %2$s and my comfortable zone is %3$s.
 Think yours would surprise you too?
 Get Diapason: %4$s</string>
     <string name="guide_title">How to Use Diapason</string>
@@ -198,5 +203,5 @@ Get Diapason: %4$s</string>
     <string name="share_unknown_voice_type">Unknown</string>
     <string name="share_clipboard_label">Diapason voice type result</string>
     <string name="share_clipboard_toast">Text copied — paste it if the app doesn\'t fill it automatically</string>
-    <string name="share_text">Ever wondered what your real singing voice type is? 🎶\nI just found out mine is: %1$s\nRange: %2$s–%3$s · Tessitura: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
+    <string name="share_text">Ever wondered what your singing voice type is? 🎶\nI just found out mine is: %1$s\nDetected range: %2$s–%3$s · Comfortable zone: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
 </resources>

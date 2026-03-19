@@ -56,6 +56,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
@@ -489,20 +491,20 @@ private fun ConfidenceBar(label: String, fraction: Float) {
             )
         }
         Spacer(Modifier.height(4.dp))
-        androidx.compose.foundation.layout.Box(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp)
         ) {
-            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
                 drawRoundRect(
-                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.20f),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx())
+                    color = Color.White.copy(alpha = 0.20f),
+                    cornerRadius = CornerRadius(3.dp.toPx())
                 )
                 drawRoundRect(
-                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.80f),
+                    color = Color.White.copy(alpha = 0.80f),
                     size = size.copy(width = size.width * fraction),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx())
+                    cornerRadius = CornerRadius(3.dp.toPx())
                 )
             }
         }

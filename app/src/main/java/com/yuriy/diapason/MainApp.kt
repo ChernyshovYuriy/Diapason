@@ -12,10 +12,9 @@ class MainApp : Application() {
      * Application-scoped repository. Initialised lazily on first access so that
      * the database is not opened until it is actually needed.
      *
-     * Tests that run AnalyzeViewModel in isolation should subclass [MainApp] and
-     * override this property with a fake repository.
+     * Tests inject a fake repository via constructor parameters on the ViewModel
      */
-    open val sessionRepository: SessionRepository by lazy {
+    val sessionRepository: SessionRepository by lazy {
         SessionRepositoryImpl(DiapasonDatabase.getInstance(this).sessionDao())
     }
 

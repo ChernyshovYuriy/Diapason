@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.concurrent.CopyOnWriteArrayList
 
 private const val TAG = "VoiceAnalyzer"
 private const val SAMPLE_RATE = 44100
@@ -35,7 +36,12 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
 
     private var audioRecord: AudioRecord? = null
     private var analyzerJob: Job? = null
-    private val pitchSamples = mutableListOf<Float>()
+    // CopyOnWriteArrayList is used instead of mutableListOf because pitchSamples is
+    // written on Dispatchers.IO and read on the calling thread immediately after
+    // cancel(). cancel() sends a signal but does not join — the coroutine may still
+    // be in pitchSamples.add() when stop() reads the list. COWAL is write-safe
+    // without locking reads, which is exactly this access pattern.
+    private val pitchSamples = CopyOnWriteArrayList<Float>()
     private var sessionStartMs = 0L
     private var lastLoggedNote = ""
 

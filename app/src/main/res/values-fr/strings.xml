@@ -40,10 +40,8 @@
     <string name="results_section_other_matches">Autres correspondances possibles</string>
     <string name="results_stat_lowest">Note la plus grave détectée</string>
     <string name="results_stat_highest">Note la plus aiguë détectée</string>
-    <string name="results_stat_tessitura">Tessiture (zone confortable)</string>
     <string name="results_stat_passaggio">Passaggio estimé</string>
     <string name="results_stat_samples">Échantillons de hauteur valides</string>
-    <string name="results_stat_percentile_range">P20–P80</string>
     <string name="results_stat_session_format">session de %1$.0fs</string>
     <string name="results_runner_up_rank_format">#%1$d</string>
     <string name="results_score_format">%1$d/%2$d</string>
@@ -121,7 +119,6 @@
     <string name="about_section_feedback">Retours et rapports de bugs</string>
     <string name="about_feedback_body">Vous avez trouvé un bug ou une idée de fonctionnalité ? Ouvrez une issue sur le dépôt du projet.</string>
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
-    <string name="about_translation_item_format">• %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f Hz</string>
     <string name="results_percent_format">%1$d%%</string>
@@ -183,25 +180,6 @@
     <string name="results_stat_comfortable_low">Limite basse</string>
     <string name="results_stat_comfortable_high">Limite haute</string>
     <string name="results_session_note">Basé sur cette session · notes fiables uniquement</string>
-    <string name="results_comfortable_range_hz">%1$.0f – %2$.0f Hz</string>
-    <string name="results_cd_share">Partager le résultat</string>
-    <string name="results_share_subject">Mon résultat vocal Diapason</string>
-    <string name="results_share_chooser_title">Partager votre résultat</string>
-    <string name="results_share_unknown_voice_type">Type de voix inconnu</string>
-    <string name="results_share_voice_type_format">%1$s (%2$s)</string>
-    <string name="results_share_template_viral_curiosity">Vous êtes-vous déjà demandé quelle est vraiment votre voix chantée ? 🎤
-	J’ai testé la mienne avec Diapason et j’ai obtenu : %1$s.
-	Étendue : %2$s. Zone confortable : %3$s.
-	Maintenant, je suis curieux — et vous ?
-	Essayez Diapason : %4$s</string>
-    <string name="results_share_template_confident_reveal">Je viens de faire une analyse vocale dans Diapason et mon résultat est : %1$s 🎶
-	Étendue vocale : %2$s (zone confortable %3$s).
-	Si vous chantez, vous devriez vraiment tester la vôtre aussi :
-	%4$s</string>
-    <string name="results_share_template_challenge_style">Défi type de voix : j’ai essayé Diapason et j’ai obtenu %1$s 👀
-	Mon étendue détectée est %2$s et ma zone confortable est %3$s.
-	Vous pensez que votre résultat vous surprendrait aussi ?
-	Téléchargez Diapason : %4$s</string>
     <string name="nav_history">Historique</string>
     <string name="history_title">Historique</string>
     <string name="history_subtitle">Vos analyses vocales passées, des plus récentes aux plus anciennes</string>
@@ -211,7 +189,6 @@
     <string name="history_label_detected_extremes">Extrêmes détectés</string>
     <string name="history_label_passaggio">Passaggio</string>
     <string name="history_range_format">%1$s – %2$s</string>
-    <string name="history_confidence_format">%1$d / %2$d</string>
     <string name="compare_btn_start">Comparer avant / après l’échauffement</string>
     <string name="compare_intro_title">Avant / après l’échauffement</string>
     <string name="compare_intro_headline">Comparer deux sessions</string>
@@ -230,7 +207,6 @@
     <string name="compare_retest_title">Après l’échauffement</string>
     <string name="compare_retest_instruction">Répétez le même schéma — de la note la plus basse à la plus haute, puis redescendez.</string>
     <string name="compare_record_btn_stop">Arrêter l’enregistrement</string>
-    <string name="compare_record_btn_exit">Quitter la comparaison</string>
     <string name="compare_insufficient_title">Pas assez de données</string>
     <string name="compare_insufficient_btn_retry">Réessayer</string>
     <string name="compare_insufficient_btn_exit">Quitter la comparaison</string>

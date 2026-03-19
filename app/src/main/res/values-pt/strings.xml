@@ -40,10 +40,8 @@
     <string name="results_section_other_matches">Outras Correspondências Possíveis</string>
     <string name="results_stat_lowest">Nota mais grave detectada</string>
     <string name="results_stat_highest">Nota mais aguda detectada</string>
-    <string name="results_stat_tessitura">Tessitura (zona confortável)</string>
     <string name="results_stat_passaggio">Passaggio estimado</string>
     <string name="results_stat_samples">Amostras válidas de altura</string>
-    <string name="results_stat_percentile_range">P20–P80</string>
     <string name="results_stat_session_format">Sessão de %1$.0fs</string>
     <string name="results_runner_up_rank_format">#%1$d</string>
     <string name="results_score_format">%1$d/%2$d</string>
@@ -52,24 +50,6 @@
         que exigem um ouvido treinado. Use isto como um ponto de partida informado — não como um diagnóstico
         definitivo. Um professor de canto sempre dará a avaliação mais precisa.</string>
     <string name="results_cd_back">Voltar</string>
-    <string name="results_cd_share">Compartilhar resultado</string>
-    <string name="results_share_subject">Meu resultado vocal no Diapason</string>
-    <string name="results_share_chooser_title">Compartilhe seu resultado</string>
-    <string name="results_share_unknown_voice_type">Tipo de voz desconhecido</string>
-    <string name="results_share_voice_type_format">%1$s (%2$s)</string>
-    <string name="results_share_template_viral_curiosity">Já se perguntou qual é realmente a sua voz de canto? 🎤
-Eu testei a minha com o Diapason e obtive: %1$s.
-Extensão: %2$s. Zona confortável: %3$s.
-Agora estou curioso — e a sua?
-Experimente o Diapason: %4$s</string>
-    <string name="results_share_template_confident_reveal">Acabei de fazer uma análise vocal no Diapason e meu resultado foi: %1$s 🎶
-Extensão vocal: %2$s (zona confortável %3$s).
-Se você canta, deveria testar a sua também:
-%4$s</string>
-    <string name="results_share_template_challenge_style">Desafio do tipo vocal: testei o Diapason e obtive %1$s 👀
-Minha extensão é %2$s e minha tessitura é %3$s.
-Acha que a sua também iria te surpreender?
-Baixe o Diapason: %4$s</string>
     <string name="guide_title">Como Usar o Diapason</string>
     <string name="guide_subtitle">Siga estas etapas para obter o resultado mais preciso</string>
     <string name="guide_step1_title">Encontre um ambiente silencioso</string>
@@ -140,7 +120,6 @@ Baixe o Diapason: %4$s</string>
     <string name="about_section_feedback">Feedback &amp; Relatos de Bugs</string>
     <string name="about_feedback_body">Encontrou um bug ou tem uma solicitação de recurso? Abra uma issue no repositório do projeto.</string>
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
-    <string name="about_translation_item_format">• %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f Hz</string>
     <string name="results_percent_format">%1$d%%</string>
@@ -202,7 +181,6 @@ Baixe o Diapason: %4$s</string>
     <string name="results_stat_comfortable_low">Limite inferior</string>
     <string name="results_stat_comfortable_high">Limite superior</string>
     <string name="results_session_note">Com base nesta sessão · apenas notas confiáveis</string>
-    <string name="results_comfortable_range_hz">%1$.0f – %2$.0f Hz</string>
     <string name="nav_history">Histórico</string>
     <string name="history_title">Histórico</string>
     <string name="history_subtitle">Suas análises vocais anteriores, da mais recente para a mais antiga</string>
@@ -212,7 +190,6 @@ Baixe o Diapason: %4$s</string>
     <string name="history_label_detected_extremes">Extremos detectados</string>
     <string name="history_label_passaggio">Passaggio</string>
     <string name="history_range_format">%1$s – %2$s</string>
-    <string name="history_confidence_format">%1$d / %2$d</string>
     <string name="compare_btn_start">Comparar antes / depois do aquecimento</string>
     <string name="compare_intro_title">Antes / depois do aquecimento</string>
     <string name="compare_intro_headline">Comparar duas sessões</string>
@@ -231,7 +208,6 @@ Baixe o Diapason: %4$s</string>
     <string name="compare_retest_title">Depois do aquecimento</string>
     <string name="compare_retest_instruction">Repita o mesmo padrão — da nota mais grave à mais aguda e depois volte.</string>
     <string name="compare_record_btn_stop">Parar gravação</string>
-    <string name="compare_record_btn_exit">Sair da comparação</string>
     <string name="compare_insufficient_title">Dados insuficientes</string>
     <string name="compare_insufficient_btn_retry">Tentar novamente</string>
     <string name="compare_insufficient_btn_exit">Sair da comparação</string>

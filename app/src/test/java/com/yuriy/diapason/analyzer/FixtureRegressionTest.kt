@@ -1,5 +1,6 @@
 package com.yuriy.diapason.analyzer
 
+import com.yuriy.diapason.analyzer.FixtureRegressionTest.Companion.fixtureNames
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue

@@ -125,11 +125,11 @@ class FachClassifierTest {
         // 5 low, 40 mid (262–392 Hz), 5 high
         val pitches = typicalSession(
             lowCluster = 196f,  // G3 — bass floor excursion
-            midLow     = 262f,  // C4
-            midHigh    = 392f,  // G4
-            highCluster= 523f,  // C5 — soprano stretch
+            midLow = 262f,  // C4
+            midHigh = 392f,  // G4
+            highCluster = 523f,  // C5 — soprano stretch
             clusterCount = 5,
-            midCount     = 40
+            midCount = 40
         )
 
         val (low, high) = FachClassifier.estimateComfortableRange(pitches)

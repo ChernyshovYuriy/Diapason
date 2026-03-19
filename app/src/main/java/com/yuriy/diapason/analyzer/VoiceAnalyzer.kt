@@ -36,6 +36,7 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
 
     private var audioRecord: AudioRecord? = null
     private var analyzerJob: Job? = null
+
     // CopyOnWriteArrayList is used instead of mutableListOf because pitchSamples is
     // written on Dispatchers.IO and read on the calling thread immediately after
     // cancel(). cancel() sends a signal but does not join — the coroutine may still
@@ -98,7 +99,11 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
                 if (frameCount % 10 == 0) {
                     Log.v(
                         TAG,
-                        "Frame $frameCount: pitch=${if (pitchHz > 0) "%.1fHz".format(pitchHz) else "—"} conf=${"%.3f".format(confidence)}"
+                        "Frame $frameCount: pitch=${if (pitchHz > 0) "%.1fHz".format(pitchHz) else "—"} conf=${
+                            "%.3f".format(
+                                confidence
+                            )
+                        }"
                     )
                 }
 
@@ -145,8 +150,16 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
 
         Log.i(
             TAG,
-            "Profile: detected=${FachClassifier.hzToNoteName(detectedMin)}–${FachClassifier.hzToNoteName(detectedMax)} " +
-                    "comfortable=${FachClassifier.hzToNoteName(comfortableLow)}–${FachClassifier.hzToNoteName(comfortableHigh)} " +
+            "Profile: detected=${FachClassifier.hzToNoteName(detectedMin)}–${
+                FachClassifier.hzToNoteName(
+                    detectedMax
+                )
+            } " +
+                    "comfortable=${FachClassifier.hzToNoteName(comfortableLow)}–${
+                        FachClassifier.hzToNoteName(
+                            comfortableHigh
+                        )
+                    } " +
                     "pass=${FachClassifier.hzToNoteName(passaggio)}"
         )
 

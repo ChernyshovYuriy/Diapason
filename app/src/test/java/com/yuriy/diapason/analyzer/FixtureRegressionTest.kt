@@ -72,8 +72,8 @@ class FixtureRegressionTest(private val fixtureName: String) {
 
         assertTrue(
             "[$fixtureName] expected ≥ ${fixture.assertions.minAcceptedFrames} accepted frames " +
-                "but only ${pitches.size} survived the filter. " +
-                "Either the fixture has too few high-confidence samples or MIN_CONFIDENCE changed.",
+                    "but only ${pitches.size} survived the filter. " +
+                    "Either the fixture has too few high-confidence samples or MIN_CONFIDENCE changed.",
             pitches.size >= fixture.assertions.minAcceptedFrames
         )
     }
@@ -95,7 +95,7 @@ class FixtureRegressionTest(private val fixtureName: String) {
         pitches.forEachIndexed { i, hz ->
             assertTrue(
                 "[$fixtureName] accepted pitch at index $i ($hz Hz) is outside " +
-                    "[${SessionReplay.MIN_PITCH_HZ}, ${SessionReplay.MAX_PITCH_HZ}]",
+                        "[${SessionReplay.MIN_PITCH_HZ}, ${SessionReplay.MAX_PITCH_HZ}]",
                 hz in SessionReplay.MIN_PITCH_HZ..SessionReplay.MAX_PITCH_HZ
             )
         }
@@ -115,16 +115,16 @@ class FixtureRegressionTest(private val fixtureName: String) {
      */
     @Test
     fun `fixture detected min matches expected note`() {
-        val fixture  = FixtureLoader.load(fixtureName)
+        val fixture = FixtureLoader.load(fixtureName)
         val expected = fixture.assertions.detectedMinNote ?: return
-        val pitches  = SessionReplay.acceptedPitches(fixture.toPitchSamples())
+        val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (detectedMin, _) = FachClassifier.estimateDetectedExtremes(pitches)
 
         FixtureAssertHelper.assertWithinSemitones(
-            label              = "[$fixtureName] detectedMin",
-            actualHz           = detectedMin,
-            expectedNote       = expected,
+            label = "[$fixtureName] detectedMin",
+            actualHz = detectedMin,
+            expectedNote = expected,
             toleranceSemitones = fixture.assertions.semitoneTol
         )
     }
@@ -133,16 +133,16 @@ class FixtureRegressionTest(private val fixtureName: String) {
 
     @Test
     fun `fixture detected max matches expected note`() {
-        val fixture  = FixtureLoader.load(fixtureName)
+        val fixture = FixtureLoader.load(fixtureName)
         val expected = fixture.assertions.detectedMaxNote ?: return
-        val pitches  = SessionReplay.acceptedPitches(fixture.toPitchSamples())
+        val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (_, detectedMax) = FachClassifier.estimateDetectedExtremes(pitches)
 
         FixtureAssertHelper.assertWithinSemitones(
-            label              = "[$fixtureName] detectedMax",
-            actualHz           = detectedMax,
-            expectedNote       = expected,
+            label = "[$fixtureName] detectedMax",
+            actualHz = detectedMax,
+            expectedNote = expected,
             toleranceSemitones = fixture.assertions.semitoneTol
         )
     }
@@ -159,16 +159,16 @@ class FixtureRegressionTest(private val fixtureName: String) {
      */
     @Test
     fun `fixture comfortable low matches expected note`() {
-        val fixture  = FixtureLoader.load(fixtureName)
+        val fixture = FixtureLoader.load(fixtureName)
         val expected = fixture.assertions.comfortableLowNote ?: return
-        val pitches  = SessionReplay.acceptedPitches(fixture.toPitchSamples())
+        val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (comfortableLow, _) = FachClassifier.estimateComfortableRange(pitches)
 
         FixtureAssertHelper.assertWithinSemitones(
-            label              = "[$fixtureName] comfortableLow",
-            actualHz           = comfortableLow,
-            expectedNote       = expected,
+            label = "[$fixtureName] comfortableLow",
+            actualHz = comfortableLow,
+            expectedNote = expected,
             toleranceSemitones = fixture.assertions.semitoneTol
         )
     }
@@ -177,16 +177,16 @@ class FixtureRegressionTest(private val fixtureName: String) {
 
     @Test
     fun `fixture comfortable high matches expected note`() {
-        val fixture  = FixtureLoader.load(fixtureName)
+        val fixture = FixtureLoader.load(fixtureName)
         val expected = fixture.assertions.comfortableHighNote ?: return
-        val pitches  = SessionReplay.acceptedPitches(fixture.toPitchSamples())
+        val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (_, comfortableHigh) = FachClassifier.estimateComfortableRange(pitches)
 
         FixtureAssertHelper.assertWithinSemitones(
-            label              = "[$fixtureName] comfortableHigh",
-            actualHz           = comfortableHigh,
-            expectedNote       = expected,
+            label = "[$fixtureName] comfortableHigh",
+            actualHz = comfortableHigh,
+            expectedNote = expected,
             toleranceSemitones = fixture.assertions.semitoneTol
         )
     }
@@ -205,9 +205,9 @@ class FixtureRegressionTest(private val fixtureName: String) {
      */
     @Test
     fun `fixture passaggio matches expected note`() {
-        val fixture  = FixtureLoader.load(fixtureName)
+        val fixture = FixtureLoader.load(fixtureName)
         val expected = fixture.assertions.passaggioNote ?: return
-        val pitches  = SessionReplay.acceptedPitches(fixture.toPitchSamples())
+        val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         // Passaggio estimate is unreliable with fewer than 30 accepted frames.
         if (pitches.size < 30) return
@@ -215,9 +215,9 @@ class FixtureRegressionTest(private val fixtureName: String) {
         val passaggio = FachClassifier.estimatePassaggio(pitches)
 
         FixtureAssertHelper.assertWithinSemitones(
-            label              = "[$fixtureName] passaggio",
-            actualHz           = passaggio,
-            expectedNote       = expected,
+            label = "[$fixtureName] passaggio",
+            actualHz = passaggio,
+            expectedNote = expected,
             toleranceSemitones = fixture.assertions.passaggioTol
         )
     }
@@ -239,7 +239,7 @@ class FixtureRegressionTest(private val fixtureName: String) {
         val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
         if (pitches.size < 10) return  // comfortable range fallback for tiny sets is not comparable
 
-        val (detectedMin,    detectedMax)    = FachClassifier.estimateDetectedExtremes(pitches)
+        val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(pitches)
         val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(pitches)
 
         assertTrue(
@@ -285,27 +285,27 @@ class FixtureRegressionTest(private val fixtureName: String) {
 
         assertNotNull(
             "[$fixtureName] buildProfile returned null — fixture has too few accepted frames. " +
-                "Increase the frame count or lower minAcceptedFrames.",
+                    "Increase the frame count or lower minAcceptedFrames.",
             profile
         )
         profile!! // smart-cast after assertNotNull
 
         val pitches = SessionReplay.acceptedPitches(samples)
 
-        val (detectedMin,    detectedMax)    = FachClassifier.estimateDetectedExtremes(pitches)
+        val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(pitches)
         val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(pitches)
 
         assertEquals(
             "[$fixtureName] profile.detectedMinHz",
-            detectedMin,    profile.detectedMinHz,    0.01f
+            detectedMin, profile.detectedMinHz, 0.01f
         )
         assertEquals(
             "[$fixtureName] profile.detectedMaxHz",
-            detectedMax,    profile.detectedMaxHz,    0.01f
+            detectedMax, profile.detectedMaxHz, 0.01f
         )
         assertEquals(
             "[$fixtureName] profile.comfortableLowHz",
-            comfortableLow,  profile.comfortableLowHz,  0.01f
+            comfortableLow, profile.comfortableLowHz, 0.01f
         )
         assertEquals(
             "[$fixtureName] profile.comfortableHighHz",
@@ -313,7 +313,7 @@ class FixtureRegressionTest(private val fixtureName: String) {
         )
         assertEquals(
             "[$fixtureName] profile.sampleCount should equal accepted pitch count",
-            pitches.size,    profile.sampleCount
+            pitches.size, profile.sampleCount
         )
     }
 }

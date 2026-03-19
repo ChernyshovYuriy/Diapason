@@ -35,12 +35,12 @@ class AnalyzerInvariantTest {
     // ─────────────────────────────────────────────────────────────────────────
 
     private val representativeDatasets: List<Pair<String, List<Float>>> = listOf(
-        "ascending warmup"   to SessionReplay.acceptedPitches(Fixtures.ASCENDING_WARMUP),
-        "descending warmup"  to SessionReplay.acceptedPitches(Fixtures.DESCENDING_WARMUP),
-        "stable mid"         to SessionReplay.acceptedPitches(Fixtures.STABLE_MID_UNSTABLE_EDGES),
-        "long gaps"          to SessionReplay.acceptedPitches(Fixtures.LONG_SILENCE_GAPS),
+        "ascending warmup" to SessionReplay.acceptedPitches(Fixtures.ASCENDING_WARMUP),
+        "descending warmup" to SessionReplay.acceptedPitches(Fixtures.DESCENDING_WARMUP),
+        "stable mid" to SessionReplay.acceptedPitches(Fixtures.STABLE_MID_UNSTABLE_EDGES),
+        "long gaps" to SessionReplay.acceptedPitches(Fixtures.LONG_SILENCE_GAPS),
         "repeated boundaries" to SessionReplay.acceptedPitches(Fixtures.REPEATED_STABLE_BOUNDARIES),
-        "repeated top note"  to SessionReplay.acceptedPitches(Fixtures.REPEATED_STABLE_TOP_NOTE),
+        "repeated top note" to SessionReplay.acceptedPitches(Fixtures.REPEATED_STABLE_TOP_NOTE),
     )
 
     private fun forAllDatasets(
@@ -157,7 +157,7 @@ class AnalyzerInvariantTest {
     @Test
     fun `adding many confirmed high samples can widen comfortable high toward them`() {
         // Start with 40 frames at E4 (330 Hz) — comfortable high ≈ E4
-        val base   = List(40) { Fixtures.E4 }
+        val base = List(40) { Fixtures.E4 }
         val (_, comfortableHighSmall) = FachClassifier.estimateComfortableRange(base)
 
         // Now add 40 more frames at B4 (494 Hz) — they should push P80 up
@@ -166,14 +166,14 @@ class AnalyzerInvariantTest {
 
         assertTrue(
             "Comfortable high ($comfortableHighExtended Hz) should increase toward B4 (494 Hz) " +
-                "when many B4 samples are added (was $comfortableHighSmall Hz)",
+                    "when many B4 samples are added (was $comfortableHighSmall Hz)",
             comfortableHighExtended > comfortableHighSmall
         )
     }
 
     @Test
     fun `adding many confirmed low samples can widen comfortable low toward them`() {
-        val base   = List(40) { Fixtures.A4 }
+        val base = List(40) { Fixtures.A4 }
         val (comfortableLowSmall, _) = FachClassifier.estimateComfortableRange(base)
 
         val extended = List(40) { Fixtures.G3 } + base
@@ -181,7 +181,7 @@ class AnalyzerInvariantTest {
 
         assertTrue(
             "Comfortable low ($comfortableLowExtended Hz) should decrease toward G3 (196 Hz) " +
-                "when many G3 samples are added (was $comfortableLowSmall Hz)",
+                    "when many G3 samples are added (was $comfortableLowSmall Hz)",
             comfortableLowExtended < comfortableLowSmall
         )
     }
@@ -287,7 +287,7 @@ class AnalyzerInvariantTest {
     fun `hzToNoteName returns the same result for every call with the same input`() {
         val testFrequencies = listOf(65f, 130f, 196f, 262f, 330f, 440f, 523f, 880f, 1047f)
         testFrequencies.forEach { hz ->
-            val first  = FachClassifier.hzToNoteName(hz)
+            val first = FachClassifier.hzToNoteName(hz)
             val second = FachClassifier.hzToNoteName(hz)
             assertEquals("hzToNoteName($hz) must be deterministic", first, second)
         }
@@ -308,7 +308,7 @@ class AnalyzerInvariantTest {
     fun `single sample list for comfortable range falls back without crashing`() {
         val (low, high) = FachClassifier.estimateComfortableRange(listOf(440f))
         // Size < 10 → falls back to min/max = 440
-        assertEquals(440f, low,  0.01f)
+        assertEquals(440f, low, 0.01f)
         assertEquals(440f, high, 0.01f)
     }
 
@@ -327,8 +327,18 @@ class AnalyzerInvariantTest {
         val extended = core + List(4) { Fixtures.C6 }
         val (extLow, extHigh) = FachClassifier.estimateComfortableRange(extended)
 
-        assertEquals("Comfortable low should not shift with a 5% minority at C6", coreLow, extLow, 5f)
-        assertEquals("Comfortable high should not shift with a 5% minority at C6", coreHigh, extHigh, 5f)
+        assertEquals(
+            "Comfortable low should not shift with a 5% minority at C6",
+            coreLow,
+            extLow,
+            5f
+        )
+        assertEquals(
+            "Comfortable high should not shift with a 5% minority at C6",
+            coreHigh,
+            extHigh,
+            5f
+        )
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -347,8 +357,14 @@ class AnalyzerInvariantTest {
         val plusE5 = plusC5 + listOf(Fixtures.E5, Fixtures.E5)
         val (_, maxE5) = FachClassifier.estimateDetectedExtremes(plusE5)
 
-        assertTrue("Detected max should grow when C5 cluster is added ($maxBase → $maxC5)", maxC5 >= maxBase)
-        assertTrue("Detected max should grow when E5 cluster is added ($maxC5 → $maxE5)", maxE5 >= maxC5)
+        assertTrue(
+            "Detected max should grow when C5 cluster is added ($maxBase → $maxC5)",
+            maxC5 >= maxBase
+        )
+        assertTrue(
+            "Detected max should grow when E5 cluster is added ($maxC5 → $maxE5)",
+            maxE5 >= maxC5
+        )
     }
 
     @Test
@@ -362,7 +378,13 @@ class AnalyzerInvariantTest {
         val plusE3 = plusA3 + listOf(Fixtures.E3, Fixtures.E3)
         val (minE3, _) = FachClassifier.estimateDetectedExtremes(plusE3)
 
-        assertTrue("Detected min should shrink when A3 cluster is added ($minBase → $minA3)", minA3 <= minBase)
-        assertTrue("Detected min should shrink when E3 cluster is added ($minA3 → $minE3)", minE3 <= minA3)
+        assertTrue(
+            "Detected min should shrink when A3 cluster is added ($minBase → $minA3)",
+            minA3 <= minBase
+        )
+        assertTrue(
+            "Detected min should shrink when E3 cluster is added ($minA3 → $minE3)",
+            minE3 <= minA3
+        )
     }
 }

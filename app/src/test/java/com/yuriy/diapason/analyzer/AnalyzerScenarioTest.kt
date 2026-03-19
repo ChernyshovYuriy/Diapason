@@ -57,10 +57,10 @@ class AnalyzerScenarioTest {
 
     @Test
     fun `descending warmup produces same extremes as ascending warmup`() {
-        val pitchesUp   = SessionReplay.acceptedPitches(Fixtures.ASCENDING_WARMUP)
+        val pitchesUp = SessionReplay.acceptedPitches(Fixtures.ASCENDING_WARMUP)
         val pitchesDown = SessionReplay.acceptedPitches(Fixtures.DESCENDING_WARMUP)
 
-        val (minUp,   maxUp)   = FachClassifier.estimateDetectedExtremes(pitchesUp)
+        val (minUp, maxUp) = FachClassifier.estimateDetectedExtremes(pitchesUp)
         val (minDown, maxDown) = FachClassifier.estimateDetectedExtremes(pitchesDown)
 
         assertEquals("Detected min should be direction-independent", minUp, minDown, 5f)
@@ -339,7 +339,7 @@ class AnalyzerScenarioTest {
         // 3 frames at E3 out of ~45 total = ~7% — P20 is still in the core (G3+)
         assertTrue(
             "Comfortable low ($comfortableLow Hz) should stay in the G3–A4 core, " +
-                "not pulled to the 3-frame E3 cluster",
+                    "not pulled to the 3-frame E3 cluster",
             comfortableLow >= 185f
         )
         assertTrue(

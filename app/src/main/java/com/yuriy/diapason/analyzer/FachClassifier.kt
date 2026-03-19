@@ -70,12 +70,12 @@ object FachClassifier {
             val upperOk = lo < sorted.size - 1 && (sorted[lo + 1] / candidate) <= twoSemitones
             // selfDuplicate: another element at exactly this pitch counts as a neighbour
             val selfDuplicate = (lo > 0 && sorted[lo - 1] == candidate) ||
-                                (lo + 1 < sorted.size && sorted[lo + 1] == candidate)
+                    (lo + 1 < sorted.size && sorted[lo + 1] == candidate)
             return lowerOk || upperOk || selfDuplicate
         }
 
         val stableMin = sorted.firstOrNull { hasNeighbor(it) } ?: sorted.first()
-        val stableMax = sorted.lastOrNull  { hasNeighbor(it) } ?: sorted.last()
+        val stableMax = sorted.lastOrNull { hasNeighbor(it) } ?: sorted.last()
 
         return Pair(stableMin, stableMax)
     }

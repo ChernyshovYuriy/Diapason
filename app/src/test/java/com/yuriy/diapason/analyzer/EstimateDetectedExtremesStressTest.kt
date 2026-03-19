@@ -45,8 +45,9 @@ class EstimateDetectedExtremesStressTest {
                 val ratio = if (other >= candidate) other / candidate else candidate / other
                 ratio <= twoSemitones
             } >= 2
+
         val stableMin = sorted.firstOrNull { hasNeighbor(it) } ?: sorted.first()
-        val stableMax = sorted.lastOrNull  { hasNeighbor(it) } ?: sorted.last()
+        val stableMax = sorted.lastOrNull { hasNeighbor(it) } ?: sorted.last()
         return Pair(stableMin, stableMax)
     }
 
@@ -59,7 +60,7 @@ class EstimateDetectedExtremesStressTest {
     /** Asserts that production and reference produce the same result for [pitches]. */
     private fun assertSameAsReference(label: String, pitches: List<Float>) {
         val (prodMin, prodMax) = FachClassifier.estimateDetectedExtremes(pitches)
-        val (refMin, refMax)   = referenceDetectedExtremes(pitches)
+        val (refMin, refMax) = referenceDetectedExtremes(pitches)
         assertEquals("$label: min mismatch (prod=$prodMin ref=$refMin)", refMin, prodMin, eps)
         assertEquals("$label: max mismatch (prod=$prodMax ref=$refMax)", refMax, prodMax, eps)
     }
@@ -119,8 +120,10 @@ class EstimateDetectedExtremesStressTest {
     @Test
     fun `ascending scale session — each note has an adjacent neighbour`() {
         // Chromatic scale G3 to G4 in 50-cent steps, 3 samples per note
-        val notes = listOf(196f, 208f, 220f, 233f, 247f, 261f, 277f, 294f, 311f, 330f,
-                           349f, 370f, 392f)
+        val notes = listOf(
+            196f, 208f, 220f, 233f, 247f, 261f, 277f, 294f, 311f, 330f,
+            349f, 370f, 392f
+        )
         val pitches = notes.flatMap { listOf(it, it, it) }
         assertSameAsReference("ascending scale", pitches)
     }
@@ -129,8 +132,8 @@ class EstimateDetectedExtremesStressTest {
     fun `typical vocal session with genuine floor and ceiling clusters`() {
         // C4 cluster at the bottom, B5 cluster at the top, C5 bulk in the middle
         val pitches = List(3) { 261f } + List(3) { 277f } +  // C4–C#4
-                      List(20) { 523f } +                      // C5 middle
-                      List(3) { 932f } + List(3) { 988f }    // A#5–B5
+                List(20) { 523f } +                      // C5 middle
+                List(3) { 932f } + List(3) { 988f }    // A#5–B5
         assertSameAsReference("genuine floor and ceiling", pitches)
         val (min, max) = FachClassifier.estimateDetectedExtremes(pitches)
         assertTrue("Floor cluster (C4) should be detected min", min < 280f)

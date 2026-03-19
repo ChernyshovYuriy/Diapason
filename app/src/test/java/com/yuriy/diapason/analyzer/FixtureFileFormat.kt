@@ -43,14 +43,14 @@ data class FixtureFrame(
  * @param passaggioTol       Tolerance for passaggio assertion (default 3 semitones).
  */
 data class FixtureAssertions(
-    val detectedMinNote: String?    = null,
-    val detectedMaxNote: String?    = null,
+    val detectedMinNote: String? = null,
+    val detectedMaxNote: String? = null,
     val comfortableLowNote: String? = null,
     val comfortableHighNote: String? = null,
-    val passaggioNote: String?      = null,
-    val minAcceptedFrames: Int      = 20,
-    val semitoneTol: Int            = 2,
-    val passaggioTol: Int           = 3
+    val passaggioNote: String? = null,
+    val minAcceptedFrames: Int = 20,
+    val semitoneTol: Int = 2,
+    val passaggioTol: Int = 3
 )
 
 /**
@@ -107,23 +107,23 @@ object FixtureLoader {
 
     /** Parses a fixture JSON string.  Exposed for testing the loader itself. */
     internal fun parse(json: String): FixtureData {
-        val id          = extractString(json, "id")          ?: ""
+        val id = extractString(json, "id") ?: ""
         val description = extractString(json, "description") ?: ""
-        val voiceType   = extractString(json, "voiceType")   ?: ""
-        val source      = extractString(json, "source")      ?: "synthetic"
-        val capturedAt  = extractString(json, "capturedAt")  ?: "synthetic"
+        val voiceType = extractString(json, "voiceType") ?: ""
+        val source = extractString(json, "source") ?: "synthetic"
+        val capturedAt = extractString(json, "capturedAt") ?: "synthetic"
 
-        val frames     = parseFrames(json)
+        val frames = parseFrames(json)
         val assertions = parseAssertions(extractObject(json, "assertions") ?: "{}")
 
         return FixtureData(
-            id          = id,
+            id = id,
             description = description,
-            voiceType   = voiceType,
-            source      = source,
-            capturedAt  = capturedAt,
-            frames      = frames,
-            assertions  = assertions
+            voiceType = voiceType,
+            source = source,
+            capturedAt = capturedAt,
+            frames = frames,
+            assertions = assertions
         )
     }
 
@@ -137,19 +137,24 @@ object FixtureLoader {
         var objStart = -1
         for (i in arrayText.indices) {
             when (arrayText[i]) {
-                '{' -> { if (depth++ == 0) objStart = i }
-                '}' -> { if (--depth == 0 && objStart >= 0) {
-                    val obj = arrayText.substring(objStart, i + 1)
-                    parseFrame(obj)?.let { result += it }
-                    objStart = -1
-                }}
+                '{' -> {
+                    if (depth++ == 0) objStart = i
+                }
+
+                '}' -> {
+                    if (--depth == 0 && objStart >= 0) {
+                        val obj = arrayText.substring(objStart, i + 1)
+                        parseFrame(obj)?.let { result += it }
+                        objStart = -1
+                    }
+                }
             }
         }
         return result
     }
 
     private fun parseFrame(obj: String): FixtureFrame? {
-        val hz   = extractFloat(obj, "hz")         ?: return null
+        val hz = extractFloat(obj, "hz") ?: return null
         val conf = extractFloat(obj, "confidence") ?: return null
         return FixtureFrame(hz = hz, confidence = conf)
     }
@@ -157,14 +162,14 @@ object FixtureLoader {
     // ── Assertions object parser ──────────────────────────────────────────────
 
     private fun parseAssertions(obj: String) = FixtureAssertions(
-        detectedMinNote    = extractString(obj, "detectedMinNote"),
-        detectedMaxNote    = extractString(obj, "detectedMaxNote"),
+        detectedMinNote = extractString(obj, "detectedMinNote"),
+        detectedMaxNote = extractString(obj, "detectedMaxNote"),
         comfortableLowNote = extractString(obj, "comfortableLowNote"),
-        comfortableHighNote= extractString(obj, "comfortableHighNote"),
-        passaggioNote      = extractString(obj, "passaggioNote"),
-        minAcceptedFrames  = extractInt(obj, "minAcceptedFrames") ?: 20,
-        semitoneTol        = extractInt(obj, "semitoneTol")       ?: 2,
-        passaggioTol       = extractInt(obj, "passaggioTol")      ?: 3
+        comfortableHighNote = extractString(obj, "comfortableHighNote"),
+        passaggioNote = extractString(obj, "passaggioNote"),
+        minAcceptedFrames = extractInt(obj, "minAcceptedFrames") ?: 20,
+        semitoneTol = extractInt(obj, "semitoneTol") ?: 2,
+        passaggioTol = extractInt(obj, "passaggioTol") ?: 3
     )
 
     // ── Primitive extractors ──────────────────────────────────────────────────
@@ -173,7 +178,8 @@ object FixtureLoader {
         Regex(""""$key"\s*:\s*"([^"]*?)"""").find(json)?.groupValues?.get(1)
 
     private fun extractFloat(json: String, key: String): Float? =
-        Regex(""""$key"\s*:\s*([0-9]+(?:\.[0-9]*)?)""").find(json)?.groupValues?.get(1)?.toFloatOrNull()
+        Regex(""""$key"\s*:\s*([0-9]+(?:\.[0-9]*)?)""").find(json)?.groupValues?.get(1)
+            ?.toFloatOrNull()
 
     private fun extractInt(json: String, key: String): Int? =
         Regex(""""$key"\s*:\s*([0-9]+)""").find(json)?.groupValues?.get(1)?.toIntOrNull()
@@ -191,7 +197,9 @@ object FixtureLoader {
         for (i in arrStart until json.length) {
             when (json[i]) {
                 '[' -> depth++
-                ']' -> { if (--depth == 0) return json.substring(arrStart, i + 1) }
+                ']' -> {
+                    if (--depth == 0) return json.substring(arrStart, i + 1)
+                }
             }
         }
         return null
@@ -210,7 +218,9 @@ object FixtureLoader {
         for (i in objStart until json.length) {
             when (json[i]) {
                 '{' -> depth++
-                '}' -> { if (--depth == 0) return json.substring(objStart, i + 1) }
+                '}' -> {
+                    if (--depth == 0) return json.substring(objStart, i + 1)
+                }
             }
         }
         return null
@@ -234,9 +244,9 @@ fun FixtureData.toPitchSamples(): List<PitchSample> =
     frames.mapIndexed { idx, frame ->
         PitchSample(
             frameIndex = idx,
-            hz         = frame.hz,
+            hz = frame.hz,
             confidence = frame.confidence,
-            isVoiced   = true   // session files contain only voiced detections
+            isVoiced = true   // session files contain only voiced detections
         )
     }
 
@@ -262,7 +272,7 @@ object FixtureAssertHelper {
             "C" to 0, "C#" to 1, "D" to 2, "D#" to 3, "E" to 4, "F" to 5,
             "F#" to 6, "G" to 7, "G#" to 8, "A" to 9, "A#" to 10, "B" to 11
         )
-        val step   = noteStep[m.groupValues[1]] ?: return -1
+        val step = noteStep[m.groupValues[1]] ?: return -1
         val octave = m.groupValues[2].toIntOrNull() ?: return -1
         return (octave + 1) * 12 + step
     }
@@ -277,7 +287,7 @@ object FixtureAssertHelper {
      */
     fun semitoneDiff(hz: Float, expectedNote: String): Int {
         if (hz <= 0f) return Int.MAX_VALUE
-        val actualMidi   = hzToMidi(hz)
+        val actualMidi = hzToMidi(hz)
         val expectedMidi = noteNameToMidi(expectedNote)
         if (expectedMidi < 0) return Int.MAX_VALUE
         return abs(actualMidi - expectedMidi)
@@ -295,11 +305,11 @@ object FixtureAssertHelper {
         expectedNote: String,
         toleranceSemitones: Int
     ) {
-        val diff       = semitoneDiff(actualHz, expectedNote)
+        val diff = semitoneDiff(actualHz, expectedNote)
         val actualNote = FachClassifier.hzToNoteName(actualHz)
         assert(diff <= toleranceSemitones) {
             "$label: expected $expectedNote ±${toleranceSemitones}st " +
-                "but got $actualNote (${"%.1f".format(actualHz)} Hz) — $diff semitones away"
+                    "but got $actualNote (${"%.1f".format(actualHz)} Hz) — $diff semitones away"
         }
     }
 }

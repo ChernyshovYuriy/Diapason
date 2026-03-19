@@ -51,8 +51,8 @@ object SessionReplay {
         samples
             .filter { s ->
                 s.isVoiced &&
-                s.hz in MIN_PITCH_HZ..MAX_PITCH_HZ &&
-                s.confidence >= MIN_CONFIDENCE
+                        s.hz in MIN_PITCH_HZ..MAX_PITCH_HZ &&
+                        s.confidence >= MIN_CONFIDENCE
             }
             .map { it.hz }
 
@@ -70,13 +70,13 @@ object SessionReplay {
         val passaggio = FachClassifier.estimatePassaggio(pitches)
 
         return VoiceProfile(
-            detectedMinHz       = detectedMin,
-            detectedMaxHz       = detectedMax,
-            comfortableLowHz    = comfortableLow,
-            comfortableHighHz   = comfortableHigh,
+            detectedMinHz = detectedMin,
+            detectedMaxHz = detectedMax,
+            comfortableLowHz = comfortableLow,
+            comfortableHighHz = comfortableHigh,
             estimatedPassaggioHz = passaggio,
-            sampleCount         = pitches.size,
-            durationSeconds     = durationSeconds
+            sampleCount = pitches.size,
+            durationSeconds = durationSeconds
         )
     }
 }
@@ -106,8 +106,10 @@ class SessionBuilder {
     // ── Core primitive ────────────────────────────────────────────────────────
 
     fun frame(hz: Float, confidence: Float = 1.0f, isVoiced: Boolean = true): SessionBuilder {
-        samples += PitchSample(frameIndex = nextFrame++, hz = hz,
-            confidence = confidence, isVoiced = isVoiced)
+        samples += PitchSample(
+            frameIndex = nextFrame++, hz = hz,
+            confidence = confidence, isVoiced = isVoiced
+        )
         return this
     }
 
@@ -145,8 +147,10 @@ class SessionBuilder {
         steps: Int = 8,
         framesPerStep: Int = 3,
         confidence: Float = 1.0f
-    ): SessionBuilder = stepUp(from = from, to = to, steps = steps,
-        framesPerStep = framesPerStep, confidence = confidence)
+    ): SessionBuilder = stepUp(
+        from = from, to = to, steps = steps,
+        framesPerStep = framesPerStep, confidence = confidence
+    )
 
     /**
      * Unvoiced silence gap.  These frames are always rejected by [SessionReplay].
@@ -164,8 +168,10 @@ class SessionBuilder {
      * Produces an alternating low/high pattern rather than random noise so the
      * tests remain deterministic.
      */
-    fun noisyGlide(centerHz: Float, varianceHz: Float, frames: Int,
-                   confidence: Float = 1.0f): SessionBuilder {
+    fun noisyGlide(
+        centerHz: Float, varianceHz: Float, frames: Int,
+        confidence: Float = 1.0f
+    ): SessionBuilder {
         for (i in 0 until frames) {
             val hz = if (i % 2 == 0) centerHz - varianceHz else centerHz + varianceHz
             frame(hz, confidence)
@@ -220,32 +226,32 @@ object Fixtures {
     // ── Frequency landmarks (standard equal-temperament Hz, rounded) ──────────
 
     // Bass / baritone territory
-    const val E2  = 82f   // low bass floor
-    const val G2  = 98f
-    const val C3  = 130f
-    const val E3  = 165f
-    const val G3  = 196f  // comfortable baritone low
+    const val E2 = 82f   // low bass floor
+    const val G2 = 98f
+    const val C3 = 130f
+    const val E3 = 165f
+    const val G3 = 196f  // comfortable baritone low
 
     // Tenor / baritone passaggio area
-    const val C4  = 262f  // middle C
-    const val D4  = 294f
-    const val E4  = 330f
-    const val F4  = 349f
-    const val G4  = 392f
-    const val A4  = 440f  // concert pitch
-    const val B4  = 494f
+    const val C4 = 262f  // middle C
+    const val D4 = 294f
+    const val E4 = 330f
+    const val F4 = 349f
+    const val G4 = 392f
+    const val A4 = 440f  // concert pitch
+    const val B4 = 494f
 
     // Soprano / mezzo territory
-    const val C5  = 523f
-    const val D5  = 587f
-    const val E5  = 659f
-    const val G5  = 784f
-    const val A5  = 880f
-    const val B5  = 988f
+    const val C5 = 523f
+    const val D5 = 587f
+    const val E5 = 659f
+    const val G5 = 784f
+    const val A5 = 880f
+    const val B5 = 988f
 
     // High soprano / coloratura
-    const val C6  = 1047f
-    const val E6  = 1319f
+    const val C6 = 1047f
+    const val E6 = 1319f
 
     // ── Scenario 1: Stable ascending warm-up (baritone-ish range) ─────────────
 

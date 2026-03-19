@@ -392,10 +392,14 @@ class FachClassifierClassifyTest {
     fun `classify is deterministic - same profile always produces the same ordered results`() {
         val profile = perfectProfileFor(fachByRange(130f, 523f))  // Lyric Tenor
 
-        val first  = FachClassifier.classify(profile)
+        val first = FachClassifier.classify(profile)
         val second = FachClassifier.classify(profile)
 
-        assertEquals("classify must return the same number of results on every call", first.size, second.size)
+        assertEquals(
+            "classify must return the same number of results on every call",
+            first.size,
+            second.size
+        )
         first.zip(second).forEachIndexed { index, (a, b) ->
             assertEquals(
                 "Result at rank $index must have the same score on both calls " +

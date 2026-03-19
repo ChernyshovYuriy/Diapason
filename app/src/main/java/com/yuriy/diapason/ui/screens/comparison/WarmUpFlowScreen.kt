@@ -2,13 +2,17 @@ package com.yuriy.diapason.ui.screens.comparison
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yuriy.diapason.R
 import com.yuriy.diapason.comparison.ComparisonStage
 import com.yuriy.diapason.comparison.WarmUpComparisonViewModel
 
 /**
  * Top-level composable for the warm-up comparison flow.
  * Dispatches to the appropriate sub-screen based on the current [ComparisonStage].
+ * All user-visible strings are resolved here via stringResource so the
+ * sub-screens receive plain String values and stay context-free.
  */
 @Composable
 fun WarmUpFlowScreen(
@@ -24,8 +28,8 @@ fun WarmUpFlowScreen(
         )
 
         is ComparisonStage.Baseline -> CompareRecordScreen(
-            label = "Before Warm-up",
-            instruction = "Sing from your lowest to highest note, then back down.",
+            label = stringResource(R.string.compare_baseline_title),
+            instruction = stringResource(R.string.compare_baseline_instruction),
             currentNote = s.currentNote,
             currentHz = s.currentHz,
             sampleCount = s.sampleCount,
@@ -50,8 +54,8 @@ fun WarmUpFlowScreen(
         )
 
         is ComparisonStage.Retest -> CompareRecordScreen(
-            label = "After Warm-up",
-            instruction = "Sing the same pattern — lowest to highest, then back down.",
+            label = stringResource(R.string.compare_retest_title),
+            instruction = stringResource(R.string.compare_retest_instruction),
             currentNote = s.currentNote,
             currentHz = s.currentHz,
             sampleCount = s.sampleCount,

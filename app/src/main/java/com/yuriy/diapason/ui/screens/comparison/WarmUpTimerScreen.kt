@@ -28,10 +28,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yuriy.diapason.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,10 +47,13 @@ fun WarmUpTimerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Warm-up") },
+                title = { Text(stringResource(R.string.compare_warmup_title)) },
                 navigationIcon = {
                     IconButton(onClick = onExit) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Exit")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cd_exit),
+                        )
                     }
                 }
             )
@@ -65,13 +70,13 @@ fun WarmUpTimerScreen(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = "Baseline recorded.",
+                text = stringResource(R.string.compare_warmup_baseline_done),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "Now warm up your voice, then record again.",
+                text = stringResource(R.string.compare_warmup_prompt),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -80,13 +85,12 @@ fun WarmUpTimerScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Timer display ────────────────────────────────────────────────
             Icon(
                 imageVector = Icons.Filled.Timer,
                 contentDescription = null,
                 tint = if (isRunning) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(48.dp),
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -100,7 +104,7 @@ fun WarmUpTimerScreen(
             if (!isRunning && remainingSeconds > 0) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Press Start when you're ready to begin the timer.",
+                    text = stringResource(R.string.compare_warmup_timer_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -108,7 +112,7 @@ fun WarmUpTimerScreen(
             } else if (isRunning) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Timer running…",
+                    text = stringResource(R.string.compare_warmup_timer_running),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -118,9 +122,8 @@ fun WarmUpTimerScreen(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            // ── Warm-up guidance ─────────────────────────────────────────────
             Text(
-                text = "Suggested warm-up exercises",
+                text = stringResource(R.string.compare_warmup_exercises_heading),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.fillMaxWidth(),
@@ -128,39 +131,34 @@ fun WarmUpTimerScreen(
             Spacer(Modifier.height(12.dp))
 
             WarmUpCard(
-                minuteRange = "0–1 min",
-                title = "Lip trills",
-                body = "Blow air through loosely closed lips to make them vibrate. " +
-                        "Slide gently up and down your range."
+                minuteRange = stringResource(R.string.compare_warmup_card1_range),
+                title = stringResource(R.string.compare_warmup_card1_title),
+                body = stringResource(R.string.compare_warmup_card1_body),
             )
             WarmUpCard(
-                minuteRange = "1–2 min",
-                title = "Humming",
-                body = "Hum on a comfortable pitch with your mouth closed. " +
-                        "Move slowly up and down a fifth."
+                minuteRange = stringResource(R.string.compare_warmup_card2_range),
+                title = stringResource(R.string.compare_warmup_card2_title),
+                body = stringResource(R.string.compare_warmup_card2_body),
             )
             WarmUpCard(
-                minuteRange = "2–3 min",
-                title = "Five-note scales",
-                body = "Sing 'mah-may-mee-mo-moo' on a five-note ascending scale. " +
-                        "Start in mid-range, step up a half-step each repeat."
+                minuteRange = stringResource(R.string.compare_warmup_card3_range),
+                title = stringResource(R.string.compare_warmup_card3_title),
+                body = stringResource(R.string.compare_warmup_card3_body),
             )
             WarmUpCard(
-                minuteRange = "3–4 min",
-                title = "Octave slides",
-                body = "On a comfortable vowel, slide from a comfortable low note to " +
-                        "a comfortable high note and back. Keep it easy — no forcing."
+                minuteRange = stringResource(R.string.compare_warmup_card4_range),
+                title = stringResource(R.string.compare_warmup_card4_title),
+                body = stringResource(R.string.compare_warmup_card4_body),
             )
             WarmUpCard(
-                minuteRange = "4–5 min",
-                title = "Gentle sustained notes",
-                body = "Hold 3–4 comfortable notes for 3 seconds each. " +
-                        "These are the same sustained notes Diapason will detect."
+                minuteRange = stringResource(R.string.compare_warmup_card5_range),
+                title = stringResource(R.string.compare_warmup_card5_title),
+                body = stringResource(R.string.compare_warmup_card5_body),
             )
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "These are general suggestions only. Follow your own warm-up routine if you have one.",
+                text = stringResource(R.string.compare_warmup_disclaimer),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
@@ -173,27 +171,32 @@ fun WarmUpTimerScreen(
                     onClick = onStartTimer,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
+                        .height(52.dp),
                 ) {
-                    Text("Start 5-Minute Timer")
+                    Text(stringResource(R.string.compare_warmup_btn_start_timer))
                 }
                 Spacer(Modifier.height(8.dp))
             }
 
             FilledTonalButton(
                 onClick = onSkip,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (isRunning) "Skip Timer & Start Retest" else "Skip Timer")
+                Text(
+                    stringResource(
+                        if (isRunning) R.string.compare_warmup_btn_skip_running
+                        else R.string.compare_warmup_btn_skip_idle,
+                    )
+                )
             }
 
             Spacer(Modifier.height(8.dp))
 
             OutlinedButton(
                 onClick = onExit,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Exit Comparison")
+                Text(stringResource(R.string.compare_warmup_btn_exit))
             }
 
             Spacer(Modifier.height(24.dp))
@@ -207,7 +210,7 @@ private fun WarmUpCard(minuteRange: String, title: String, body: String) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
+            .padding(bottom = 8.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(

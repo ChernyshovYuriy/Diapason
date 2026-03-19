@@ -263,4 +263,28 @@
 	sesiones reflejan la medición, no resultados fisiológicos o de entrenamiento garantizados.</string>
     <string name="compare_result_btn_done">Hecho</string>
     <string name="compare_result_btn_again">Comparar de nuevo</string>
+    <string name="cd_back">Atrás</string>
+    <string name="cd_exit">Salir</string>
+    <string name="compare_record_btn_start">Iniciar grabación</string>
+    <string name="compare_record_listening">Escuchando…</string>
+    <string name="compare_warmup_card1_range">0–1 min</string>
+    <string name="compare_warmup_card1_title">Trinos de labios</string>
+    <string name="compare_warmup_card1_body">Sopla aire a través de los labios ligeramente cerrados para hacerlos vibrar.
+    Deslízate suavemente hacia arriba y hacia abajo por tu rango.</string>
+    <string name="compare_warmup_card2_range">1–2 min</string>
+    <string name="compare_warmup_card2_title">Zumbido</string>
+    <string name="compare_warmup_card2_body">Tararea en una nota cómoda con la boca cerrada.
+    Sube y baja lentamente una quinta.</string>
+    <string name="compare_warmup_card3_range">2–3 min</string>
+    <string name="compare_warmup_card3_title">Escalas de cinco notas</string>
+    <string name="compare_warmup_card3_body">Canta \"mah-may-mee-mo-moo\" en una escala ascendente de cinco notas.
+    Empieza en el registro medio y sube medio tono en cada repetición.</string>
+    <string name="compare_warmup_card4_range">3–4 min</string>
+    <string name="compare_warmup_card4_title">Deslizamientos de octava</string>
+    <string name="compare_warmup_card4_body">Con una vocal cómoda, deslízate desde una nota grave cómoda
+    hasta una nota aguda cómoda y vuelve. Hazlo con suavidad, sin forzar.</string>
+    <string name="compare_warmup_card5_range">4–5 min</string>
+    <string name="compare_warmup_card5_title">Notas sostenidas suaves</string>
+    <string name="compare_warmup_card5_body">Mantén 3 o 4 notas cómodas durante 3 segundos cada una.
+    Son las mismas notas sostenidas que Diapason detectará.</string>
 </resources>

@@ -265,4 +265,28 @@
 	sessions reflètent la mesure, et non des résultats physiologiques ou d’entraînement garantis.</string>
     <string name="compare_result_btn_done">Terminé</string>
     <string name="compare_result_btn_again">Comparer à nouveau</string>
+    <string name="cd_back">Retour</string>
+    <string name="cd_exit">Quitter</string>
+    <string name="compare_record_btn_start">Commencer l’enregistrement</string>
+    <string name="compare_record_listening">Écoute…</string>
+    <string name="compare_warmup_card1_range">0–1 min</string>
+    <string name="compare_warmup_card1_title">Trilles des lèvres</string>
+    <string name="compare_warmup_card1_body">Soufflez de l’air à travers des lèvres légèrement fermées pour les faire vibrer.
+    Glissez doucement vers le haut et le bas de votre tessiture.</string>
+    <string name="compare_warmup_card2_range">1–2 min</string>
+    <string name="compare_warmup_card2_title">Bourdonnement</string>
+    <string name="compare_warmup_card2_body">Fredonnez sur une hauteur confortable, bouche fermée.
+    Montez et descendez lentement d’une quinte.</string>
+    <string name="compare_warmup_card3_range">2–3 min</string>
+    <string name="compare_warmup_card3_title">Gammes de cinq notes</string>
+    <string name="compare_warmup_card3_body">Chantez \"mah-may-mee-mo-moo\" sur une gamme ascendante de cinq notes.
+    Commencez dans le médium et montez d’un demi-ton à chaque répétition.</string>
+    <string name="compare_warmup_card4_range">3–4 min</string>
+    <string name="compare_warmup_card4_title">Glissandos d’octave</string>
+    <string name="compare_warmup_card4_body">Sur une voyelle confortable, glissez d’une note grave confortable
+    vers une note aiguë confortable, puis revenez. Gardez cela facile, sans forcer.</string>
+    <string name="compare_warmup_card5_range">4–5 min</string>
+    <string name="compare_warmup_card5_title">Notes tenues en douceur</string>
+    <string name="compare_warmup_card5_body">Tenez 3 à 4 notes confortables pendant 3 secondes chacune.
+    Ce sont les mêmes notes tenues que Diapason détectera.</string>
 </resources>

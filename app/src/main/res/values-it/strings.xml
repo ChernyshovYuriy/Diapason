@@ -265,4 +265,28 @@
 	sessioni riflettono la misurazione, non esiti fisiologici o di allenamento garantiti.</string>
     <string name="compare_result_btn_done">Fatto</string>
     <string name="compare_result_btn_again">Confronta di nuovo</string>
+    <string name="cd_back">Indietro</string>
+    <string name="cd_exit">Esci</string>
+    <string name="compare_record_btn_start">Avvia registrazione</string>
+    <string name="compare_record_listening">In ascolto…</string>
+    <string name="compare_warmup_card1_range">0–1 min</string>
+    <string name="compare_warmup_card1_title">Trilli con le labbra</string>
+    <string name="compare_warmup_card1_body">Soffia aria attraverso le labbra leggermente chiuse per farle vibrare.
+    Scivola delicatamente su e giù per la tua estensione.</string>
+    <string name="compare_warmup_card2_range">1–2 min</string>
+    <string name="compare_warmup_card2_title">Mormorio</string>
+    <string name="compare_warmup_card2_body">Canticchia su un tono comodo con la bocca chiusa.
+    Muoviti lentamente su e giù di una quinta.</string>
+    <string name="compare_warmup_card3_range">2–3 min</string>
+    <string name="compare_warmup_card3_title">Scale di cinque note</string>
+    <string name="compare_warmup_card3_body">Canta \"mah-may-mee-mo-moo\" su una scala ascendente di cinque note.
+    Inizia nel registro medio e sali di un semitono a ogni ripetizione.</string>
+    <string name="compare_warmup_card4_range">3–4 min</string>
+    <string name="compare_warmup_card4_title">Glissati d’ottava</string>
+    <string name="compare_warmup_card4_body">Su una vocale comoda, scivola da una nota bassa comoda
+    a una nota alta comoda e ritorno. Mantieni tutto leggero, senza forzare.</string>
+    <string name="compare_warmup_card5_range">4–5 min</string>
+    <string name="compare_warmup_card5_title">Note tenute leggere</string>
+    <string name="compare_warmup_card5_body">Tieni 3–4 note comode per 3 secondi ciascuna.
+    Sono le stesse note tenute che Diapason rileverà.</string>
 </resources>

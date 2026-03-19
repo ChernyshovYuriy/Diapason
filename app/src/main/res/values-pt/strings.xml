@@ -266,4 +266,28 @@ Baixe o Diapason: %4$s</string>
 	sessões refletem a medição, não resultados fisiológicos ou de treino garantidos.</string>
     <string name="compare_result_btn_done">Concluído</string>
     <string name="compare_result_btn_again">Comparar novamente</string>
+    <string name="cd_back">Voltar</string>
+    <string name="cd_exit">Sair</string>
+    <string name="compare_record_btn_start">Iniciar gravação</string>
+    <string name="compare_record_listening">Ouvindo…</string>
+    <string name="compare_warmup_card1_range">0–1 min</string>
+    <string name="compare_warmup_card1_title">Trilos labiais</string>
+    <string name="compare_warmup_card1_body">Solte o ar através dos lábios levemente fechados para fazê-los vibrar.
+    Deslize suavemente para cima e para baixo pela sua extensão.</string>
+    <string name="compare_warmup_card2_range">1–2 min</string>
+    <string name="compare_warmup_card2_title">Humming</string>
+    <string name="compare_warmup_card2_body">Hum com uma nota confortável e a boca fechada.
+    Suba e desça lentamente uma quinta.</string>
+    <string name="compare_warmup_card3_range">2–3 min</string>
+    <string name="compare_warmup_card3_title">Escalas de cinco notas</string>
+    <string name="compare_warmup_card3_body">Cante \"mah-may-mee-mo-moo\" em uma escala ascendente de cinco notas.
+    Comece no registro médio e suba meio tom a cada repetição.</string>
+    <string name="compare_warmup_card4_range">3–4 min</string>
+    <string name="compare_warmup_card4_title">Deslizamentos de oitava</string>
+    <string name="compare_warmup_card4_body">Em uma vogal confortável, deslize de uma nota grave confortável
+    para uma nota aguda confortável e volte. Faça isso sem esforço, sem forçar.</string>
+    <string name="compare_warmup_card5_range">4–5 min</string>
+    <string name="compare_warmup_card5_title">Notas sustentadas suaves</string>
+    <string name="compare_warmup_card5_body">Sustente 3–4 notas confortáveis por 3 segundos cada.
+    São as mesmas notas sustentadas que o Diapason irá detectar.</string>
 </resources>

@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yuriy.diapason.R
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.comparison.ComparisonResult
 import com.yuriy.diapason.comparison.HzDelta
@@ -48,7 +49,7 @@ fun CompareResultScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Comparison Result") })
+            TopAppBar(title = { Text(stringResource(R.string.compare_result_title)) })
         }
     ) { padding ->
         Column(
@@ -56,7 +57,7 @@ fun CompareResultScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 20.dp),
         ) {
             Spacer(Modifier.height(8.dp))
 
@@ -64,51 +65,53 @@ fun CompareResultScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Primary: comfortable range ────────────────────────────────────
-            SectionLabel("Comfortable Range")
+            SectionLabel(stringResource(R.string.compare_result_section_comfortable))
             ComfortableRangeCard(result)
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Secondary: detected extremes ─────────────────────────────────
-            SectionLabel("Detected Extremes")
+            SectionLabel(stringResource(R.string.compare_result_section_extremes))
             DetectedExtremesCard(result)
 
-            // ── Passaggio (optional) ─────────────────────────────────────────
             result.passaggio?.let { passaggio ->
                 Spacer(Modifier.height(16.dp))
-                SectionLabel("Estimated Passaggio")
+                SectionLabel(stringResource(R.string.compare_result_section_passaggio))
                 PassaggioCard(passaggio)
             }
 
-            // ── Voice type change (when both sessions produced a match) ───────
             val beforeMatch = result.beforeTopMatch
             val afterMatch = result.afterTopMatch
             if (beforeMatch != null && afterMatch != null) {
                 val beforeName = stringResource(beforeMatch.fach.nameRes)
                 val afterName = stringResource(afterMatch.fach.nameRes)
                 Spacer(Modifier.height(16.dp))
-                SectionLabel("Voice Type Match")
+                SectionLabel(stringResource(R.string.compare_result_section_voice_type))
                 VoiceTypeCard(
                     beforeName = beforeName,
                     afterName = afterName,
-                    beforeScore = "${beforeMatch.score}/${beforeMatch.maxScore}",
-                    afterScore = "${afterMatch.score}/${afterMatch.maxScore}",
+                    beforeScore = stringResource(
+                        R.string.results_score_format,
+                        beforeMatch.score,
+                        beforeMatch.maxScore
+                    ),
+                    afterScore = stringResource(
+                        R.string.results_score_format,
+                        afterMatch.score,
+                        afterMatch.maxScore
+                    ),
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Disclaimer ───────────────────────────────────────────────────
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f),
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "Based on these two sessions only. Changes between sessions reflect " +
-                            "measurement, not guaranteed physiological or training outcomes.",
+                    text = stringResource(R.string.compare_result_disclaimer),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
                     modifier = Modifier.padding(14.dp),
@@ -121,18 +124,18 @@ fun CompareResultScreen(
                 onClick = onDone,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(52.dp),
             ) {
-                Text("Done")
+                Text(stringResource(R.string.compare_result_btn_done))
             }
 
             Spacer(Modifier.height(8.dp))
 
             FilledTonalButton(
                 onClick = onCompareAgain,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Compare Again")
+                Text(stringResource(R.string.compare_result_btn_again))
             }
 
             Spacer(Modifier.height(32.dp))
@@ -151,7 +154,7 @@ private fun SummaryHeadline(result: ComparisonResult) {
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -161,23 +164,23 @@ private fun SummaryHeadline(result: ComparisonResult) {
                 Icons.Filled.CompareArrows,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(end = 12.dp)
+                modifier = Modifier.padding(end = 12.dp),
             )
             Column {
                 Text(
-                    text = "Two sessions recorded",
+                    text = stringResource(R.string.compare_result_sessions_recorded),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Before warm-up comfortable range: $comfBefore",
+                    text = stringResource(R.string.compare_result_before_range, comfBefore),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                 )
                 Text(
-                    text = "After warm-up comfortable range:  $comfAfter",
+                    text = stringResource(R.string.compare_result_after_range, comfAfter),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                 )
@@ -190,24 +193,22 @@ private fun SummaryHeadline(result: ComparisonResult) {
 private fun ComfortableRangeCard(result: ComparisonResult) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             CompareRow(
-                label = "Lower end (P20)",
+                label = stringResource(R.string.compare_result_label_comfortable_low),
                 before = FachClassifier.hzToNoteName(result.comfortableLow.beforeHz),
                 after = FachClassifier.hzToNoteName(result.comfortableLow.afterHz),
                 delta = result.comfortableLow,
-                // Lower boundary going DOWN means comfortable range widened
                 positiveWhenDown = true,
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             CompareRow(
-                label = "Upper end (P80)",
+                label = stringResource(R.string.compare_result_label_comfortable_high),
                 before = FachClassifier.hzToNoteName(result.comfortableHigh.beforeHz),
                 after = FachClassifier.hzToNoteName(result.comfortableHigh.afterHz),
                 delta = result.comfortableHigh,
-                // Upper boundary going UP means comfortable range widened
                 positiveWhenDown = false,
             )
         }
@@ -218,11 +219,11 @@ private fun ComfortableRangeCard(result: ComparisonResult) {
 private fun DetectedExtremesCard(result: ComparisonResult) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             CompareRow(
-                label = "Lowest detected",
+                label = stringResource(R.string.compare_result_label_detected_min),
                 before = FachClassifier.hzToNoteName(result.detectedMin.beforeHz),
                 after = FachClassifier.hzToNoteName(result.detectedMin.afterHz),
                 delta = result.detectedMin,
@@ -230,7 +231,7 @@ private fun DetectedExtremesCard(result: ComparisonResult) {
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             CompareRow(
-                label = "Highest detected",
+                label = stringResource(R.string.compare_result_label_detected_max),
                 before = FachClassifier.hzToNoteName(result.detectedMax.beforeHz),
                 after = FachClassifier.hzToNoteName(result.detectedMax.afterHz),
                 delta = result.detectedMax,
@@ -244,10 +245,10 @@ private fun DetectedExtremesCard(result: ComparisonResult) {
 private fun PassaggioCard(passaggio: HzDelta) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         CompareRow(
-            label = "Passaggio estimate",
+            label = stringResource(R.string.compare_result_label_passaggio),
             before = FachClassifier.hzToNoteName(passaggio.beforeHz),
             after = FachClassifier.hzToNoteName(passaggio.afterHz),
             delta = passaggio,
@@ -266,7 +267,7 @@ private fun VoiceTypeCard(
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier
@@ -275,17 +276,17 @@ private fun VoiceTypeCard(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             SessionColumn(
-                sessionLabel = "Before warm-up",
+                sessionLabel = stringResource(R.string.compare_result_before_label),
                 voiceType = beforeName,
                 score = beforeScore,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             Spacer(Modifier.width(8.dp))
             SessionColumn(
-                sessionLabel = "After warm-up",
+                sessionLabel = stringResource(R.string.compare_result_after_label),
                 voiceType = afterName,
                 score = afterScore,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -323,15 +324,6 @@ private fun SessionColumn(
     }
 }
 
-/**
- * One comparison row: label | before → after | colour-coded arrow.
- *
- * [positiveWhenDown]: true when a lower "after" value means the range widened
- * (i.e. the floor went down). False when a higher "after" means widening.
- *
- * Arrow is coloured with [MaterialTheme.colorScheme.primary] when the change
- * widens range, [onSurfaceVariant] otherwise, and neutral when sub-semitone.
- */
 @Composable
 private fun CompareRow(
     label: String,
@@ -367,7 +359,7 @@ private fun CompareRow(
             },
             contentDescription = null,
             tint = deltaColour(delta, positiveWhenDown),
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
         )
         Text(
             text = after,

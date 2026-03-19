@@ -267,4 +267,28 @@ Get Diapason: %4$s</string>
         sessions reflect measurement, not guaranteed physiological or training outcomes.</string>
     <string name="compare_result_btn_done">Done</string>
     <string name="compare_result_btn_again">Compare Again</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_exit">Exit</string>
+    <string name="compare_record_btn_start">Start Recording</string>
+    <string name="compare_record_listening">Listening…</string>
+    <string name="compare_warmup_card1_range">0–1 min</string>
+    <string name="compare_warmup_card1_title">Lip trills</string>
+    <string name="compare_warmup_card1_body">Blow air through loosely closed lips to make them vibrate.
+        Slide gently up and down your range.</string>
+    <string name="compare_warmup_card2_range">1–2 min</string>
+    <string name="compare_warmup_card2_title">Humming</string>
+    <string name="compare_warmup_card2_body">Hum on a comfortable pitch with your mouth closed.
+        Move slowly up and down a fifth.</string>
+    <string name="compare_warmup_card3_range">2–3 min</string>
+    <string name="compare_warmup_card3_title">Five-note scales</string>
+    <string name="compare_warmup_card3_body">Sing \'mah-may-mee-mo-moo\' on a five-note ascending scale.
+        Start in mid-range, step up a half-step each repeat.</string>
+    <string name="compare_warmup_card4_range">3–4 min</string>
+    <string name="compare_warmup_card4_title">Octave slides</string>
+    <string name="compare_warmup_card4_body">On a comfortable vowel, slide from a comfortable low note
+        to a comfortable high note and back. Keep it easy — no forcing.</string>
+    <string name="compare_warmup_card5_range">4–5 min</string>
+    <string name="compare_warmup_card5_title">Gentle sustained notes</string>
+    <string name="compare_warmup_card5_body">Hold 3–4 comfortable notes for 3 seconds each.
+        These are the same sustained notes Diapason will detect.</string>
 </resources>

@@ -39,16 +39,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yuriy.diapason.R
 
-/**
- * Generic recording screen for baseline and retest stages.
- * When [isRecording] is true the mic is already active; shows Stop button.
- * When false (e.g. retest waiting for user to tap Start), shows Start button.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompareRecordScreen(
@@ -64,14 +61,16 @@ fun CompareRecordScreen(
     onStop: () -> Unit,
     onExit: () -> Unit,
 ) {
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(label) },
                 navigationIcon = {
                     IconButton(onClick = onExit) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Exit")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cd_exit),
+                        )
                     }
                 }
             )
@@ -96,52 +95,58 @@ fun CompareRecordScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Pitch display circle
             PitchCircle(note = currentNote, isRecording = isRecording)
 
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = statusMessage.ifBlank { "Listening…" },
+                text = statusMessage.ifBlank { stringResource(R.string.compare_record_listening) },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp),
             )
 
-            // Stats row
             if (isRecording) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    MiniStatCard("Samples", sampleCount.toString())
                     MiniStatCard(
-                        "Hz",
-                        if (currentHz > 0f) "%.1f".format(currentHz) else "—"
+                        stringResource(R.string.analyze_stat_samples),
+                        sampleCount.toString()
+                    )
+                    MiniStatCard(
+                        stringResource(R.string.analyze_stat_hz),
+                        if (currentHz > 0f) "%.1f".format(currentHz) else "—",
                     )
                 }
             }
 
             Spacer(Modifier.weight(1f))
 
-            // Start button — shown when waiting to begin
             if (!isRecording) {
                 Button(
                     onClick = onStart,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(56.dp),
                 ) {
                     Icon(
                         Icons.Filled.Mic,
                         contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = 8.dp),
                     )
-                    Text("Start Recording", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        stringResource(R.string.compare_record_btn_start),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
                 }
             } else {
-                PulsingStopButton(onClick = onStop)
+                PulsingStopButton(
+                    label = stringResource(R.string.compare_record_btn_stop),
+                    onClick = onStop,
+                )
             }
 
             Spacer(Modifier.height(24.dp))
@@ -159,7 +164,7 @@ private fun PitchCircle(note: String, isRecording: Boolean) {
                     width = 2.dp,
                     color = if (isRecording) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
                     else MaterialTheme.colorScheme.surfaceVariant,
-                    shape = CircleShape
+                    shape = CircleShape,
                 )
         )
         Box(
@@ -169,9 +174,9 @@ private fun PitchCircle(note: String, isRecording: Boolean) {
                     color = MaterialTheme.colorScheme.primaryContainer.copy(
                         alpha = if (isRecording) 0.25f else 0.12f
                     ),
-                    shape = CircleShape
+                    shape = CircleShape,
                 ),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = note,
@@ -184,16 +189,16 @@ private fun PitchCircle(note: String, isRecording: Boolean) {
 }
 
 @Composable
-private fun PulsingStopButton(onClick: () -> Unit) {
+private fun PulsingStopButton(label: String, onClick: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.07f,
         animationSpec = infiniteRepeatable(
             animation = tween(700, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+            repeatMode = RepeatMode.Reverse,
         ),
-        label = "scale"
+        label = "scale",
     )
     Button(
         onClick = onClick,
@@ -201,10 +206,10 @@ private fun PulsingStopButton(onClick: () -> Unit) {
             .fillMaxWidth()
             .height(56.dp)
             .scale(scale),
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
     ) {
         Icon(Icons.Filled.Stop, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-        Text("Stop Recording", style = MaterialTheme.typography.titleMedium)
+        Text(label, style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -212,13 +217,13 @@ private fun PulsingStopButton(onClick: () -> Unit) {
 private fun MiniStatCard(label: String, value: String) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         ),
-        modifier = Modifier.padding(4.dp)
+        modifier = Modifier.padding(4.dp),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Text(

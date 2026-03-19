@@ -204,4 +204,15 @@ Get Diapason: %4$s</string>
     <string name="share_clipboard_label">Diapason voice type result</string>
     <string name="share_clipboard_toast">Text copied — paste it if the app doesn\'t fill it automatically</string>
     <string name="share_text">Ever wondered what your singing voice type is? 🎶\nI just found out mine is: %1$s\nDetected range: %2$s–%3$s · Comfortable zone: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
+    <!-- History screen -->
+    <string name="nav_history">History</string>
+    <string name="history_title">History</string>
+    <string name="history_subtitle">Your past voice analyses, newest first</string>
+    <string name="history_empty_heading">No saved sessions yet</string>
+    <string name="history_empty_body">Complete a voice analysis to see your history</string>
+    <string name="history_label_comfortable_range">Comfortable range</string>
+    <string name="history_label_detected_extremes">Detected extremes</string>
+    <string name="history_label_passaggio">Passaggio</string>
+    <string name="history_range_format">%1$s – %2$s</string>
+    <string name="history_confidence_format">%1$d / %2$d</string>
 </resources>

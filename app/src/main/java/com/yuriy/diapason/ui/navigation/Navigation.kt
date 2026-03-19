@@ -3,10 +3,12 @@ package com.yuriy.diapason.ui.navigation
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.outlined.GraphicEq
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.MenuBook
@@ -18,6 +20,7 @@ sealed class Screen(val route: String) {
     object Analyze : Screen("analyze")
     object Guide : Screen("guide")
     object VoiceTypes : Screen("voice_types")
+    object History : Screen("history")
     object About : Screen("about")
 
     // Full-screen destinations (pushed on top)
@@ -50,6 +53,12 @@ val bottomNavItems = listOf(
         label = R.string.nav_voice_types,
         selectedIcon = Icons.Filled.LibraryMusic,
         unselectedIcon = Icons.Outlined.LibraryMusic
+    ),
+    BottomNavItem(
+        screen = Screen.History,
+        label = R.string.nav_history,
+        selectedIcon = Icons.Filled.History,
+        unselectedIcon = Icons.Outlined.History
     ),
     BottomNavItem(
         screen = Screen.About,

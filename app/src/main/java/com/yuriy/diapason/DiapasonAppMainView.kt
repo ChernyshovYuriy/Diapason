@@ -24,6 +24,8 @@ import com.yuriy.diapason.ui.screens.about.AboutScreen
 import com.yuriy.diapason.ui.screens.analyze.AnalyzeScreen
 import com.yuriy.diapason.ui.screens.analyze.AnalyzeViewModel
 import com.yuriy.diapason.ui.screens.guide.GuideScreen
+import com.yuriy.diapason.ui.screens.history.HistoryScreen
+import com.yuriy.diapason.ui.screens.history.HistoryViewModel
 import com.yuriy.diapason.ui.screens.results.ResultsScreen
 import com.yuriy.diapason.ui.screens.voicetypes.VoiceTypesScreen
 
@@ -99,6 +101,12 @@ fun DiapasonAppMainView() {
             // ── Voice Types ──────────────────────────────────────────────────
             composable(Screen.VoiceTypes.route) {
                 VoiceTypesScreen()
+            }
+
+            // ── History ──────────────────────────────────────────────────────
+            composable(Screen.History.route) {
+                val historyViewModel: HistoryViewModel = viewModel()
+                HistoryScreen(viewModel = historyViewModel)
             }
 
             // ── About ────────────────────────────────────────────────────────

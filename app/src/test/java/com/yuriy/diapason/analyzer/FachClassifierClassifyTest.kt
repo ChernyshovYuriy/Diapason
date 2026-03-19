@@ -379,4 +379,80 @@ class FachClassifierClassifyTest {
             )
         }
     }
+
+    // ── Determinism ───────────────────────────────────────────────────────────
+
+    /**
+     * [FachClassifier.classify] is a pure function: calling it twice with the
+     * same [VoiceProfile] must return an identical ranked list.  Non-determinism
+     * (e.g. from an unordered map or a mutable sort) would cause the UI to show
+     * a different "best match" on each navigation to the results screen.
+     */
+    @Test
+    fun `classify is deterministic - same profile always produces the same ordered results`() {
+        val profile = perfectProfileFor(fachByRange(130f, 523f))  // Lyric Tenor
+
+        val first  = FachClassifier.classify(profile)
+        val second = FachClassifier.classify(profile)
+
+        assertEquals("classify must return the same number of results on every call", first.size, second.size)
+        first.zip(second).forEachIndexed { index, (a, b) ->
+            assertEquals(
+                "Result at rank $index must have the same score on both calls " +
+                        "(${a.fach.rangeMinHz}–${a.fach.rangeMaxHz})",
+                a.score, b.score
+            )
+            assertEquals(
+                "Result at rank $index must point to the same fach on both calls",
+                a.fach.rangeMinHz, b.fach.rangeMinHz, 0.01f
+            )
+            assertEquals(
+                "Result at rank $index rangeMax must match",
+                a.fach.rangeMaxHz, b.fach.rangeMaxHz, 0.01f
+            )
+        }
+    }
+
+    // ── Score breakdown content ───────────────────────────────────────────────
+
+    /**
+     * Awarded points (score > 0) must use a "+" prefix in the breakdown entry,
+     * and zero points must use a "  0" prefix.  This convention is relied on
+     * by the Logcat output and any future UI that renders the breakdown.
+     */
+    @Test
+    fun `score breakdown entries for awarded points start with a plus sign`() {
+        // A perfect-match profile will have "+3", "+2", etc. for every dimension.
+        val fach = fachByRange(247f, 1047f)  // Lyric Soprano
+        val results = FachClassifier.classify(perfectProfileFor(fach))
+        val winner = results.first()
+
+        assertEquals("Winner should score 14/14", 14, winner.score)
+
+        winner.scoreBreakdown.forEach { entry ->
+            assertTrue(
+                "Every breakdown entry for a perfect-match must start with '+' (got: '$entry')",
+                entry.trimStart().startsWith("+")
+            )
+        }
+    }
+
+    @Test
+    fun `score breakdown entries for zero points start with zero marker`() {
+        // Build a profile that perfectly matches Lyric Soprano.
+        // The Contrabass (Oktavist) fach will score 0 on every dimension.
+        val profile = perfectProfileFor(fachByRange(247f, 1047f))  // Lyric Soprano
+        val results = FachClassifier.classify(profile)
+
+        // Contrabass is rangeMin=43, rangeMax=220 — the furthest from a soprano
+        val contrabass = results.first { it.fach.rangeMinHz == 43f }
+
+        contrabass.scoreBreakdown.forEach { entry ->
+            assertTrue(
+                "Every breakdown entry for Contrabass against a soprano profile " +
+                        "should start with '  0' (got: '$entry')",
+                entry.startsWith("  0")
+            )
+        }
+    }
 }

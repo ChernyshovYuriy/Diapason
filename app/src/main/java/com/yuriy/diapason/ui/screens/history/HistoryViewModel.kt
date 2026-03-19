@@ -27,16 +27,27 @@ sealed interface HistoryUiState {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * [repository] has a default value that reads from [MainApp] so that the
- * standard [ViewModelProvider] factory works in production without any extra
- * setup. Tests pass a fake by supplying the parameter explicitly — the
- * Application passed in tests is never cast to [MainApp].
+ * Primary constructor is used by tests, which inject a fake [repository]
+ * directly — the [application] is never cast to [MainApp] in that path.
+ *
+ * The secondary no-repository constructor is the one
+ * [ViewModelProvider.AndroidViewModelFactory] calls in production; it
+ * resolves the repository from [MainApp] and delegates to the primary.
+ * Without this explicit secondary constructor, Kotlin default parameters
+ * only generate the two-arg JVM overload and the factory throws a
+ * [RuntimeException] at runtime.
  */
 class HistoryViewModel(
     application: Application,
-    private val repository: SessionRepository =
-        (application as MainApp).sessionRepository,
+    private val repository: SessionRepository,
 ) : AndroidViewModel(application) {
+
+    /** Called by [ViewModelProvider.AndroidViewModelFactory] in production. */
+    @Suppress("unused")
+    constructor(application: Application) : this(
+        application,
+        (application as MainApp).sessionRepository
+    )
 
     val uiState: StateFlow<HistoryUiState> = repository
         .observeAll()

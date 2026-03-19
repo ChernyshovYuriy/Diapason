@@ -212,4 +212,30 @@ class SessionMapperTest {
         val b = fullEntity(id = "id-b").toDomain()
         assertTrue(a != b)
     }
+
+    // ── passaggioHz = 0f sentinel ─────────────────────────────────────────────
+
+    /**
+     * [SessionRecord.passaggioHz] uses 0f as a sentinel meaning "unavailable".
+     * This value must survive the entity → domain → entity roundtrip unchanged
+     * so that the HistoryScreen can reliably test `passaggioHz > 0f` to decide
+     * whether to show the passaggio row.
+     */
+    @Test
+    fun `passaggioHz zero survives entity to domain mapping`() {
+        val entity = fullEntity().copy(passaggioHz = 0f)
+        assertEquals(0f, entity.toDomain().passaggioHz)
+    }
+
+    @Test
+    fun `passaggioHz zero survives domain to entity mapping`() {
+        val record = fullRecord().copy(passaggioHz = 0f)
+        assertEquals(0f, record.toEntity().passaggioHz)
+    }
+
+    @Test
+    fun `passaggioHz zero roundtrip entity to domain to entity is identity`() {
+        val original = fullEntity().copy(passaggioHz = 0f)
+        assertEquals(original, original.toDomain().toEntity())
+    }
 }

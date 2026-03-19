@@ -309,4 +309,57 @@ class FachClassifierTest {
         assertTrue("Detected min should capture the C4 cluster", detectedMin < 280f)
         assertTrue("Detected max should capture the B5 cluster", detectedMax > 900f)
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 8. hzToNoteName — out-of-MIDI-range fallback
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Frequencies that map to MIDI values outside [0, 127] (i.e. below C-1 or
+     * above G9) are outside the standard piano range.  The function falls back
+     * to returning the Hz value formatted as a plain string ("X Hz") rather
+     * than a note name.  This branch must not crash and must produce a
+     * human-readable, non-empty result.
+     */
+    @Test
+    fun `very high Hz above MIDI 127 returns Hz format string not a note name`() {
+        // MIDI 127 = G9 ≈ 12544 Hz.  Anything above this triggers the fallback.
+        val veryHigh = 15000f
+        val result = FachClassifier.hzToNoteName(veryHigh)
+
+        assertTrue(
+            "hzToNoteName($veryHigh) should contain the Hz value, got: '$result'",
+            result.contains("15000")
+        )
+        // Must not look like a standard note name (letter + octave number)
+        assertTrue(
+            "hzToNoteName($veryHigh) should not be a standard note name, got: '$result'",
+            result.contains("Hz")
+        )
+    }
+
+    @Test
+    fun `very low Hz below MIDI 0 returns Hz format string not a note name`() {
+        // C-1 ≈ 8.18 Hz (MIDI 0).  Below this the MIDI calculation goes negative.
+        val tooLow = 5f
+        val result = FachClassifier.hzToNoteName(tooLow)
+
+        assertTrue(
+            "hzToNoteName($tooLow) should contain the Hz value, got: '$result'",
+            result.contains("5")
+        )
+        assertTrue(
+            "hzToNoteName($tooLow) should not be a standard note name, got: '$result'",
+            result.contains("Hz")
+        )
+    }
+
+    @Test
+    fun `hzToNoteName fallback result is non-empty for extreme values`() {
+        listOf(1f, 3f, 20000f, 50000f).forEach { hz ->
+            val result = FachClassifier.hzToNoteName(hz)
+            assertTrue("hzToNoteName($hz) must return a non-empty string", result.isNotEmpty())
+            assertTrue("hzToNoteName($hz) must not return the dash sentinel", result != "—")
+        }
+    }
 }

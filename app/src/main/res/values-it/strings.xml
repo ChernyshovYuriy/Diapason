@@ -178,4 +178,91 @@
     <string name="share_clipboard_label">Risultato del tipo di voce Diapason</string>
     <string name="share_clipboard_toast">Testo copiato — incollalo se l\'app non lo inserisce automaticamente</string>
     <string name="share_text">Ti sei mai chiesto qual è il tuo vero tipo di voce? 🎶\nHo appena scoperto che il mio è: %1$s\nEstensione: %2$s–%3$s · Tessitura: %4$s–%5$s\n\nOra sono curioso — e il tuo?\nProva Diapason: %6$s</string>
+    <string name="results_section_comfortable_range">Intervallo confortevole</string>
+    <string name="results_section_detected_extremes">Estremi rilevati</string>
+    <string name="results_stat_comfortable_low">Estremo inferiore</string>
+    <string name="results_stat_comfortable_high">Estremo superiore</string>
+    <string name="results_session_note">Basato su questa sessione · solo note affidabili</string>
+    <string name="results_comfortable_range_hz">%1$.0f – %2$.0f Hz</string>
+    <string name="results_cd_share">Condividi risultato</string>
+    <string name="results_share_subject">Il mio risultato vocale Diapason</string>
+    <string name="results_share_chooser_title">Condividi il tuo risultato</string>
+    <string name="results_share_unknown_voice_type">Tipo di voce sconosciuto</string>
+    <string name="results_share_voice_type_format">%1$s (%2$s)</string>
+    <string name="results_share_template_viral_curiosity">Ti sei mai chiesto qual è davvero la tua voce di canto? 🎤
+	Ho testato la mia con Diapason e ho ottenuto: %1$s.
+	Estensione: %2$s. Zona confortevole: %3$s.
+	Ora sono curioso — e la tua?
+	Prova Diapason: %4$s</string>
+    <string name="results_share_template_confident_reveal">Ho appena fatto un controllo vocale con Diapason e il mio risultato è stato: %1$s 🎶
+	Estensione vocale: %2$s (zona confortevole %3$s).
+	Se canti, dovresti assolutamente provare anche la tua:
+	%4$s</string>
+    <string name="results_share_template_challenge_style">Sfida sul tipo di voce: ho provato Diapason e ho ottenuto %1$s 👀
+	La mia estensione rilevata è %2$s e la mia zona confortevole è %3$s.
+	Pensi che anche la tua ti sorprenderebbe?
+	Scarica Diapason: %4$s</string>
+    <string name="nav_history">Cronologia</string>
+    <string name="history_title">Cronologia</string>
+    <string name="history_subtitle">Le tue analisi vocali passate, dalla più recente</string>
+    <string name="history_empty_heading">Nessuna sessione salvata</string>
+    <string name="history_empty_body">Completa un’analisi vocale per vedere la tua cronologia</string>
+    <string name="history_label_comfortable_range">Intervallo confortevole</string>
+    <string name="history_label_detected_extremes">Estremi rilevati</string>
+    <string name="history_label_passaggio">Passaggio</string>
+    <string name="history_range_format">%1$s – %2$s</string>
+    <string name="history_confidence_format">%1$d / %2$d</string>
+    <string name="compare_btn_start">Confronta prima / dopo il riscaldamento</string>
+    <string name="compare_intro_title">Prima / dopo il riscaldamento</string>
+    <string name="compare_intro_headline">Confronta due sessioni</string>
+    <string name="compare_intro_body">Questo flusso registra la tua voce due volte — una prima del riscaldamento
+	e una dopo — così puoi confrontare le due sessioni.</string>
+    <string name="compare_intro_step1">Registrazione di base — canta su tutta la tua estensione</string>
+    <string name="compare_intro_step2">Timer di riscaldamento — 5 minuti di esercizi guidati</string>
+    <string name="compare_intro_step3">Nuova registrazione — ripeti lo stesso schema</string>
+    <string name="compare_intro_step4">Confronta le due sessioni affiancate</string>
+    <string name="compare_intro_disclaimer">Basato solo su queste sessioni. I risultati riflettono
+	la misurazione, non conclusioni mediche o di allenamento.</string>
+    <string name="compare_intro_btn_start">Avvia registrazione di base</string>
+    <string name="compare_intro_btn_cancel">Annulla</string>
+    <string name="compare_baseline_title">Prima del riscaldamento</string>
+    <string name="compare_baseline_instruction">Canta dalla tua nota più bassa a quella più alta, poi torna giù.</string>
+    <string name="compare_retest_title">Dopo il riscaldamento</string>
+    <string name="compare_retest_instruction">Ripeti lo stesso schema — dalla nota più bassa alla più alta, poi torna giù.</string>
+    <string name="compare_record_btn_stop">Interrompi registrazione</string>
+    <string name="compare_record_btn_exit">Esci dal confronto</string>
+    <string name="compare_insufficient_title">Dati insufficienti</string>
+    <string name="compare_insufficient_btn_retry">Riprova</string>
+    <string name="compare_insufficient_btn_exit">Esci dal confronto</string>
+    <string name="compare_warmup_title">Riscaldamento</string>
+    <string name="compare_warmup_baseline_done">Registrazione di base completata.</string>
+    <string name="compare_warmup_prompt">Ora riscalda la voce, poi registra di nuovo.</string>
+    <string name="compare_warmup_timer_hint">Premi Avvia quando sei pronto per iniziare il timer.</string>
+    <string name="compare_warmup_timer_running">Timer in esecuzione…</string>
+    <string name="compare_warmup_exercises_heading">Esercizi di riscaldamento suggeriti</string>
+    <string name="compare_warmup_disclaimer">Si tratta solo di suggerimenti generali. Segui la tua routine
+	di riscaldamento se ne hai una.</string>
+    <string name="compare_warmup_btn_start_timer">Avvia timer di 5 minuti</string>
+    <string name="compare_warmup_btn_skip_running">Salta timer &amp; avvia nuova prova</string>
+    <string name="compare_warmup_btn_skip_idle">Salta timer</string>
+    <string name="compare_warmup_btn_exit">Esci dal confronto</string>
+    <string name="compare_result_title">Risultato del confronto</string>
+    <string name="compare_result_sessions_recorded">Due sessioni registrate</string>
+    <string name="compare_result_before_range">Intervallo confortevole prima del riscaldamento: %1$s</string>
+    <string name="compare_result_after_range">Intervallo confortevole dopo il riscaldamento: %1$s</string>
+    <string name="compare_result_section_comfortable">Intervallo confortevole</string>
+    <string name="compare_result_section_extremes">Estremi rilevati</string>
+    <string name="compare_result_section_passaggio">Passaggio stimato</string>
+    <string name="compare_result_section_voice_type">Corrispondenza del tipo di voce</string>
+    <string name="compare_result_label_comfortable_low">Estremo inferiore (P20)</string>
+    <string name="compare_result_label_comfortable_high">Estremo superiore (P80)</string>
+    <string name="compare_result_label_detected_min">Nota più bassa rilevata</string>
+    <string name="compare_result_label_detected_max">Nota più alta rilevata</string>
+    <string name="compare_result_label_passaggio">Stima del passaggio</string>
+    <string name="compare_result_before_label">Prima del riscaldamento</string>
+    <string name="compare_result_after_label">Dopo il riscaldamento</string>
+    <string name="compare_result_disclaimer">Basato solo su queste due sessioni. I cambiamenti tra le
+	sessioni riflettono la misurazione, non esiti fisiologici o di allenamento garantiti.</string>
+    <string name="compare_result_btn_done">Fatto</string>
+    <string name="compare_result_btn_again">Confronta di nuovo</string>
 </resources>

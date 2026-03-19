@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -111,13 +110,14 @@ class WarmUpComparisonViewModelTest {
     // ── retryRetest ───────────────────────────────────────────────────────────
 
     @Test
-    fun `retryRetest from RetestInsufficient advances to Retest with isRecording false`() = runTest {
-        forceStage(ComparisonStage.RetestInsufficient("too short"))
-        viewModel.retryRetest()
-        val stage = viewModel.stage.value
-        assertTrue("Expected Retest but got $stage", stage is ComparisonStage.Retest)
-        assertFalse((stage as ComparisonStage.Retest).isRecording)
-    }
+    fun `retryRetest from RetestInsufficient advances to Retest with isRecording false`() =
+        runTest {
+            forceStage(ComparisonStage.RetestInsufficient("too short"))
+            viewModel.retryRetest()
+            val stage = viewModel.stage.value
+            assertTrue("Expected Retest but got $stage", stage is ComparisonStage.Retest)
+            assertFalse((stage as ComparisonStage.Retest).isRecording)
+        }
 
     // ── skipWarmUpTimer ───────────────────────────────────────────────────────
 
@@ -131,13 +131,14 @@ class WarmUpComparisonViewModelTest {
     }
 
     @Test
-    fun `skipWarmUpTimer from running WarmUp advances to Retest with isRecording false`() = runTest {
-        forceStage(ComparisonStage.WarmUp(remainingSeconds = 120, isRunning = true))
-        viewModel.skipWarmUpTimer()
-        val stage = viewModel.stage.value
-        assertTrue("Expected Retest but got $stage", stage is ComparisonStage.Retest)
-        assertFalse((stage as ComparisonStage.Retest).isRecording)
-    }
+    fun `skipWarmUpTimer from running WarmUp advances to Retest with isRecording false`() =
+        runTest {
+            forceStage(ComparisonStage.WarmUp(remainingSeconds = 120, isRunning = true))
+            viewModel.skipWarmUpTimer()
+            val stage = viewModel.stage.value
+            assertTrue("Expected Retest but got $stage", stage is ComparisonStage.Retest)
+            assertFalse((stage as ComparisonStage.Retest).isRecording)
+        }
 
     // ── startWarmUpTimer ──────────────────────────────────────────────────────
 
@@ -236,6 +237,9 @@ private class FakeSessionRepository : SessionRepository {
     override fun observeAll(): Flow<List<SessionRecord>> = _flow
     override suspend fun getAll(): List<SessionRecord> = saved.toList()
     override suspend fun getById(id: String): SessionRecord? = saved.find { it.id == id }
-    override suspend fun deleteById(id: String) { saved.removeAll { it.id == id } }
+    override suspend fun deleteById(id: String) {
+        saved.removeAll { it.id == id }
+    }
+
     override suspend fun count(): Int = saved.size
 }

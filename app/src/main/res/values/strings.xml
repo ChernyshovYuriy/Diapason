@@ -204,7 +204,6 @@ Get Diapason: %4$s</string>
     <string name="share_clipboard_label">Diapason voice type result</string>
     <string name="share_clipboard_toast">Text copied — paste it if the app doesn\'t fill it automatically</string>
     <string name="share_text">Ever wondered what your singing voice type is? 🎶\nI just found out mine is: %1$s\nDetected range: %2$s–%3$s · Comfortable zone: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
-    <!-- History screen -->
     <string name="nav_history">History</string>
     <string name="history_title">History</string>
     <string name="history_subtitle">Your past voice analyses, newest first</string>
@@ -215,8 +214,6 @@ Get Diapason: %4$s</string>
     <string name="history_label_passaggio">Passaggio</string>
     <string name="history_range_format">%1$s – %2$s</string>
     <string name="history_confidence_format">%1$d / %2$d</string>
-
-    <!-- Warm-up comparison flow -->
     <string name="compare_btn_start">Compare Before / After Warm-up</string>
     <string name="compare_intro_title">Before / After Warm-up</string>
     <string name="compare_intro_headline">Compare two sessions</string>
@@ -230,18 +227,15 @@ Get Diapason: %4$s</string>
         measurement, not medical or training conclusions.</string>
     <string name="compare_intro_btn_start">Start Baseline Recording</string>
     <string name="compare_intro_btn_cancel">Cancel</string>
-
     <string name="compare_baseline_title">Before Warm-up</string>
     <string name="compare_baseline_instruction">Sing from your lowest to highest note, then back down.</string>
     <string name="compare_retest_title">After Warm-up</string>
     <string name="compare_retest_instruction">Sing the same pattern — lowest to highest, then back down.</string>
     <string name="compare_record_btn_stop">Stop Recording</string>
     <string name="compare_record_btn_exit">Exit Comparison</string>
-
     <string name="compare_insufficient_title">Not Enough Data</string>
     <string name="compare_insufficient_btn_retry">Try Again</string>
     <string name="compare_insufficient_btn_exit">Exit Comparison</string>
-
     <string name="compare_warmup_title">Warm-up</string>
     <string name="compare_warmup_baseline_done">Baseline recorded.</string>
     <string name="compare_warmup_prompt">Now warm up your voice, then record again.</string>
@@ -254,7 +248,6 @@ Get Diapason: %4$s</string>
     <string name="compare_warmup_btn_skip_running">Skip Timer &amp; Start Retest</string>
     <string name="compare_warmup_btn_skip_idle">Skip Timer</string>
     <string name="compare_warmup_btn_exit">Exit Comparison</string>
-
     <string name="compare_result_title">Comparison Result</string>
     <string name="compare_result_sessions_recorded">Two sessions recorded</string>
     <string name="compare_result_before_range">Before warm-up comfortable range: %1$s</string>

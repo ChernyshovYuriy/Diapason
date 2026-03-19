@@ -3,6 +3,7 @@ package com.yuriy.diapason.analyzer
 import android.util.Log
 import kotlin.math.abs
 import kotlin.math.ln
+import kotlin.math.roundToInt
 
 private const val TAG = "FachClassifier"
 
@@ -13,7 +14,7 @@ object FachClassifier {
     fun hzToNoteName(hz: Float): String {
         if (hz <= 0f) return "—"
         val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-        val midi = (12 * ln(hz / 440.0) / ln(2.0) + 69).toInt()
+        val midi = (12 * ln(hz / 440.0) / ln(2.0) + 69).roundToInt()
         if (midi !in 0..127) return "%.0f Hz".format(hz)
         return "${noteNames[midi % 12]}${(midi / 12) - 1}"
     }

@@ -94,7 +94,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     fun startBaseline() {
         Log.i(TAG, "startBaseline()")
-        _stage.value = ComparisonStage.Baseline(statusMessage = str(R.string.analyze_status_listening))
+        _stage.value =
+            ComparisonStage.Baseline(statusMessage = str(R.string.analyze_status_listening))
         attachAnalyzerCallbacksForBaseline()
         analyzer.start(analyzerStrings())
     }
@@ -253,7 +254,12 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         analyzer.onPitchDetected = { hz, note ->
             _stage.update {
                 if (it is ComparisonStage.Retest)
-                    it.copy(currentNote = note, currentHz = hz, sampleCount = it.sampleCount + 1, isRecording = true)
+                    it.copy(
+                        currentNote = note,
+                        currentHz = hz,
+                        sampleCount = it.sampleCount + 1,
+                        isRecording = true
+                    )
                 else it
             }
         }

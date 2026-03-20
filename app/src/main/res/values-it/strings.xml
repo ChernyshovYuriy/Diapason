@@ -3,7 +3,7 @@
     <string name="app_tagline">Classificatore di estensione vocale</string>
     <string name="nav_analyze">Analizza</string>
     <string name="nav_guide">Guida</string>
-    <string name="nav_voice_types">Tipi di voce</string>
+    <string name="nav_voice_types">Tipi vocali</string>
     <string name="nav_about">Informazioni</string>
     <string name="analyze_idle_prompt">Premi Avvia e canta su tutta la tua estensione</string>
     <string name="analyze_complete">Analisi completata!</string>
@@ -49,7 +49,6 @@
     <string name="results_disclaimer">La classificazione Fach dipende anche da timbro e peso vocale,
         che richiedono un orecchio allenato. Usalo come punto di partenza informato — non come
         diagnosi definitiva. Un insegnante di canto fornirà sempre la valutazione più accurata.</string>
-    <string name="results_cd_back">Indietro</string>
     <string name="guide_title">Come usare Diapason</string>
     <string name="guide_subtitle">Segui questi passaggi per ottenere il risultato più accurato</string>
     <string name="guide_step1_title">Trova una stanza silenziosa</string>

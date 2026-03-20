@@ -7,6 +7,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -76,7 +77,13 @@ fun DiapasonAppMainView() {
                                     contentDescription = stringResource(item.label)
                                 )
                             },
-                            label = { Text(stringResource(item.label)) }
+                            label = {
+                                Text(
+                                    text = stringResource(item.label),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
                         )
                     }
                 }

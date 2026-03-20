@@ -22,7 +22,7 @@ data** — one `(hz, confidence)` pair per YIN frame.  Raw PCM is never stored.
 
 ## Step 1 — Run a development build and enable verbose logging
 
-`VoiceAnalyzer` emits one `Log.i` line per unique note change at
+`VoiceAnalyzer` emits one log line per unique note change at
 the `VoiceAnalyzer` tag.  A typical line looks like:
 
 ```

@@ -163,7 +163,7 @@ fun AnalyzeScreen(
                 StatCard(
                     label = stringResource(R.string.analyze_stat_hz),
                     value = if ((recording?.currentHz ?: 0f) > 0)
-                        "%.1f".format(recording?.currentHz) else "—"
+                        "%.1f".format(recording?.currentHz) else stringResource(R.string.no_pitch_placeholder)
                 )
             }
         }
@@ -314,7 +314,8 @@ private fun PreviousResultBanner(
 @Composable
 private fun PitchDisplay(uiState: AnalyzeUiState) {
     val isRecording = uiState is AnalyzeUiState.Recording
-    val note = (uiState as? AnalyzeUiState.Recording)?.currentNote ?: "—"
+    val note = (uiState as? AnalyzeUiState.Recording)?.currentNote
+        ?: stringResource(R.string.no_pitch_placeholder)
 
     Box(contentAlignment = Alignment.Center) {
         Box(

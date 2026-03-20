@@ -117,7 +117,7 @@ fun ResultsScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.results_cd_back)
+                            contentDescription = stringResource(R.string.cd_back)
                         )
                     }
                 },

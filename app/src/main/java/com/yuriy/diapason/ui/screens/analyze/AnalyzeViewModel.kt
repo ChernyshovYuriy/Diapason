@@ -1,7 +1,6 @@
 package com.yuriy.diapason.ui.screens.analyze
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuriy.diapason.MainApp
@@ -13,6 +12,7 @@ import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
+import com.yuriy.diapason.logging.AppLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -92,7 +92,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun startRecording() {
-        Log.i(TAG, "startRecording()")
+        AppLogger.i("$TAG startRecording()")
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_listening)
         )
@@ -106,7 +106,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun stopRecording() {
-        Log.i(TAG, "stopRecording()")
+        AppLogger.i("$TAG stopRecording()")
         if (!analyzer.isRunning) return
 
         _uiState.value = AnalyzeUiState.Recording(
@@ -149,8 +149,8 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 isPartial = false,
             )
             runCatching { repository.save(record) }
-                .onSuccess { Log.i(TAG, "Session saved: ${record.topFachKey} (${record.id})") }
-                .onFailure { Log.e(TAG, "Failed to save session", it) }
+                .onSuccess { AppLogger.i("$TAG Session saved: ${record.topFachKey} (${record.id})") }
+                .onFailure { AppLogger.e("$TAG Failed to save session", it) }
         }
     }
 

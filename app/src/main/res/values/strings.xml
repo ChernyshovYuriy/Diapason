@@ -54,7 +54,6 @@
     <string name="results_disclaimer">Fach classification also depends on timbre and vocal weight,
         which require a trained ear. Use this as an informed starting point — not a definitive
         diagnosis. A voice teacher will always give the most accurate assessment.</string>
-    <string name="results_cd_back">Back</string>
     <string name="guide_title">How to Use Diapason</string>
     <string name="guide_subtitle">Follow these steps for the most accurate result</string>
     <string name="guide_step1_title">Find a quiet room</string>

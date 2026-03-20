@@ -1,11 +1,9 @@
 package com.yuriy.diapason.analyzer
 
-import android.util.Log
+import com.yuriy.diapason.logging.AppLogger
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.roundToInt
-
-private const val TAG = "FachClassifier"
 
 object FachClassifier {
 
@@ -112,22 +110,19 @@ object FachClassifier {
      *   Passaggio proximity → 0–3 pts
      */
     fun classify(profile: VoiceProfile): List<FachMatch> {
-        Log.i(TAG, "═══════════════════════════════════════════════════")
-        Log.i(TAG, "  FACH CLASSIFICATION")
-        Log.i(
-            TAG,
+        AppLogger.i("═══════════════════════════════════════════════════")
+        AppLogger.i("  FACH CLASSIFICATION")
+        AppLogger.i(
             "  Detected   : ${hzToNoteName(profile.detectedMinHz)}–${hzToNoteName(profile.detectedMaxHz)}"
         )
-        Log.i(
-            TAG,
+        AppLogger.i(
             "  Comfortable: ${hzToNoteName(profile.comfortableLowHz)}–${hzToNoteName(profile.comfortableHighHz)}"
         )
-        Log.i(
-            TAG,
+        AppLogger.i(
             "  Passaggio  : ${hzToNoteName(profile.estimatedPassaggioHz)} (${profile.estimatedPassaggioHz.toInt()} Hz)"
         )
-        Log.i(TAG, "  Samples    : ${profile.sampleCount} over ${profile.durationSeconds}s")
-        Log.i(TAG, "───────────────────────────────────────────────────")
+        AppLogger.i("  Samples    : ${profile.sampleCount} over ${profile.durationSeconds}s")
+        AppLogger.i("───────────────────────────────────────────────────")
 
         val results = ALL_FACH.map { fach ->
             val breakdown = mutableListOf<String>()
@@ -223,15 +218,17 @@ object FachClassifier {
             FachMatch(fach = fach, score = score, scoreBreakdown = breakdown)
         }.sortedByDescending { it.score }
 
-        Log.i(TAG, "  FULL SCORING TABLE:")
-        results.forEach { Log.d(TAG, "  [%2d/14] fachRes=${it.fach.nameRes}".format(it.score)) }
-
-        Log.i(TAG, "  TOP 3 MATCHES:")
-        results.take(3).forEachIndexed { i, m ->
-            Log.i(TAG, "  #${i + 1}: fachRes=${m.fach.nameRes} — ${m.score}/14")
-            m.scoreBreakdown.forEach { Log.i(TAG, "         $it") }
+        AppLogger.i("  FULL SCORING TABLE:")
+        results.forEach {
+            AppLogger.d("  [%2d/14] fachRes=${it.fach.nameRes}".format(it.score))
         }
-        Log.i(TAG, "═══════════════════════════════════════════════════")
+
+        AppLogger.i("  TOP 3 MATCHES:")
+        results.take(3).forEachIndexed { i, m ->
+            AppLogger.i("  #${i + 1}: fachRes=${m.fach.nameRes} — ${m.score}/14")
+            m.scoreBreakdown.forEach { AppLogger.i("         $it") }
+        }
+        AppLogger.i("═══════════════════════════════════════════════════")
 
         return results
     }

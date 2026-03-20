@@ -118,7 +118,7 @@ fun CompareRecordScreen(
                     )
                     MiniStatCard(
                         stringResource(R.string.analyze_stat_hz),
-                        if (currentHz > 0f) "%.1f".format(currentHz) else "—",
+                        if (currentHz > 0f) "%.1f".format(currentHz) else stringResource(R.string.no_pitch_placeholder),
                     )
                 }
             }

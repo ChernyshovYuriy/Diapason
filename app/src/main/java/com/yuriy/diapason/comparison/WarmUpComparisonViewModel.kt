@@ -1,7 +1,6 @@
 package com.yuriy.diapason.comparison
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuriy.diapason.MainApp
@@ -13,6 +12,7 @@ import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
+import com.yuriy.diapason.logging.AppLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -93,7 +93,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     // ── Baseline ──────────────────────────────────────────────────────────────
 
     fun startBaseline() {
-        Log.i(TAG, "startBaseline()")
+        AppLogger.i("$TAG startBaseline()")
         _stage.value =
             ComparisonStage.Baseline(statusMessage = str(R.string.analyze_status_listening))
         attachAnalyzerCallbacksForBaseline()
@@ -101,7 +101,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     }
 
     fun stopBaseline() {
-        Log.i(TAG, "stopBaseline()")
+        AppLogger.i("$TAG stopBaseline()")
         if (!analyzer.isRunning) return
 
         _stage.update {
@@ -137,7 +137,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     // ── Warm-up timer ─────────────────────────────────────────────────────────
 
     fun startWarmUpTimer() {
-        Log.i(TAG, "startWarmUpTimer()")
+        AppLogger.i("$TAG startWarmUpTimer()")
         val current = _stage.value as? ComparisonStage.WarmUp ?: return
         _stage.value = current.copy(isRunning = true)
 
@@ -158,7 +158,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     }
 
     fun skipWarmUpTimer() {
-        Log.i(TAG, "skipWarmUpTimer()")
+        AppLogger.i("$TAG skipWarmUpTimer()")
         timerJob?.cancel()
         _stage.value = ComparisonStage.Retest(isRecording = false)
     }
@@ -166,7 +166,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     // ── Retest ────────────────────────────────────────────────────────────────
 
     fun startRetest() {
-        Log.i(TAG, "startRetest()")
+        AppLogger.i("$TAG startRetest()")
         _stage.value = ComparisonStage.Retest(
             isRecording = true,
             statusMessage = str(R.string.analyze_status_listening),
@@ -176,7 +176,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     }
 
     fun stopRetest() {
-        Log.i(TAG, "stopRetest()")
+        AppLogger.i("$TAG stopRetest()")
         if (!analyzer.isRunning) return
 
         _stage.update {
@@ -199,7 +199,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         val baseline = baselineProfile
         if (baseline == null) {
             // Shouldn't happen; reset to start
-            Log.e(TAG, "Baseline profile missing during retest completion — resetting")
+            AppLogger.e("$TAG Baseline profile missing during retest completion — resetting")
             _stage.value = ComparisonStage.Intro
             return
         }
@@ -289,8 +289,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                 isPartial = false,
             )
             runCatching { repository.save(record) }
-                .onSuccess { Log.i(TAG, "Comparison session saved: ${record.topFachKey}") }
-                .onFailure { Log.e(TAG, "Failed to save comparison session", it) }
+                .onSuccess { AppLogger.i("$TAG Comparison session saved: ${record.topFachKey}") }
+                .onFailure { AppLogger.e("$TAG Failed to save comparison session", it) }
         }
     }
 

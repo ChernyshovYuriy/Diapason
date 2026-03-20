@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import android.util.Log
+import com.yuriy.diapason.logging.AppLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -12,7 +12,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.CopyOnWriteArrayList
 
-private const val TAG = "VoiceAnalyzer"
 private const val SAMPLE_RATE = 44100
 private const val YIN_THRESHOLD = 0.15
 private const val MIN_PITCH_HZ = 60f
@@ -71,13 +70,15 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
         )
 
         if (audioRecord?.state != AudioRecord.STATE_INITIALIZED) {
-            Log.e(TAG, "AudioRecord failed to initialize")
+            AppLogger.e("AudioRecord failed to initialize")
+            audioRecord?.release()   // release the failed instance to avoid a resource leak
+            audioRecord = null
             onStatusUpdate?.invoke(strings.micInitError)
             return
         }
 
         audioRecord?.startRecording()
-        Log.i(TAG, "Session started — SR=$SAMPLE_RATE Hz, buffer=$bufferSize bytes")
+        AppLogger.i("Session started — SR=$SAMPLE_RATE Hz, buffer=$bufferSize bytes")
         onStatusUpdate?.invoke(strings.listeningMessage)
 
         analyzerJob = scope.launch(Dispatchers.IO) {
@@ -97,8 +98,7 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
                 )
 
                 if (frameCount % 10 == 0) {
-                    Log.v(
-                        TAG,
+                    AppLogger.d(
                         "Frame $frameCount: pitch=${if (pitchHz > 0) "%.1fHz".format(pitchHz) else "—"} conf=${
                             "%.3f".format(
                                 confidence
@@ -113,8 +113,8 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
 
                     if (noteName != lastLoggedNote) {
                         val elapsed = (System.currentTimeMillis() - sessionStartMs) / 1000f
-                        Log.i(
-                            TAG, "[%5.1fs] %-4s  %.1f Hz  conf=%.3f  n=%d".format(
+                        AppLogger.i(
+                            "[%5.1fs] %-4s  %.1f Hz  conf=%.3f  n=%d".format(
                                 elapsed, noteName, pitchHz, confidence, pitchSamples.size
                             )
                         )
@@ -134,10 +134,10 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
         audioRecord = null
 
         val duration = (System.currentTimeMillis() - sessionStartMs) / 1000f
-        Log.i(TAG, "Session stopped — %.1fs, %d valid samples".format(duration, pitchSamples.size))
+        AppLogger.i("Session stopped — %.1fs, %d valid samples".format(duration, pitchSamples.size))
 
         if (pitchSamples.size < 20) {
-            Log.w(TAG, "Insufficient samples (${pitchSamples.size} < 20) — need more singing")
+            AppLogger.w("Insufficient samples (${pitchSamples.size} < 20) — need more singing")
             onStatusUpdate?.invoke(tooFewSamplesMessage)
             return null
         }
@@ -148,8 +148,7 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
 
         logHistogram(pitchSamples)
 
-        Log.i(
-            TAG,
+        AppLogger.i(
             "Profile: detected=${FachClassifier.hzToNoteName(detectedMin)}–${
                 FachClassifier.hzToNoteName(
                     detectedMax
@@ -186,12 +185,12 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
         )
         val maxCount =
             bands.maxOf { b -> pitches.count { it in b.lo..b.hi }.toFloat() }.coerceAtLeast(1f)
-        Log.i(TAG, "Pitch histogram:")
+        AppLogger.i("Pitch histogram:")
         bands.forEach { b ->
             val cnt = pitches.count { it in b.lo..b.hi }
             val pct = (cnt * 100f / pitches.size).toInt()
             val bar = "█".repeat((cnt * 28f / maxCount).toInt())
-            Log.i(TAG, "  ${b.label} | %3d%% $bar ($cnt)".format(pct))
+            AppLogger.i("  ${b.label} | %3d%% $bar ($cnt)".format(pct))
         }
     }
 }

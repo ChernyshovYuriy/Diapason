@@ -143,7 +143,12 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 comfortableHighHz = profile.comfortableHighHz,
                 passaggioHz = profile.estimatedPassaggioHz,
                 sampleCount = profile.sampleCount,
-                topFachKey = topMatch?.let { getString(it.fach.nameRes) },
+                topFachKey = topMatch?.let {
+                    // Store the resource entry name ("fach_name_lyric_soprano") rather than the
+                    // translated string so the DB value is locale-independent. HistoryScreen
+                    // resolves it back to the display language at read time.
+                    getApplication<Application>().resources.getResourceEntryName(it.fach.nameRes)
+                },
                 topFachScore = topMatch?.score,
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,

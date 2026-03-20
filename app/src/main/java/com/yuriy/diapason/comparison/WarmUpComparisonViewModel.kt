@@ -283,7 +283,11 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                 comfortableHighHz = profile.comfortableHighHz,
                 passaggioHz = profile.estimatedPassaggioHz,
                 sampleCount = profile.sampleCount,
-                topFachKey = topMatch?.let { str(it.fach.nameRes) },
+                topFachKey = topMatch?.let {
+                    // Store the resource entry name ("fach_name_lyric_soprano") rather than the
+                    // translated string so the DB value is locale-independent.
+                    getApplication<Application>().resources.getResourceEntryName(it.fach.nameRes)
+                },
                 topFachScore = topMatch?.score,
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,

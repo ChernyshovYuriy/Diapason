@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -146,13 +147,24 @@ private fun SessionCard(session: SessionRecord) {
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
-                session.topFachKey?.let { fach ->
+                session.topFachKey?.let { key ->
+                    val context = LocalContext.current
+                    // topFachKey is stored as a resource entry name ("fach_name_lyric_soprano").
+                    // Resolve it to the current-locale display name.
+                    // Fall back to the raw value for legacy rows that stored a translated string.
+                    val fachName = try {
+                        val resId =
+                            context.resources.getIdentifier(key, "string", context.packageName)
+                        if (resId != 0) context.getString(resId) else key
+                    } catch (_: Exception) {
+                        key
+                    }
                     val suffix =
                         if (session.topFachScore != null && session.topFachMaxScore != null) {
                             "  ${session.topFachScore}/${session.topFachMaxScore}"
                         } else ""
                     Text(
-                        text = "$fach$suffix",
+                        text = "$fachName$suffix",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium

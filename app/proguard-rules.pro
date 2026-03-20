@@ -18,4 +18,10 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# Keep line numbers and source file names for readable Crashlytics stack traces.
+# Without this, crash reports show obfuscated line numbers which are very hard
+# to diagnose. The source file name is replaced with "SourceFile" (above) so
+# the original filename is not leaked, but line numbers remain accurate.
+-keepattributes SourceFile,LineNumberTable

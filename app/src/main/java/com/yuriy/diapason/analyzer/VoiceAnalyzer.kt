@@ -142,11 +142,16 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
             return null
         }
 
-        val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(pitchSamples)
-        val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(pitchSamples)
-        val passaggio = FachClassifier.estimatePassaggio(pitchSamples)
+        // Take a snapshot so subList() calls in the classifiers operate on a plain List,
+        // not on COWSubList which throws ConcurrentModificationException if the IO
+        // coroutine adds one more sample before fully stopping.
+        val snapshot = pitchSamples.toList()
 
-        logHistogram(pitchSamples)
+        val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(snapshot)
+        val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(snapshot)
+        val passaggio = FachClassifier.estimatePassaggio(snapshot)
+
+        logHistogram(snapshot)
 
         AppLogger.i(
             "Profile: detected=${FachClassifier.hzToNoteName(detectedMin)}–${
@@ -168,7 +173,7 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
             comfortableLowHz = comfortableLow,
             comfortableHighHz = comfortableHigh,
             estimatedPassaggioHz = passaggio,
-            sampleCount = pitchSamples.size,
+            sampleCount = snapshot.size,
             durationSeconds = duration
         )
     }

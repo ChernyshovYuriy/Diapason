@@ -6,20 +6,21 @@ robolectric = "4.16.1"
 accompanistPermissions = "0.37.3"
 activityCompose = "1.13.0"
 appcompat = "1.7.1"
-agp = "9.1.0"
-composeBom = "2026.03.00"
+agp = "9.2.1"
+composeBom = "2026.05.00"
 coreKtx = "1.18.0"
-firebaseBom = "34.11.0"
-kotlinxCoroutinesAndroid = "1.10.2"
-kotlinxCoroutinesTest = "1.10.2"
+firebaseBom = "34.13.0"
+kotlinxCoroutinesAndroid = "1.11.0"
+kotlinxCoroutinesTest = "1.11.0"
 lifecycleViewmodelCompose = "2.10.0"
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 material = "1.13.0"
-navigationCompose = "2.9.7"
+navigationCompose = "2.9.8"
+playReview = "2.0.2"
 
 ksp = "2.3.6"
 googleServices = "4.4.4"
-firebaseCrashlyticsPlugin = "3.0.6"
+firebaseCrashlyticsPlugin = "3.0.7"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
@@ -56,6 +57,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
+play-review = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

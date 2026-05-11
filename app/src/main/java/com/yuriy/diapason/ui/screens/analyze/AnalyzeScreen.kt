@@ -38,10 +38,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
@@ -54,6 +56,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.android.play.core.review.testing.FakeReviewManager
+import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analyzer.FachClassifier
 
@@ -71,6 +76,17 @@ fun AnalyzeScreen(
     LaunchedEffect(uiState) {
         if (uiState is AnalyzeUiState.ResultReady) {
             onNavigateToResults()
+        }
+    }
+
+    val activity = LocalContext.current as Activity
+    LaunchedEffect(Unit) {
+        viewModel.reviewTrigger.collect {
+            val manager = if (BuildConfig.DEBUG) FakeReviewManager(activity)
+                          else ReviewManagerFactory.create(activity)
+            manager.requestReviewFlow().addOnCompleteListener { task ->
+                if (task.isSuccessful) manager.launchReviewFlow(activity, task.result)
+            }
         }
     }
 

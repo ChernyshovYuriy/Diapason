@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuriy.diapason.MainApp
+import com.yuriy.diapason.ReviewHelper
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
@@ -14,8 +15,11 @@ import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.logging.AppLogger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,6 +58,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     private fun getString(resId: Int): String = getApplication<Application>().getString(resId)
 
     private val repository: SessionRepository = (application as MainApp).sessionRepository
+    private val reviewHelper = ReviewHelper(application)
+
+    private val _reviewTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val reviewTrigger: SharedFlow<Unit> = _reviewTrigger.asSharedFlow()
 
     private val _uiState = MutableStateFlow<AnalyzeUiState>(AnalyzeUiState.Idle)
     val uiState: StateFlow<AnalyzeUiState> = _uiState.asStateFlow()
@@ -129,6 +137,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
         _lastResult.value = result // persist across back-navigation
         _uiState.value = result
+
+        if (reviewHelper.recordAnalysisAndCheckShouldPrompt()) {
+            _reviewTrigger.tryEmit(Unit)
+        }
 
         // ── Persist session to local database ─────────────────────────────
         viewModelScope.launch(Dispatchers.IO) {

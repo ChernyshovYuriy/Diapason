@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace = "com.yuriy.diapason"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.yuriy.diapason"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 12
-        versionName = "2.0"
+        targetSdk = 37
+        versionCode = 15
+        versionName = "2.1"
     }
 
     buildFeatures {
@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.accompanist.permissions)
+    implementation(libs.play.review)
 
     debugImplementation(libs.androidx.ui.tooling)
 

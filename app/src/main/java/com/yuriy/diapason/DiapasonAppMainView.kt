@@ -8,6 +8,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.comparison.WarmUpComparisonViewModel
 import com.yuriy.diapason.ui.navigation.Screen
 import com.yuriy.diapason.ui.navigation.bottomNavItems
@@ -45,6 +47,14 @@ fun DiapasonAppMainView() {
         Screen.Results.route,
         Screen.WarmUpComparison.route,
     )
+
+    // Firebase auto-tracks screen_view only for Activities, so every Compose nav
+    // change goes silent in analytics unless we fire it ourselves. Re-keyed on
+    // route so re-selecting the same tab is not double-counted.
+    val currentRoute = currentDestination?.route
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { AppAnalytics.trackScreen(it) }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

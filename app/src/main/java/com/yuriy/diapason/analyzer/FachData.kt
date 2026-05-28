@@ -74,7 +74,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_coloratura_soprano,
         categoryRes = R.string.fach_category_soprano,
-        rangeMinHz = 262f, rangeMaxHz = 2093f,
+        rangeMinHz = 262f, rangeMaxHz = 1568f,
         tessituraMinHz = 440f, tessituraMaxHz = 1319f,
         passaggioHz = 659f,
         descriptionRes = R.string.fach_description_coloratura_soprano,

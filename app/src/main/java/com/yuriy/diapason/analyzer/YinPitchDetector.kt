@@ -39,14 +39,18 @@ object YinPitchDetector {
         }
         yinBuffer[0] = 1.0
 
-        // Step 3 — Absolute threshold
+        // Step 3 — Absolute threshold with local-minimum advance
+        // tau must be a var so the inner loop can advance it to the true minimum
+        // within the sub-threshold region (the original for-loop val could not be mutated).
         var tauEstimate = -1
-        for (tau in 2 until yinBuffer.size - 1) {
+        var tau = 2
+        while (tau < yinBuffer.size - 1) {
             if (yinBuffer[tau] < threshold) {
-                while (tau + 1 < yinBuffer.size && yinBuffer[tau + 1] < yinBuffer[tau]) break
+                while (tau + 1 < yinBuffer.size && yinBuffer[tau + 1] < yinBuffer[tau]) tau++
                 tauEstimate = tau
                 break
             }
+            tau++
         }
 
         if (tauEstimate == -1) {

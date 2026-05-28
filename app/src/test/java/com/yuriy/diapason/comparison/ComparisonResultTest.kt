@@ -82,6 +82,12 @@ class ComparisonResultTest {
         assertTrue(d.isMeaningful)
     }
 
+    @Test
+    fun `isMeaningful is false when beforeHz is zero`() {
+        val d = HzDelta(beforeHz = 0f, afterHz = 300f)
+        assertFalse(d.isMeaningful)
+    }
+
     // ── ComparisonResult.compute – delta correctness ───────────────────────────
 
     @Test
@@ -196,6 +202,15 @@ class ComparisonResultTest {
         assertFalse(result.comfortableRangeWidened)
     }
 
+    @Test
+    fun `comfortableRangeWidened is false when high boundary drops meaningfully`() {
+        val before = profile(comfortableLow = 260f, comfortableHigh = 680f)
+        val after  = profile(comfortableLow = 260f, comfortableHigh = 620f)  // high drops ~1.5 semitones
+        val result = compute(before, after)
+
+        assertFalse(result.comfortableRangeWidened)
+    }
+
     // ── Detected range widening flags ─────────────────────────────────────────
 
     @Test
@@ -216,56 +231,33 @@ class ComparisonResultTest {
         assertFalse(result.detectedRangeWidened)
     }
 
-    // ── Invariant: comfortable range must stay within detected extremes ────────
-
     @Test
-    fun `comfortable range never exceeds detected extremes in before profile`() {
-        val before = profile(
-            detectedMin = 200f, detectedMax = 800f,
-            comfortableLow = 250f, comfortableHigh = 700f,
-        )
-        assertTrue(before.comfortableLowHz >= before.detectedMinHz)
-        assertTrue(before.comfortableHighHz <= before.detectedMaxHz)
+    fun `detectedRangeWidened is false when ceiling drops meaningfully`() {
+        val before = profile(detectedMin = 180f, detectedMax = 820f)
+        val after  = profile(detectedMin = 180f, detectedMax = 750f)  // ceiling drops ~1.5 semitones
+        val result = compute(before, after)
+
+        assertFalse(result.detectedRangeWidened)
     }
 
-    @Test
-    fun `comfortable range never exceeds detected extremes in after profile`() {
-        val after = profile(
-            detectedMin = 185f, detectedMax = 860f,
-            comfortableLow = 240f, comfortableHigh = 780f,
-        )
-        assertTrue(after.comfortableLowHz >= after.detectedMinHz)
-        assertTrue(after.comfortableHighHz <= after.detectedMaxHz)
-    }
+    // ── compute assigns all four range fields to the correct HzDelta slots ────
 
-    /**
-     * Construct arbitrary before/after pairs and verify the invariant holds.
-     * This is a property-like sanity check using a small hand-written table.
-     */
     @Test
-    fun `comfortable range invariant holds across multiple profile pairs`() {
-        data class Case(
-            val detMin: Float, val detMax: Float,
-            val comfLow: Float, val comfHigh: Float,
-        )
-        listOf(
-            Case(100f, 1000f, 200f, 800f),
-            Case(65f, 880f, 130f, 700f),
-            Case(260f, 1047f, 349f, 880f),
-        ).forEach { c ->
-            val p = profile(
-                detectedMin = c.detMin, detectedMax = c.detMax,
-                comfortableLow = c.comfLow, comfortableHigh = c.comfHigh,
-            )
-            assertTrue(
-                "comfortable low ${p.comfortableLowHz} < detected min ${p.detectedMinHz}",
-                p.comfortableLowHz >= p.detectedMinHz
-            )
-            assertTrue(
-                "comfortable high ${p.comfortableHighHz} > detected max ${p.detectedMaxHz}",
-                p.comfortableHighHz <= p.detectedMaxHz
-            )
-        }
+    fun `compute assigns all four range fields without swapping`() {
+        // Use obviously distinct values so any field swap produces a readable failure.
+        val before = profile(detectedMin = 80f, detectedMax = 1200f, comfortableLow = 150f, comfortableHigh = 900f)
+        val after  = profile(detectedMin = 70f, detectedMax = 1300f, comfortableLow = 130f, comfortableHigh = 950f)
+        val result = compute(before, after)
+
+        assertEquals(80f,   result.detectedMin.beforeHz,    0.01f)
+        assertEquals(1200f, result.detectedMax.beforeHz,    0.01f)
+        assertEquals(150f,  result.comfortableLow.beforeHz,  0.01f)
+        assertEquals(900f,  result.comfortableHigh.beforeHz, 0.01f)
+
+        assertEquals(70f,   result.detectedMin.afterHz,     0.01f)
+        assertEquals(1300f, result.detectedMax.afterHz,     0.01f)
+        assertEquals(130f,  result.comfortableLow.afterHz,   0.01f)
+        assertEquals(950f,  result.comfortableHigh.afterHz,  0.01f)
     }
 
     // ── compute returns correct profile references ─────────────────────────────

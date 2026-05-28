@@ -38,12 +38,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
@@ -79,9 +78,10 @@ fun AnalyzeScreen(
         }
     }
 
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current
     LaunchedEffect(Unit) {
         viewModel.reviewTrigger.collect {
+            activity ?: return@collect
             val manager = if (BuildConfig.DEBUG) FakeReviewManager(activity)
                           else ReviewManagerFactory.create(activity)
             manager.requestReviewFlow().addOnCompleteListener { task ->

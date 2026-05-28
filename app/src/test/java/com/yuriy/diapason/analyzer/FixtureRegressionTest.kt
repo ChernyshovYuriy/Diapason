@@ -4,6 +4,7 @@ import com.yuriy.diapason.analyzer.FixtureRegressionTest.Companion.fixtureNames
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -116,7 +117,9 @@ class FixtureRegressionTest(private val fixtureName: String) {
     @Test
     fun `fixture detected min matches expected note`() {
         val fixture = FixtureLoader.load(fixtureName)
-        val expected = fixture.assertions.detectedMinNote ?: return
+        val expected = fixture.assertions.detectedMinNote
+        Assume.assumeTrue("[$fixtureName] no detectedMinNote assertion declared", expected != null)
+        expected!!
         val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (detectedMin, _) = FachClassifier.estimateDetectedExtremes(pitches)
@@ -134,7 +137,9 @@ class FixtureRegressionTest(private val fixtureName: String) {
     @Test
     fun `fixture detected max matches expected note`() {
         val fixture = FixtureLoader.load(fixtureName)
-        val expected = fixture.assertions.detectedMaxNote ?: return
+        val expected = fixture.assertions.detectedMaxNote
+        Assume.assumeTrue("[$fixtureName] no detectedMaxNote assertion declared", expected != null)
+        expected!!
         val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (_, detectedMax) = FachClassifier.estimateDetectedExtremes(pitches)
@@ -160,7 +165,9 @@ class FixtureRegressionTest(private val fixtureName: String) {
     @Test
     fun `fixture comfortable low matches expected note`() {
         val fixture = FixtureLoader.load(fixtureName)
-        val expected = fixture.assertions.comfortableLowNote ?: return
+        val expected = fixture.assertions.comfortableLowNote
+        Assume.assumeTrue("[$fixtureName] no comfortableLowNote assertion declared", expected != null)
+        expected!!
         val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (comfortableLow, _) = FachClassifier.estimateComfortableRange(pitches)
@@ -178,7 +185,9 @@ class FixtureRegressionTest(private val fixtureName: String) {
     @Test
     fun `fixture comfortable high matches expected note`() {
         val fixture = FixtureLoader.load(fixtureName)
-        val expected = fixture.assertions.comfortableHighNote ?: return
+        val expected = fixture.assertions.comfortableHighNote
+        Assume.assumeTrue("[$fixtureName] no comfortableHighNote assertion declared", expected != null)
+        expected!!
         val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         val (_, comfortableHigh) = FachClassifier.estimateComfortableRange(pitches)
@@ -206,11 +215,13 @@ class FixtureRegressionTest(private val fixtureName: String) {
     @Test
     fun `fixture passaggio matches expected note`() {
         val fixture = FixtureLoader.load(fixtureName)
-        val expected = fixture.assertions.passaggioNote ?: return
+        val expected = fixture.assertions.passaggioNote
+        Assume.assumeTrue("[$fixtureName] no passaggioNote assertion declared", expected != null)
+        expected!!
         val pitches = SessionReplay.acceptedPitches(fixture.toPitchSamples())
 
         // Passaggio estimate is unreliable with fewer than 30 accepted frames.
-        if (pitches.size < 30) return
+        Assume.assumeTrue("[$fixtureName] fewer than 30 accepted frames — passaggio estimate unreliable", pitches.size >= 30)
 
         val passaggio = FachClassifier.estimatePassaggio(pitches)
 

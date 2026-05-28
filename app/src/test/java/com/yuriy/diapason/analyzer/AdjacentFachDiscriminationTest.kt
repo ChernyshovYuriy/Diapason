@@ -41,6 +41,8 @@ class AdjacentFachDiscriminationTest {
     private fun fach(minHz: Float, maxHz: Float) =
         ALL_FACH.first { it.rangeMinHz == minHz && it.rangeMaxHz == maxHz }
 
+    private val coloraturaSoprano = fach(262f, 1568f)
+    private val lyricColoraturaSoprano = fach(262f, 1397f)
     private val lyricSoprano = fach(247f, 1047f)
     private val spintoSoprano = fach(233f, 988f)
     private val lyricTenor = fach(130f, 523f)
@@ -76,6 +78,36 @@ class AdjacentFachDiscriminationTest {
         results.first { it.fach.rangeMinHz == target.rangeMinHz && it.fach.rangeMaxHz == target.rangeMaxHz }.score
 
     // ── TIER 1 — Clearly separated profiles ──────────────────────────────────
+
+    /**
+     * A realistic Coloratura Soprano session: detected max at E6 (1319 Hz), comfortable
+     * range A4–C6, passaggio at E5.
+     *
+     * Expected: Coloratura Soprano 11/14, Lyric Coloratura Soprano 10/14.
+     * Key differentiator: passaggio (Coloratura E5=659 Hz vs Lyric Coloratura C5=523 Hz).
+     *
+     * This profile specifically validates that rangeMaxHz=1568 Hz (G6) allows a singer who
+     * reaches E6 to score 2 pts for the Coloratura ceiling rather than 0 pts (which was the
+     * result with the previous erroneous rangeMaxHz=2093 Hz, causing Lyric Coloratura to
+     * outscore Coloratura).
+     */
+    @Test
+    fun `coloratura soprano profile ranks coloratura above lyric coloratura`() {
+        val p = profile(
+            detectedMin = 262f,   // C4
+            detectedMax = 1319f,  // E6 — a high but realistic session ceiling
+            comfortableLow = 440f,  // A4
+            comfortableHigh = 1047f, // C6
+            passaggio = 659f,       // E5
+        )
+        val results = FachClassifier.classify(p)
+        assertTrue(
+            "Coloratura Soprano must rank above Lyric Coloratura for a coloratura profile " +
+                    "(Coloratura rank=${rankOf(coloraturaSoprano, results)}, " +
+                    "Lyric Coloratura rank=${rankOf(lyricColoraturaSoprano, results)})",
+            rankOf(coloraturaSoprano, results) < rankOf(lyricColoraturaSoprano, results)
+        )
+    }
 
     /**
      * A profile closely matching Spinto Soprano definition parameters.

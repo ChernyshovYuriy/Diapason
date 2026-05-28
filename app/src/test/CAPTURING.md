@@ -55,6 +55,14 @@ I/VoiceAnalyzer: [  5.3s] E4    329.6 Hz  conf=0.930  n=42
 > example: hold C4 for several seconds, then rapidly alternate A3↔G4 for
 > several seconds, then hold F4.  This ensures the max-variance window falls
 > inside the oscillation zone, not at the top of a rising scale.
+>
+> **Why this structure is required:** `estimatePassaggio` computes variance in raw
+> Hz, not semitones.  Because one semitone equals more Hz at higher pitches (e.g.
+> ~12 Hz at A3 vs ~48 Hz at A5), the top of any ascending scale always produces
+> higher raw variance than a narrow register-break wobble lower in the range.
+> Only a deliberate oscillation (large Hz swings in a mid-range window) can
+> outcompete the scale's high-frequency end.  This is a known algorithmic
+> limitation; see `KNOWN_ISSUES.md` for the fix approach.
 
 ---
 
@@ -295,10 +303,11 @@ in a local test run) to see what the algorithm produces.
 **Passaggio test fails consistently**
 First check whether your fixture is a scale or arpeggio — if so, set
 `passaggioNote` to `null`.  `estimatePassaggio` finds the window of highest raw
-Hz variance; because Hz intervals grow with pitch, the top of any ascending run
-always dominates over a narrow register-break wobble.  A passaggio assertion
-only works reliably with the **stable / oscillation / stable** session structure
-described in the Step 1 tip.  If your fixture already has that structure and the
-test still fails, widen `passaggioTol` by 1–2 semitones — but investigate first;
-a large semitone error usually means the oscillation amplitude is too small to
-dominate the boundary windows.
+Hz variance; because Hz intervals grow with pitch (an inherent algorithmic
+limitation — see `KNOWN_ISSUES.md`), the top of any ascending run always dominates
+over a narrow register-break wobble.  A passaggio assertion only works reliably
+with the **stable / oscillation / stable** session structure described in the
+Step 1 tip.  If your fixture already has that structure and the test still fails,
+widen `passaggioTol` by 1–2 semitones — but investigate first; a large semitone
+error usually means the oscillation amplitude is too small to dominate the boundary
+windows.

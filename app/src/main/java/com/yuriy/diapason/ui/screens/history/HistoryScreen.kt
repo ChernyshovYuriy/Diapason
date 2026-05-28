@@ -22,16 +22,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.data.SessionRecord
 import java.text.DateFormat
@@ -40,6 +43,17 @@ import java.util.Date
 @Composable
 fun HistoryScreen(viewModel: HistoryViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Fire once per visit, after the first non-loading emission, so item_count
+    // reflects the actual history size rather than a placeholder 0.
+    LaunchedEffect(Unit) {
+        val firstSettled = when (val s = uiState) {
+            is HistoryUiState.Sessions -> s.items.size
+            is HistoryUiState.Empty -> 0
+            HistoryUiState.Loading -> null
+        }
+        AppAnalytics.historyOpened(firstSettled ?: 0)
+    }
 
     Column(
         modifier = Modifier
@@ -149,13 +163,14 @@ private fun SessionCard(session: SessionRecord) {
                 )
                 session.topFachKey?.let { key ->
                     val context = LocalContext.current
+                    val resources = LocalResources.current
                     // topFachKey is stored as a resource entry name ("fach_name_lyric_soprano").
                     // Resolve it to the current-locale display name.
                     // Fall back to the raw value for legacy rows that stored a translated string.
                     val fachName = try {
                         val resId =
-                            context.resources.getIdentifier(key, "string", context.packageName)
-                        if (resId != 0) context.getString(resId) else key
+                            resources.getIdentifier(key, "string", context.packageName)
+                        if (resId != 0) resources.getString(resId) else key
                     } catch (_: Exception) {
                         key
                     }

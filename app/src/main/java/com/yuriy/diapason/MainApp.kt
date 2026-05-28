@@ -4,10 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import com.google.firebase.FirebaseApp
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.data.db.DiapasonDatabase
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.data.repository.SessionRepositoryImpl
 import com.yuriy.diapason.logging.AppLogger
+import java.util.Locale
 
 class MainApp : Application() {
 
@@ -29,6 +31,11 @@ class MainApp : Application() {
         super.onCreate()
         AppLogger.setDebug(isDebug(applicationContext))
         FirebaseApp.initializeApp(applicationContext)
+        AppAnalytics.init(applicationContext)
+        // The display language splits all engagement metrics by locale — the
+        // Firebase overview shows French/Portuguese/Italian dominate, so confirm
+        // that signal at user-property level rather than guessing from country.
+        AppAnalytics.setLanguage(Locale.getDefault().language)
     }
 
     private fun isDebug(context: Context): Boolean {

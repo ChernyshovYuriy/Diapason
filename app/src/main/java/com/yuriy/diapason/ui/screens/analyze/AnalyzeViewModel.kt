@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.yuriy.diapason.MainApp
 import com.yuriy.diapason.ReviewHelper
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
@@ -101,6 +103,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     fun startRecording() {
         AppLogger.i("$TAG startRecording()")
+        AppAnalytics.analysisStarted(AppAnalytics.Flow.Single)
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_listening)
         )
@@ -117,9 +120,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         AppLogger.i("$TAG stopRecording()")
         if (!analyzer.isRunning) return
 
+        val priorSampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_analyzing),
-            sampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+            sampleCount = priorSampleCount
         )
 
         val profile = analyzer.stop(
@@ -127,6 +131,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         )
 
         if (profile == null) {
+            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Single, priorSampleCount)
             _uiState.value = AnalyzeUiState.InsufficientData(
                 getString(R.string.analyze_error_insufficient)
             )
@@ -134,6 +139,17 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         }
 
         val matches = FachClassifier.classify(profile)
+        val topMatch = matches.firstOrNull()
+        val topFachKey = topMatch?.let { fachKeyOf(it.fach) }
+        AppAnalytics.analysisCompleted(
+            flow = AppAnalytics.Flow.Single,
+            durationSeconds = profile.durationSeconds,
+            sampleCount = profile.sampleCount,
+            topFachKey = topFachKey,
+            score = topMatch?.score,
+            maxScore = topMatch?.maxScore,
+        )
+
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
         _lastResult.value = result // persist across back-navigation
         _uiState.value = result
@@ -144,7 +160,6 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
         // ── Persist session to local database ─────────────────────────────
         viewModelScope.launch(Dispatchers.IO) {
-            val topMatch = matches.firstOrNull()
             val record = SessionRecord(
                 id = UUID.randomUUID().toString(),
                 timestampMs = System.currentTimeMillis(),
@@ -155,12 +170,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 comfortableHighHz = profile.comfortableHighHz,
                 passaggioHz = profile.estimatedPassaggioHz,
                 sampleCount = profile.sampleCount,
-                topFachKey = topMatch?.let {
-                    // Store the resource entry name ("fach_name_lyric_soprano") rather than the
-                    // translated string so the DB value is locale-independent. HistoryScreen
-                    // resolves it back to the display language at read time.
-                    getApplication<Application>().resources.getResourceEntryName(it.fach.nameRes)
-                },
+                // topFachKey is the resource entry name ("fach_name_lyric_soprano") rather than
+                // the translated string so the DB value is locale-independent. HistoryScreen
+                // resolves it back to the display language at read time.
+                topFachKey = topFachKey,
                 topFachScore = topMatch?.score,
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,
@@ -180,7 +193,14 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     override fun onCleared() {
         super.onCleared()
         if (analyzer.isRunning) {
+            val abandonedSampleCount =
+                (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+            AppAnalytics.analysisAbandoned(AppAnalytics.Flow.Single, abandonedSampleCount)
             analyzer.stop(getString(R.string.analyze_status_too_few_samples))
         }
     }
+
+    private fun fachKeyOf(fach: FachDefinition): String? = runCatching {
+        getApplication<Application>().resources.getResourceEntryName(fach.nameRes)
+    }.getOrNull()
 }

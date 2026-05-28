@@ -44,6 +44,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceProfile
@@ -96,6 +98,24 @@ fun ResultsScreen(
 
     val context = LocalContext.current
     val topMatch = matches.firstOrNull()
+    val topFachKey = remember(topMatch) {
+        topMatch?.let {
+            runCatching { context.resources.getResourceEntryName(it.fach.nameRes) }.getOrNull()
+        }
+    }
+
+    // dwell tracking — fire result_viewed on entry, result_dismissed on dispose
+    // with elapsed seconds. Without this the funnel can't distinguish "user read
+    // the result" from "user opened and bounced".
+    val openedAtMs = remember { System.currentTimeMillis() }
+    DisposableEffect(Unit) {
+        AppAnalytics.resultViewed(topFachKey)
+        onDispose {
+            val dwellSeconds = (System.currentTimeMillis() - openedAtMs) / 1000L
+            AppAnalytics.resultDismissed(topFachKey, dwellSeconds)
+        }
+    }
+
     val shareText = stringResource(
         R.string.share_text,
         stringResource(topMatch?.fach?.nameRes ?: R.string.share_unknown_voice_type),
@@ -124,6 +144,7 @@ fun ResultsScreen(
                 actions = {
                     ShareButton(
                         onClick = {
+                            AppAnalytics.resultShared(topFachKey)
                             shareResult(
                                 context,
                                 shareText,

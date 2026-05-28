@@ -17,7 +17,7 @@ data class HzDelta(
     val deltaHz: Float get() = afterHz - beforeHz
 
     /** True if the absolute difference is large enough to be meaningful (>= 1 semitone ≈ 6%). */
-    val isMeaningful: Boolean get() = kotlin.math.abs(deltaHz / beforeHz) >= 0.059f
+    val isMeaningful: Boolean get() = beforeHz != 0f && kotlin.math.abs(deltaHz / beforeHz) >= 0.059f
 }
 
 /**

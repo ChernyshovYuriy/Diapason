@@ -17,19 +17,8 @@ import kotlin.math.sin
  *
  *  1.  Pure sines at pitches spanning the full vocal range (C3–A5) are
  *      detected with confidence ≥ MIN_YIN_CONFIDENCE (0.80).
- *  2.  Detected pitch for a pure sine is within 100 cents of the true
- *      frequency — one full semitone.
- *
- *      NOTE ON ACCURACY: this implementation's Step 3 (threshold search)
- *      uses a Kotlin `for (tau in range)` loop which cannot mutate `tau`,
- *      so the "advance to local minimum" while-break pattern in the code
- *      exits immediately without advancing.  The algorithm therefore stops
- *      at the *first* tau below the threshold rather than the local
- *      minimum, producing a systematic ~40–50 cent flat bias.  The 100-cent
- *      tolerance reflects this real-world behavior and will catch any gross
- *      regression (e.g. returning 600 Hz for a 440 Hz sine) without being
- *      fragile to small implementation tweaks.
- *
+ *  2.  Detected pitch for a pure sine is within 20 cents of the true
+ *      frequency — a third of a semitone.
  *  3.  Silence (all-zeros PCM) returns confidence ≈ 0 — ensuring the
  *      VoiceAnalyzer acceptance filter discards it.
  *  4.  Sub-threshold noise (amplitude 0.002 ≪ voiced 0.5) returns
@@ -74,10 +63,10 @@ class YinPitchDetectorTest {
 
     /**
      * Concert A (A4 = 440 Hz) is the most fundamental accuracy check.
-     * Both accuracy (within 100 cents) and confidence (≥ 0.80) must hold.
+     * Both accuracy (within 20 cents) and confidence (≥ 0.80) must hold.
      */
     @Test
-    fun `concert A at 440 Hz is detected within 100 cents with sufficient confidence`() {
+    fun `concert A at 440 Hz is detected within 20 cents with sufficient confidence`() {
         val (pitch, confidence) = YinPitchDetector.detect(sine(440f), SR, THRESH)
 
         assertTrue(
@@ -85,8 +74,8 @@ class YinPitchDetectorTest {
             pitch > 0f
         )
         assertTrue(
-            "Pitch error ${centsDiff(pitch, 440f).toInt()} cents exceeds 100-cent tolerance",
-            centsDiff(pitch, 440f) <= 100f
+            "Pitch error ${centsDiff(pitch, 440f).toInt()} cents exceeds 20-cent tolerance",
+            centsDiff(pitch, 440f) <= 20f
         )
         assertTrue(
             "Confidence ($confidence) must be ≥ MIN_CONFIDENCE ($MIN_CONFIDENCE) for a clean sine",
@@ -95,13 +84,11 @@ class YinPitchDetectorTest {
     }
 
     /**
-     * Coverage across the practical vocal range: bass floor (C2 = 65 Hz) to
-     * coloratura ceiling (C6 = 1047 Hz).  Every pitch must be detected within
-     * 100 cents with confidence ≥ MIN_CONFIDENCE.
+     * Coverage across the practical vocal range: bass floor (C3) to coloratura ceiling (A5).
+     * Every pitch must be detected within 20 cents with confidence ≥ MIN_CONFIDENCE.
      */
     @Test
-    fun `all vocal range pitches are detected within 100 cents with sufficient confidence`() {
-        // Standard equal-temperament frequencies (Hz) representative of each voice
+    fun `all vocal range pitches are detected within 20 cents with sufficient confidence`() {
         val testPitches = floatArrayOf(
             130.81f,  // C3  — bass/baritone floor
             164.81f,  // E3
@@ -123,9 +110,9 @@ class YinPitchDetectorTest {
             )
             val cents = centsDiff(pitch, freq)
             assertTrue(
-                "${freq} Hz: pitch error ${"%.0f".format(cents)} cents exceeds 100-cent tolerance " +
+                "${freq} Hz: pitch error ${"%.0f".format(cents)} cents exceeds 20-cent tolerance " +
                         "(detected ${"%.1f".format(pitch)} Hz)",
-                cents <= 100f
+                cents <= 20f
             )
             assertTrue(
                 "${freq} Hz: confidence (${"%.4f".format(confidence)}) must be ≥ $MIN_CONFIDENCE",
@@ -316,5 +303,34 @@ class YinPitchDetectorTest {
                 pitch.isFinite()
             )
         }
+    }
+
+    // ── 8. Step-3 local-minimum advance regression ────────────────────────────
+
+    /**
+     * Regression guard for the Step 3 local-minimum advance fix.
+     *
+     * Before the fix the threshold path stopped at the *first* tau below the
+     * threshold instead of the local minimum, producing a systematic flat bias.
+     * After the fix both paths (normal threshold and tight-threshold fallback)
+     * converge on the same tau region and must agree within 5 cents.
+     *
+     * A disagreement of > 5 cents indicates the inner while-loop is again not
+     * advancing tau, i.e. the bug has been reintroduced.
+     */
+    @Test
+    fun `threshold path and global-minimum fallback agree within 5 cents for pure sine`() {
+        val buf = sine(440f)
+        val (pitchNormal, _) = YinPitchDetector.detect(buf, SR, THRESH)
+        val (pitchFallback, _) = YinPitchDetector.detect(buf, SR, 0.001)
+
+        assertTrue("Normal path pitch must be positive", pitchNormal > 0f)
+        assertTrue("Fallback pitch must be positive", pitchFallback > 0f)
+        assertTrue(
+            "Threshold path ($pitchNormal Hz) and global-min fallback ($pitchFallback Hz) " +
+                    "must agree within 5 cents — a larger gap indicates the local-minimum " +
+                    "advance loop is not executing",
+            centsDiff(pitchNormal, pitchFallback) <= 5f
+        )
     }
 }

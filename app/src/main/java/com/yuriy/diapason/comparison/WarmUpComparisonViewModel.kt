@@ -5,7 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuriy.diapason.MainApp
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
@@ -94,6 +96,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     fun startBaseline() {
         AppLogger.i("$TAG startBaseline()")
+        AppAnalytics.analysisStarted(AppAnalytics.Flow.Baseline)
         _stage.value =
             ComparisonStage.Baseline(statusMessage = str(R.string.analyze_status_listening))
         attachAnalyzerCallbacksForBaseline()
@@ -104,6 +107,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         AppLogger.i("$TAG stopBaseline()")
         if (!analyzer.isRunning) return
 
+        val priorSampleCount =
+            (_stage.value as? ComparisonStage.Baseline)?.sampleCount ?: 0
+
         _stage.update {
             if (it is ComparisonStage.Baseline)
                 it.copy(statusMessage = str(R.string.analyze_status_analyzing))
@@ -112,6 +118,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples))
         if (profile == null) {
+            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Baseline, priorSampleCount)
             _stage.value = ComparisonStage.BaselineInsufficient(
                 str(R.string.analyze_error_insufficient)
             )
@@ -120,6 +127,16 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         baselineProfile = profile
         baselineMatches = FachClassifier.classify(profile)
+
+        val topMatch = baselineMatches.firstOrNull()
+        AppAnalytics.analysisCompleted(
+            flow = AppAnalytics.Flow.Baseline,
+            durationSeconds = profile.durationSeconds,
+            sampleCount = profile.sampleCount,
+            topFachKey = topMatch?.let { fachKeyOf(it.fach) },
+            score = topMatch?.score,
+            maxScore = topMatch?.maxScore,
+        )
 
         persistSession(profile, baselineMatches)
 
@@ -139,6 +156,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     fun startWarmUpTimer() {
         AppLogger.i("$TAG startWarmUpTimer()")
         val current = _stage.value as? ComparisonStage.WarmUp ?: return
+        AppAnalytics.warmupStarted(current.remainingSeconds)
         _stage.value = current.copy(isRunning = true)
 
         timerJob?.cancel()
@@ -152,6 +170,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                     else it
                 }
             }
+            AppAnalytics.warmupCompleted()
             // Timer finished — advance to retest, waiting for user to tap Start
             _stage.value = ComparisonStage.Retest(isRecording = false)
         }
@@ -159,6 +178,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     fun skipWarmUpTimer() {
         AppLogger.i("$TAG skipWarmUpTimer()")
+        val remaining = (_stage.value as? ComparisonStage.WarmUp)?.remainingSeconds ?: 0
+        AppAnalytics.warmupSkipped(remaining)
         timerJob?.cancel()
         _stage.value = ComparisonStage.Retest(isRecording = false)
     }
@@ -167,6 +188,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     fun startRetest() {
         AppLogger.i("$TAG startRetest()")
+        AppAnalytics.analysisStarted(AppAnalytics.Flow.Retest)
         _stage.value = ComparisonStage.Retest(
             isRecording = true,
             statusMessage = str(R.string.analyze_status_listening),
@@ -179,6 +201,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         AppLogger.i("$TAG stopRetest()")
         if (!analyzer.isRunning) return
 
+        val priorSampleCount =
+            (_stage.value as? ComparisonStage.Retest)?.sampleCount ?: 0
+
         _stage.update {
             if (it is ComparisonStage.Retest)
                 it.copy(statusMessage = str(R.string.analyze_status_analyzing))
@@ -187,6 +212,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples))
         if (profile == null) {
+            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Retest, priorSampleCount)
             _stage.value = ComparisonStage.RetestInsufficient(
                 str(R.string.analyze_error_insufficient)
             )
@@ -194,6 +220,15 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         }
 
         val retestMatches = FachClassifier.classify(profile)
+        val retestTop = retestMatches.firstOrNull()
+        AppAnalytics.analysisCompleted(
+            flow = AppAnalytics.Flow.Retest,
+            durationSeconds = profile.durationSeconds,
+            sampleCount = profile.sampleCount,
+            topFachKey = retestTop?.let { fachKeyOf(it.fach) },
+            score = retestTop?.score,
+            maxScore = retestTop?.maxScore,
+        )
         persistSession(profile, retestMatches)
 
         val baseline = baselineProfile
@@ -204,11 +239,18 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             return
         }
 
+        val baselineTop = baselineMatches.firstOrNull()
         val result = ComparisonResult.compute(
             before = baseline,
-            beforeTopMatch = baselineMatches.firstOrNull(),
+            beforeTopMatch = baselineTop,
             after = profile,
-            afterTopMatch = retestMatches.firstOrNull(),
+            afterTopMatch = retestTop,
+        )
+        AppAnalytics.comparisonCompleted(
+            beforeFachKey = baselineTop?.let { fachKeyOf(it.fach) },
+            afterFachKey = retestTop?.let { fachKeyOf(it.fach) },
+            comfortableRangeWidened = result.comfortableRangeWidened,
+            detectedRangeWidened = result.detectedRangeWidened,
         )
         _stage.value = ComparisonStage.Done(result)
     }
@@ -283,11 +325,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                 comfortableHighHz = profile.comfortableHighHz,
                 passaggioHz = profile.estimatedPassaggioHz,
                 sampleCount = profile.sampleCount,
-                topFachKey = topMatch?.let {
-                    // Store the resource entry name ("fach_name_lyric_soprano") rather than the
-                    // translated string so the DB value is locale-independent.
-                    getApplication<Application>().resources.getResourceEntryName(it.fach.nameRes)
-                },
+                // Resource entry name ("fach_name_lyric_soprano") rather than the translated
+                // string so the DB value is locale-independent.
+                topFachKey = topMatch?.let { fachKeyOf(it.fach) },
                 topFachScore = topMatch?.score,
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,
@@ -297,6 +337,10 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                 .onFailure { AppLogger.e("$TAG Failed to save comparison session", it) }
         }
     }
+
+    private fun fachKeyOf(fach: FachDefinition): String? = runCatching {
+        getApplication<Application>().resources.getResourceEntryName(fach.nameRes)
+    }.getOrNull()
 
     override fun onCleared() {
         super.onCleared()

@@ -307,9 +307,11 @@ object FixtureAssertHelper {
     ) {
         val diff = semitoneDiff(actualHz, expectedNote)
         val actualNote = FachClassifier.hzToNoteName(actualHz)
-        assert(diff <= toleranceSemitones) {
-            "$label: expected $expectedNote ±${toleranceSemitones}st " +
-                    "but got $actualNote (${"%.1f".format(actualHz)} Hz) — $diff semitones away"
+        if (diff > toleranceSemitones) {
+            throw AssertionError(
+                "$label: expected $expectedNote ±${toleranceSemitones}st " +
+                        "but got $actualNote (${"%.1f".format(actualHz)} Hz) — $diff semitones away"
+            )
         }
     }
 }

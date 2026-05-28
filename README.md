@@ -42,24 +42,29 @@ The app is localised into **5 languages** via Android string resources (`res/val
 All analyzer tests are pure JVM — no device or emulator needed:
 
 ```bash
-./gradlew :app:test
+./gradlew :app:testDebugUnitTest
 ```
 
-To run a specific test class:
+To run a specific test class (use `testDebugUnitTest`, not `test`, for the `--tests` flag to work):
 
 ```bash
-./gradlew :app:test --tests "*.FachClassifierClassifyTest"
-./gradlew :app:test --tests "*.YinPitchDetectorTest"
-./gradlew :app:test --tests "*.FixtureRegressionTest"
+./gradlew :app:testDebugUnitTest --tests "*.FachClassifierClassifyTest"
+./gradlew :app:testDebugUnitTest --tests "*.YinPitchDetectorTest"
+./gradlew :app:testDebugUnitTest --tests "*.FixtureRegressionTest"
 ```
 
 ### Test structure
 
 | File | What it covers |
 |---|---|
+| `YinPitchDetectorTest` | YIN pitch detection — accuracy (≤20 cents), confidence, silence, noise, edge-case buffers, Step 3 local-minimum regression |
 | `FachClassifierTest` | `hzToNoteName`, `estimateComfortableRange`, `estimateDetectedExtremes`, `estimatePassaggio` — unit cases and edge cases |
-| `FachClassifierClassifyTest` | `classify()` scoring — perfect-match profiles, cross-category separation, result invariants |
-| `YinPitchDetectorTest` | YIN pitch detection — accuracy, confidence, silence, noise, edge-case buffers |
+| `HzToNoteNameTest` | Note name correctness across all octaves and ALL_FACH range values |
+| `FachClassifierClassifyTest` | `classify()` scoring — perfect-match profiles, cross-category separation, invariants |
+| `AdjacentFachDiscriminationTest` | Hardest adjacent-pair voice-type boundaries; boundary-condition scoring |
+| `FachDataIntegrityTest` | ALL_FACH table constraints: range ordering, tessitura containment, unique IDs |
+| `PassaggioEdgeCaseTest` | Passaggio and comfortable-range edge cases — bimodal, uniform, fading confidence |
+| `EstimateDetectedExtremesStressTest` | Stress and property tests for neighbor-validated extremes |
 | `AnalyzerScenarioTest` | End-to-end vocal scenarios using the DSL fixture builder |
 | `AnalyzerInvariantTest` | Properties that must hold for all inputs (e.g. comfortable ⊆ detected) |
 | `FixtureRegressionTest` | Parameterised regression against five JSON fixtures in `src/test/resources/fixtures/` |

@@ -166,10 +166,9 @@ class HzToNoteNameTest {
     }
 
     @Test
-    fun `coloratura soprano range max 2093 Hz maps to a C-note in octave 7`() {
-        // Coloratura max rangeMaxHz = 2093f
-        // 2093 ≈ 2093.00 Hz; C7 = 2093.00 Hz (MIDI 96)
-        assertEquals("C7", note(2093.0f))
+    fun `coloratura soprano range max 1568 Hz maps to G6`() {
+        // Coloratura Soprano rangeMaxHz = 1568f (G6)
+        assertEquals("G6", note(1568.0f))
     }
 
     // ── N9. Edge values return the placeholder ─────────────────────────────────
@@ -228,7 +227,7 @@ class HzToNoteNameTest {
     fun `every non-placeholder note name ends with a digit`() {
         val testFreqs = listOf(
             43f, 65f, 82f, 110f, 130f, 165f, 196f, 220f, 247f, 262f, 330f,
-            392f, 440f, 494f, 523f, 659f, 784f, 880f, 988f, 1047f, 1319f, 2093f
+            392f, 440f, 494f, 523f, 659f, 784f, 880f, 988f, 1047f, 1319f, 1568f
         )
         for (hz in testFreqs) {
             val name = note(hz)

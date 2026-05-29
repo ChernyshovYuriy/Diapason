@@ -9,6 +9,7 @@ import com.yuriy.diapason.data.db.DiapasonDatabase
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.data.repository.SessionRepositoryImpl
 import com.yuriy.diapason.logging.AppLogger
+import com.yuriy.diapason.reminder.ReminderWorker
 import java.util.Locale
 
 class MainApp : Application() {
@@ -36,6 +37,7 @@ class MainApp : Application() {
         // Firebase overview shows French/Portuguese/Italian dominate, so confirm
         // that signal at user-property level rather than guessing from country.
         AppAnalytics.setLanguage(Locale.getDefault().language)
+        ReminderWorker.Channel.ensureRegistered(applicationContext)
     }
 
     private fun isDebug(context: Context): Boolean {

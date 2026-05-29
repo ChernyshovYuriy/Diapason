@@ -25,3 +25,13 @@
 # to diagnose. The source file name is replaced with "SourceFile" (above) so
 # the original filename is not leaked, but line numbers remain accurate.
 -keepattributes SourceFile,LineNumberTable
+
+# WorkManager persists worker class names as strings in its SQLite DB; the
+# persisted name from APK v(N) must still resolve in APK v(N+1). R8 is only
+# deterministic within a single build, so without an explicit keep an obfuscated
+# rename across releases would leave already-scheduled reminders unresolvable
+# (ClassNotFoundException at fire time, silent drop). Keep the class name and
+# the constructor WorkManager invokes via reflection.
+-keep class com.yuriy.diapason.reminder.ReminderWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}

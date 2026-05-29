@@ -1,9 +1,11 @@
 package com.yuriy.diapason.ui.screens.results
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -28,8 +30,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -40,12 +44,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,11 +67,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceProfile
+import com.yuriy.diapason.reminder.ReminderScheduler
+import java.text.DateFormat
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 private fun shareResult(
     context: Context,
@@ -195,6 +210,14 @@ fun ResultsScreen(
 
             // ── Disclaimer ────────────────────────────────────────────────
             DisclaimerCard()
+
+            Spacer(Modifier.height(16.dp))
+
+            // ── Re-test reminder opt-in ───────────────────────────────────
+            // This is the single retention lever: 55% of users uninstall after
+            // reaching this screen because their goal feels complete. The card
+            // gives them a reason to come back next week.
+            ReTestReminderCard()
 
             Spacer(Modifier.height(20.dp))
 
@@ -565,4 +588,133 @@ private fun SectionLabel(text: String) {
         fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(bottom = 8.dp)
     )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Re-test reminder card
+// ─────────────────────────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun ReTestReminderCard() {
+    val context = LocalContext.current
+    val scheduler = remember(context) { ReminderScheduler(context) }
+
+    // Mirror scheduler state in Compose-visible holders so the card re-renders
+    // after the user taps without us having to round-trip through a ViewModel.
+    var scheduledAtMs by remember { mutableLongStateOf(scheduler.scheduledAtMs) }
+    var optedIn by remember { mutableStateOf(scheduler.isOptedIn) }
+    var dismissedThisView by remember { mutableStateOf(false) }
+
+    fun schedule() {
+        scheduler.scheduleOrReplace()
+        scheduledAtMs = scheduler.scheduledAtMs
+        optedIn = true
+        AppAnalytics.reminderOptInAccepted()
+    }
+
+    // POST_NOTIFICATIONS only exists from Android 13+. Older devices grant it
+    // implicitly so we skip the permission gate entirely.
+    val notifPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS) { granted ->
+            if (granted) schedule()
+        }
+    } else {
+        null
+    }
+
+    LaunchedEffect(Unit) {
+        AppAnalytics.reminderOptInShown()
+    }
+
+    if (dismissedThisView) return
+
+    val dateFormatter = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
+    val targetDateText = remember(scheduledAtMs) {
+        val target = if (scheduledAtMs > 0L) scheduledAtMs
+                     else System.currentTimeMillis() +
+                             TimeUnit.DAYS.toMillis(ReminderScheduler.REMINDER_DELAY_DAYS)
+        dateFormatter.format(Date(target))
+    }
+
+    val isScheduled = optedIn && scheduledAtMs > 0L
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = if (isScheduled)
+                MaterialTheme.colorScheme.secondaryContainer
+            else
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = if (isScheduled) Icons.Filled.CheckCircle
+                                  else Icons.Filled.NotificationsActive,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(
+                    text = stringResource(
+                        if (isScheduled) R.string.reminder_scheduled_title
+                        else R.string.reminder_card_title
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = if (isScheduled)
+                    stringResource(R.string.reminder_scheduled_body, targetDateText)
+                else
+                    stringResource(R.string.reminder_card_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+            )
+            Spacer(Modifier.height(12.dp))
+
+            if (isScheduled) {
+                OutlinedButton(
+                    onClick = {
+                        scheduler.cancel()
+                        scheduledAtMs = 0L
+                        optedIn = false
+                        AppAnalytics.reminderCancelled()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.reminder_btn_cancel))
+                }
+            } else {
+                Button(
+                    onClick = {
+                        val notif = notifPermission
+                        if (notif == null || notif.status.isGranted) {
+                            schedule()
+                        } else {
+                            notif.launchPermissionRequest()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.reminder_btn_opt_in, targetDateText))
+                }
+                TextButton(
+                    onClick = {
+                        AppAnalytics.reminderOptInDismissed()
+                        dismissedThisView = true
+                    },
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 4.dp)
+                ) {
+                    Text(stringResource(R.string.reminder_btn_dismiss))
+                }
+            }
+        }
+    }
 }

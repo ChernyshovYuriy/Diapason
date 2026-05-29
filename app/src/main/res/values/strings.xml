@@ -54,6 +54,22 @@
     <string name="results_disclaimer">Fach classification also depends on timbre and vocal weight,
         which require a trained ear. Use this as an informed starting point — not a definitive
         diagnosis. A voice teacher will always give the most accurate assessment.</string>
+
+    <!-- Re-test reminder (Results screen card + notification) -->
+    <string name="reminder_card_title">Re-test in 7 days?</string>
+    <string name="reminder_card_body">Your voice changes day to day — sleep, allergies, training all
+        move your range. Diapason will send one gentle reminder a week from now.</string>
+    <string name="reminder_btn_opt_in">Remind me on %1$s</string>
+    <string name="reminder_btn_dismiss">Not now</string>
+    <string name="reminder_scheduled_title">Reminder set</string>
+    <string name="reminder_scheduled_body">Diapason will remind you to re-test on %1$s.</string>
+    <string name="reminder_btn_cancel">Cancel reminder</string>
+    <string name="reminder_notification_title">Time for a voice check-in</string>
+    <string name="reminder_notification_body">Open Diapason to see how your range has changed since
+        your last session.</string>
+    <string name="reminder_channel_name">Re-test reminders</string>
+    <string name="reminder_channel_description">A single weekly nudge to re-measure your voice
+        range, only if you opted in.</string>
     <string name="guide_title">How to Use Diapason</string>
     <string name="guide_subtitle">Follow these steps for the most accurate result</string>
     <string name="guide_step1_title">Find a quiet room</string>

@@ -15,6 +15,7 @@ import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.logging.AppLogger
+import com.yuriy.diapason.reminder.ReminderScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -77,6 +78,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     private fun str(resId: Int) = getApplication<Application>().getString(resId)
 
     private val repository: SessionRepository = (application as MainApp).sessionRepository
+    private val reminderScheduler = ReminderScheduler(application)
 
     private val _stage = MutableStateFlow<ComparisonStage>(ComparisonStage.Intro)
     val stage: StateFlow<ComparisonStage> = _stage.asStateFlow()
@@ -252,6 +254,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             comfortableRangeWidened = result.comfortableRangeWidened,
             detectedRangeWidened = result.detectedRangeWidened,
         )
+        // Push the re-test reminder out so it stays anchored to the user's most recent
+        // session rather than the original opt-in moment.
+        reminderScheduler.bumpIfOptedIn()
         _stage.value = ComparisonStage.Done(result)
     }
 

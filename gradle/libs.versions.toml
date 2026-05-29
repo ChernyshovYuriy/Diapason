@@ -17,6 +17,7 @@ kotlin = "2.3.21"
 material = "1.14.0"
 navigationCompose = "2.9.8"
 playReview = "2.0.2"
+workRuntime = "2.11.2"
 
 ksp = "2.3.6"
 googleServices = "4.4.4"
@@ -58,6 +59,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 play-review = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

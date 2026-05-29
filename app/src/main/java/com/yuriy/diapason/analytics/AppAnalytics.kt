@@ -139,6 +139,28 @@ object AppAnalytics {
         logEvent(EVENT_HISTORY_OPENED) { long(PARAM_ITEM_COUNT, itemCount.toLong()) }
     }
 
+    // ── Re-test reminder funnel ──────────────────────────────────────────────
+
+    fun reminderOptInShown() {
+        logEvent(EVENT_REMINDER_OPT_IN_SHOWN) {}
+    }
+
+    fun reminderOptInAccepted() {
+        logEvent(EVENT_REMINDER_OPT_IN_ACCEPTED) {}
+    }
+
+    fun reminderOptInDismissed() {
+        logEvent(EVENT_REMINDER_OPT_IN_DISMISSED) {}
+    }
+
+    fun reminderCancelled() {
+        logEvent(EVENT_REMINDER_CANCELLED) {}
+    }
+
+    fun reminderNotificationPosted() {
+        logEvent(EVENT_REMINDER_NOTIFICATION_POSTED) {}
+    }
+
     // ── Internal ─────────────────────────────────────────────────────────────
 
     private class ParamBuilder {
@@ -179,6 +201,11 @@ object AppAnalytics {
     private const val EVENT_WARMUP_COMPLETED = "warmup_completed"
     private const val EVENT_COMPARISON_COMPLETED = "comparison_completed"
     private const val EVENT_HISTORY_OPENED = "history_opened"
+    private const val EVENT_REMINDER_OPT_IN_SHOWN = "reminder_opt_in_shown"
+    private const val EVENT_REMINDER_OPT_IN_ACCEPTED = "reminder_opt_in_accepted"
+    private const val EVENT_REMINDER_OPT_IN_DISMISSED = "reminder_opt_in_dismissed"
+    private const val EVENT_REMINDER_CANCELLED = "reminder_cancelled"
+    private const val EVENT_REMINDER_NOTIFICATION_POSTED = "reminder_notification_posted"
 
     private const val PARAM_FLOW = "flow"
     private const val PARAM_DURATION_SECONDS = "duration_seconds"

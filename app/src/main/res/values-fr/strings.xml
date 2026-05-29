@@ -49,6 +49,22 @@
     <string name="results_disclaimer">La classification Fach dépend aussi du timbre et du poids vocal,
         qui nécessitent une oreille entraînée. Utilisez ceci comme point de départ éclairé — pas
         comme diagnostic définitif. Un professeur de chant donnera toujours l’évaluation la plus précise.</string>
+
+    <!-- Rappel pour refaire le test -->
+    <string name="reminder_card_title">Refaire le test dans 7 jours ?</string>
+    <string name="reminder_card_body">Votre voix change d’un jour à l’autre — sommeil, allergies,
+        entraînement, tout influence votre tessiture. Diapason vous enverra un rappel discret dans une semaine.</string>
+    <string name="reminder_btn_opt_in">Me rappeler le %1$s</string>
+    <string name="reminder_btn_dismiss">Pas maintenant</string>
+    <string name="reminder_scheduled_title">Rappel activé</string>
+    <string name="reminder_scheduled_body">Diapason vous rappellera de refaire le test le %1$s.</string>
+    <string name="reminder_btn_cancel">Annuler le rappel</string>
+    <string name="reminder_notification_title">L’heure de votre bilan vocal</string>
+    <string name="reminder_notification_body">Ouvrez Diapason pour voir comment votre voix a évolué
+        depuis votre dernière séance.</string>
+    <string name="reminder_channel_name">Rappels pour refaire le test</string>
+    <string name="reminder_channel_description">Un seul rappel hebdomadaire pour mesurer à nouveau
+        votre tessiture, uniquement si vous avez choisi de l’activer.</string>
     <string name="guide_title">Comment utiliser Diapason</string>
     <string name="guide_subtitle">Suivez ces étapes pour obtenir le résultat le plus précis</string>
     <string name="guide_step1_title">Trouvez une pièce calme</string>

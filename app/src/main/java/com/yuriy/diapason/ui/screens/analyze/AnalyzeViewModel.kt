@@ -16,6 +16,7 @@ import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.logging.AppLogger
+import com.yuriy.diapason.reminder.ReminderScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,6 +62,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     private val repository: SessionRepository = (application as MainApp).sessionRepository
     private val reviewHelper = ReviewHelper(application)
+    private val reminderScheduler = ReminderScheduler(application)
 
     private val _reviewTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val reviewTrigger: SharedFlow<Unit> = _reviewTrigger.asSharedFlow()
@@ -153,6 +155,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
         _lastResult.value = result // persist across back-navigation
         _uiState.value = result
+
+        // If the user previously opted into the re-test reminder, push it out so it always
+        // sits ~30 days from their most recent session rather than from the original opt-in.
+        reminderScheduler.bumpIfOptedIn()
 
         if (reviewHelper.recordAnalysisAndCheckShouldPrompt()) {
             _reviewTrigger.tryEmit(Unit)

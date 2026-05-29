@@ -49,6 +49,22 @@
     <string name="results_disclaimer">A classificação Fach também depende do timbre e do peso vocal,
         que exigem um ouvido treinado. Use isto como um ponto de partida informado — não como um diagnóstico
         definitivo. Um professor de canto sempre dará a avaliação mais precisa.</string>
+
+    <!-- Lembrete para repetir o teste -->
+    <string name="reminder_card_title">Repetir o teste em 7 dias?</string>
+    <string name="reminder_card_body">A sua voz muda de um dia para o outro — sono, alergias e
+        treino influenciam a sua extensão. O Diapason enviará um único lembrete daqui a uma semana.</string>
+    <string name="reminder_btn_opt_in">Lembrar-me em %1$s</string>
+    <string name="reminder_btn_dismiss">Agora não</string>
+    <string name="reminder_scheduled_title">Lembrete ativado</string>
+    <string name="reminder_scheduled_body">O Diapason irá lembrá-lo de repetir o teste em %1$s.</string>
+    <string name="reminder_btn_cancel">Cancelar lembrete</string>
+    <string name="reminder_notification_title">Hora de um check-up vocal</string>
+    <string name="reminder_notification_body">Abra o Diapason para ver como a sua extensão mudou
+        desde a última sessão.</string>
+    <string name="reminder_channel_name">Lembretes para repetir o teste</string>
+    <string name="reminder_channel_description">Um único lembrete semanal para medir novamente a sua
+        extensão vocal, apenas se tiver optado por ativá-lo.</string>
     <string name="guide_title">Como Usar o Diapason</string>
     <string name="guide_subtitle">Siga estas etapas para obter o resultado mais preciso</string>
     <string name="guide_step1_title">Encontre um ambiente silencioso</string>

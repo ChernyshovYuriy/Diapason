@@ -74,6 +74,10 @@ To run a specific test class (use `testDebugUnitTest`, not `test`, for the `--te
 
 See **[CAPTURING.md](CAPTURING.md)** for the full workflow: exporting pitch data from Logcat, converting it to the fixture JSON format, writing behavioural assertions, and registering the fixture in `FixtureRegressionTest`.
 
+### Analytics events
+
+See **[ANALYTICS.md](ANALYTICS.md)** for the full catalogue of custom Firebase Analytics events, their parameters, and where each one fires.
+
 ## References
 
 - de Cheveigné & Kawahara — *JASA 111(4), 2002* (YIN paper)

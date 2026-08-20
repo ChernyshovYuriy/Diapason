@@ -240,5 +240,6 @@
     <string name="about_language_italian" translatable="false">Italiano</string>
     <string name="about_language_spanish" translatable="false">Español</string>
     <string name="about_language_portuguese" translatable="false">Português</string>
+    <string name="about_language_chinese" translatable="false">中文</string>
     <string name="no_pitch_placeholder" translatable="false">—</string>
 </resources>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">音域分类器</string>
+    <string name="nav_analyze">分析</string>
+    <string name="nav_guide">指南</string>
+    <string name="nav_voice_types">声部类型</string>
+    <string name="nav_about">关于</string>
+    <string name="analyze_idle_prompt">点击开始，唱出你的全部音域</string>
+    <string name="analyze_complete">分析完成！</string>
+    <string name="analyze_stat_samples">样本数</string>
+    <string name="analyze_stat_hz">Hz</string>
+    <string name="analyze_btn_grant_permission">授予麦克风权限</string>
+    <string name="analyze_btn_start">开始</string>
+    <string name="analyze_btn_stop">停止</string>
+    <string name="analyze_btn_try_again">重试</string>
+    <string name="analyze_unknown">未知</string>
+    <string name="analyze_view">查看</string>
+    <string name="analyze_last_result_type">上次结果：%1$s</string>
+    <string name="analyze_range">音域：%1$s - %2$s</string>
+    <string name="analyze_status_listening">正在聆听…请从最低音唱到最高音，然后再唱回来</string>
+    <string name="analyze_status_listening_short">正在聆听…请从最低音唱到最高音</string>
+    <string name="analyze_status_analyzing">正在分析你的声音…</string>
+    <string name="analyze_status_mic_error">麦克风初始化失败——请检查权限</string>
+    <string name="analyze_status_too_few_samples">样本太少——请延长演唱时间</string>
+    <string name="analyze_error_insufficient">数据不足。请持续演唱至少 20–30 秒。</string>
+    <string name="voice_types_title">声部类型</string>
+    <string name="voice_types_subtitle">点击任意声部类型，了解其音域、代表曲目和著名歌唱家</string>
+    <string name="voice_types_label_range">音域</string>
+    <string name="voice_types_label_tessitura">常用音区</string>
+    <string name="voice_types_label_passaggio">换声点</string>
+    <string name="voice_types_label_famous_roles">著名角色</string>
+    <string name="voice_types_label_example_singers">代表歌唱家</string>
+    <string name="voice_types_cd_collapse">收起</string>
+    <string name="voice_types_cd_expand">展开</string>
+    <string name="results_title">你的结果</string>
+    <string name="results_best_match_label">最佳匹配</string>
+    <string name="results_confidence_label">分类置信度</string>
+    <string name="results_famous_roles_subheading">该声部的著名角色</string>
+    <string name="results_section_range">音域——本次分析</string>
+    <string name="results_section_other_matches">其他可能匹配</string>
+    <string name="results_section_comfortable_range">舒适音域</string>
+    <string name="results_section_detected_extremes">检测到的音域极值</string>
+    <string name="results_stat_comfortable_low">下限</string>
+    <string name="results_stat_comfortable_high">上限</string>
+    <string name="results_stat_lowest">检测到的最低音</string>
+    <string name="results_stat_highest">检测到的最高音</string>
+    <string name="results_stat_passaggio">估计换声点</string>
+    <string name="results_stat_samples">有效音高样本数</string>
+    <string name="results_session_note">基于本次分析 · 仅计入可靠音符</string>
+    <string name="results_stat_session_format">%1$.0f 秒分析</string>
+    <string name="results_runner_up_rank_format">#%1$d</string>
+    <string name="results_score_format">%1$d/%2$d</string>
+    <string name="results_btn_analyze_again">再次分析</string>
+    <string name="results_disclaimer">Fach 声部分类还取决于音色和声音的厚度，
+        这需要经过训练的耳朵来判断。请将本结果作为有依据的参考起点——而非
+        最终诊断。声乐老师给出的评估始终最为准确。</string>
+
+    <!-- Re-test reminder (Results screen card + notification) -->
+    <string name="reminder_card_title">7 天后再次测试？</string>
+    <string name="reminder_card_body">你的声音每天都在变化——睡眠、过敏、训练都会
+        影响音域。Diapason 将在一周后发送一次温馨提醒。</string>
+    <string name="reminder_btn_opt_in">在 %1$s 提醒我</string>
+    <string name="reminder_btn_dismiss">暂不</string>
+    <string name="reminder_scheduled_title">提醒已设置</string>
+    <string name="reminder_scheduled_body">Diapason 将在 %1$s 提醒你重新测试。</string>
+    <string name="reminder_btn_cancel">取消提醒</string>
+    <string name="reminder_notification_title">该做一次声音检测了</string>
+    <string name="reminder_notification_body">打开 Diapason，看看你的音域自上次测试以来
+        有何变化。</string>
+    <string name="reminder_channel_name">重新测试提醒</string>
+    <string name="reminder_channel_description">仅在你选择开启后，每周发送一次
+        重新测量音域的提醒。</string>
+    <string name="guide_title">如何使用 Diapason</string>
+    <string name="guide_subtitle">按照以下步骤获得最准确的结果</string>
+    <string name="guide_step1_title">找一个安静的房间</string>
+    <string name="guide_step1_body">背景噪音会降低音高检测的置信度。
+        请关闭窗户、关掉风扇，并远离电视或音乐声。</string>
+    <string name="guide_step2_title">先热身</string>
+    <string name="guide_step2_body">开始前进行 5–10 分钟的声乐热身。
+        未热身的嗓音会产生不可靠的结果，也可能无法达到真实的音域极限。</string>
+    <string name="guide_step3_title">演唱持续音</string>
+    <string name="guide_step3_body">每个音至少保持 2–3 秒。Diapason 需要稳定、
+        持续的音才能可靠地检测音高——说话声和音符间的滑音会被过滤掉。</string>
+    <string name="guide_step4_title">覆盖你的全部音域</string>
+    <string name="guide_step4_body">从你舒适的最低音开始，按半音阶或音阶逐渐
+        上行到最高音，然后再唱回来。这有助于同时检测你的绝对音域和换声点
+        （声区转换处）。演唱时长请争取达到 30–45 秒以上。</string>
+    <string name="guide_step5_title">点击停止并查看结果</string>
+    <string name="guide_step5_body">Diapason 会显示最匹配的声部类型及置信度分数、
+        测得的音域、常用音区和估计的换声点。完整的评分细节可在 Logcat 中查看。</string>
+    <string name="guide_fach_section_title">什么是 Fach？</string>
+    <string name="guide_fach_body1">"Fach"（德语意为"分类/隔间"）是歌剧院用来
+        按声部类型对歌唱家进行分类的传统体系。了解自己的 Fach 有助于选择
+        合适的曲目、保护嗓音，并与选角导演和声乐老师有效沟通。</string>
+    <string name="guide_fach_body2">Fach 体系不止区分"女高音"或"男低音"这样的
+        大类，还根据音域、常用音区（声音最自如的区域）、换声点（胸声与头声
+        之间的转换处）以及音色，细分出 19 种以上的子类型。</string>
+    <string name="guide_measures_section_title">Diapason 测量什么</string>
+    <string name="guide_measure_range_term">检测音域</string>
+    <string name="guide_measure_range_def">本次分析中检测到的最低音和最高音，
+        均需在两个半音以内至少有一个邻近样本予以验证。单个孤立的边缘音
+        不会单独决定音域的上下限。</string>
+    <string name="guide_measure_tessitura_term">常用音区</string>
+    <string name="guide_measure_tessitura_def">你音高样本中第 20 到第 80 百分位
+        的区间——即你的声音自然且舒适地停留时间最长的区域。</string>
+    <string name="guide_measure_passaggio_term">换声点</string>
+    <string name="guide_measure_passaggio_def">根据本次分析中音高最不稳定的区域
+        估算得出——即胸声与头声之间的过渡点。</string>
+    <string name="guide_limitation_title">Diapason 无法测量的内容</string>
+    <string name="guide_limitation_body">音色和声音的厚度对准确的 Fach 分类至关
+        重要，但无法通过手机麦克风可靠地测量。戏剧女高音和抒情女高音可能
+        唱到相同的音符——只有经过训练的耳朵才能分辨。请将 Diapason 的结果
+        作为有力的参考起点，而非最终结论。</string>
+    <string name="about_hero_subtitle">音域分类器</string>
+    <string name="about_version_format">版本 %1$s（构建 %2$d）</string>
+    <string name="about_section_about">关于</string>
+    <string name="about_body_1">Diapason 帮助歌唱家和声乐老师使用经典的德语 Fach 体系探索并分类声部。它通过设备麦克风聆听持续的音符，实时构建声学特征，并将其与 19 种已记录的声部类型进行匹配——从花腔女高音到最低音（Contrabass Oktavist）。</string>
+    <string name="about_body_2">本应用旨在作为教育性的参考起点。音色和声音厚度——对确定最终 Fach 至关重要——需要经过训练的耳朵来判断，单靠麦克风无法捕捉。</string>
+    <string name="about_section_creator">开发者</string>
+    <string name="about_creator_developer_label">软件工程师</string>
+    <string name="about_creator_stack_label">技术栈</string>
+    <string name="about_creator_pitch_detection_label">音高检测</string>
+    <string name="about_creator_voice_taxonomy_label">声部分类体系</string>
+    <string name="about_section_localization">语言与本地化</string>
+    <string name="about_localization_current_language">支持 6 种语言</string>
+    <string name="about_localization_available_languages">已支持英语、法语、意大利语、西班牙语、葡萄牙语和中文。</string>
+    <string name="about_localization_choose_language">选择应用语言</string>
+    <string name="about_section_references">参考资料</string>
+    <string name="about_reference_yin_label">YIN 论文</string>
+    <string name="about_reference_fach_label">Fach 分类体系</string>
+    <string name="about_section_privacy">隐私</string>
+    <string name="about_privacy_policy_label">隐私政策</string>
+    <string name="about_privacy_policy_value">你的声音分析始终保留在设备本地。不会上传或分享任何录音。</string>
+    <string name="about_privacy_policy_cta">点击查看完整政策</string>
+    <string name="about_section_feedback">反馈与问题报告</string>
+    <string name="about_feedback_body">发现问题或有功能建议？请在项目代码仓库中提交 issue。</string>
+    <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
+    <string name="common_bullet_item">• %1$s</string>
+    <string name="results_hz_format">%1$.0f Hz</string>
+    <string name="results_percent_format">%1$d%%</string>
+    <string name="voice_types_separator_dot"> · </string>
+    <string name="voice_types_detail_label_format">  %1$s</string>
+    <string name="fach_category_soprano">女高音</string>
+    <string name="fach_category_mezzo_soprano">女中音</string>
+    <string name="fach_category_contralto">女低音</string>
+    <string name="fach_category_countertenor">假声男高音</string>
+    <string name="fach_category_tenor">男高音</string>
+    <string name="fach_category_baritone">男中音</string>
+    <string name="fach_category_bass">男低音</string>
+    <string name="fach_name_coloratura_soprano">花腔女高音</string>
+    <string name="fach_description_coloratura_soprano">极其灵活敏捷，音域高入云霄，音色轻盈剔透。</string>
+    <string name="fach_name_lyric_coloratura_soprano">抒情花腔女高音</string>
+    <string name="fach_description_lyric_coloratura_soprano">高音区明亮辉煌，兼具温暖音色与富有表现力的连音。</string>
+    <string name="fach_name_lyric_soprano">抒情女高音</string>
+    <string name="fach_description_lyric_soprano">音色温暖流畅、情感丰富——最常见的女高音类型。</string>
+    <string name="fach_name_spinto_soprano">戏剧抒情女高音</string>
+    <string name="fach_description_spinto_soprano">以抒情音色为基础，融入戏剧性的张力与更为深沉的音色。</string>
+    <string name="fach_name_dramatic_soprano">戏剧女高音</string>
+    <string name="fach_description_dramatic_soprano">音色强劲、厚重、穿透力强，足以在大型乐队伴奏下响彻整个音乐厅。</string>
+    <string name="fach_name_lyric_mezzo_soprano">抒情女中音</string>
+    <string name="fach_description_lyric_mezzo_soprano">中音区丰满且灵活，常出演反串（男装）角色。</string>
+    <string name="fach_name_dramatic_mezzo_soprano">戏剧女中音</string>
+    <string name="fach_description_dramatic_mezzo_soprano">音色深沉厚重、气势逼人——擅长演绎反派、女巫和悲剧母亲等角色。</string>
+    <string name="fach_name_contralto">女低音</string>
+    <string name="fach_description_contralto">最罕见的女声——质朴浑厚，低音区深邃共鸣。</string>
+    <string name="fach_name_countertenor">假声男高音</string>
+    <string name="fach_description_countertenor">男声运用假声/头声演唱于女低音至女中音音域，尤擅巴洛克曲目。</string>
+    <string name="fach_name_lyric_tenor">抒情男高音</string>
+    <string name="fach_description_lyric_tenor">音色明亮甜美、优雅动人——典型的浪漫男主角声部。</string>
+    <string name="fach_name_spinto_tenor">戏剧抒情男高音</string>
+    <string name="fach_description_spinto_tenor">以抒情音色为核心，带有戏剧性的锋芒——能够持续唱出强有力的高音。</string>
+    <string name="fach_name_dramatic_tenor_heldentenor">戏剧男高音（英雄男高音）</string>
+    <string name="fach_description_dramatic_tenor_heldentenor">音量宏大、气势英雄——专为瓦格纳而生，重耐力而非灵活性。</string>
+    <string name="fach_name_lyric_baritone">抒情男中音</string>
+    <string name="fach_description_lyric_baritone">音色圆润温暖、高贵典雅——擅演迷人的男主角与浪漫的反英雄。</string>
+    <string name="fach_name_kavalierbariton">绅士男中音</string>
+    <string name="fach_description_kavalierbariton">优雅而具贵族气质的男中音——威严中不失精致。</string>
+    <string name="fach_name_dramatic_baritone">戏剧男中音</string>
+    <string name="fach_description_dramatic_baritone">音色深沉、强劲有力——威尔第歌剧中反派与悲剧父亲的典型声部。</string>
+    <string name="fach_name_bass_baritone">男低中音</string>
+    <string name="fach_description_bass_baritone">兼具男低音的深沉与男中音的灵活——最适合瓦格纳笔下的英雄反派角色。</string>
+    <string name="fach_name_basso_cantante">抒情男低音</string>
+    <string name="fach_description_basso_cantante">歌唱性男低音——音色温暖抒情、连音流畅；擅演智慧的国王与仁慈的父亲。</string>
+    <string name="fach_name_basso_profundo">深沉男低音</string>
+    <string name="fach_description_basso_profundo">乐队中最低沉的人声——气势磅礴、音色空灵，低音如雷鸣般震撼。</string>
+    <string name="fach_name_contrabass_oktavist">最低音（俄式深低音）</string>
+    <string name="fach_description_contrabass_oktavist">极为罕见——俄罗斯东正教合唱传统中的超低音专才。</string>
+    <string name="share_chooser_title">分享你的声部类型</string>
+    <string name="share_cd_button">分享你的结果</string>
+    <string name="share_unknown_voice_type">未知</string>
+    <string name="share_clipboard_label">Diapason 声部类型结果</string>
+    <string name="share_clipboard_toast">文本已复制——如果应用未自动填充，请手动粘贴</string>
+    <string name="share_text">你有没有想过自己的歌唱声部是什么？🎶\n我刚刚测出我是：%1$s\n检测音域：%2$s–%3$s · 舒适音区：%4$s–%5$s\n\n现在我很好奇——你的呢？\n试试 Diapason：%6$s</string>
+    <string name="nav_history">历史记录</string>
+    <string name="history_title">历史记录</string>
+    <string name="history_subtitle">你过去的声音分析记录，按最新排序</string>
+    <string name="history_empty_heading">暂无保存的记录</string>
+    <string name="history_empty_body">完成一次声音分析后即可查看历史记录</string>
+    <string name="history_label_comfortable_range">舒适音域</string>
+    <string name="history_label_detected_extremes">检测到的音域极值</string>
+    <string name="history_label_passaggio">换声点</string>
+    <string name="history_range_format">%1$s – %2$s</string>
+    <string name="compare_btn_start">对比热身前后</string>
+    <string name="compare_intro_title">热身前后对比</string>
+    <string name="compare_intro_headline">对比两次分析</string>
+    <string name="compare_intro_body">此流程会录制你的声音两次——一次在热身前，
+        一次在热身后——以便你比较两次分析结果。</string>
+    <string name="compare_intro_step1">基线录制——唱出你的全部音域</string>
+    <string name="compare_intro_step2">热身计时——5 分钟引导式练习</string>
+    <string name="compare_intro_step3">复测录制——重复相同的模式</string>
+    <string name="compare_intro_step4">并排对比两次分析结果</string>
+    <string name="compare_intro_disclaimer">结果仅基于本次分析，反映的是测量数据，
+        而非医学或训练结论。</string>
+    <string name="compare_intro_btn_start">开始基线录制</string>
+    <string name="compare_intro_btn_cancel">取消</string>
+    <string name="compare_baseline_title">热身前</string>
+    <string name="compare_baseline_instruction">从最低音唱到最高音，然后再唱回来。</string>
+    <string name="compare_retest_title">热身后</string>
+    <string name="compare_retest_instruction">重复相同的模式——从最低音到最高音，然后再唱回来。</string>
+    <string name="compare_record_btn_stop">停止录制</string>
+    <string name="compare_insufficient_title">数据不足</string>
+    <string name="compare_insufficient_btn_retry">重试</string>
+    <string name="compare_insufficient_btn_exit">退出对比</string>
+    <string name="compare_warmup_title">热身</string>
+    <string name="compare_warmup_baseline_done">基线已录制完成。</string>
+    <string name="compare_warmup_prompt">现在请热身，然后再次录制。</string>
+    <string name="compare_warmup_timer_hint">准备好后点击开始以启动计时器。</string>
+    <string name="compare_warmup_timer_running">计时中…</string>
+    <string name="compare_warmup_exercises_heading">建议的热身练习</string>
+    <string name="compare_warmup_disclaimer">这些仅为一般性建议。如果你有自己的
+        热身流程，请照常进行。</string>
+    <string name="compare_warmup_btn_start_timer">开始 5 分钟计时</string>
+    <string name="compare_warmup_btn_skip_running">跳过计时并开始复测</string>
+    <string name="compare_warmup_btn_skip_idle">跳过计时</string>
+    <string name="compare_warmup_btn_exit">退出对比</string>
+    <string name="compare_result_title">对比结果</string>
+    <string name="compare_result_sessions_recorded">已录制两次分析</string>
+    <string name="compare_result_before_range">热身前舒适音域：%1$s</string>
+    <string name="compare_result_after_range">热身后舒适音域：%1$s</string>
+    <string name="compare_result_section_comfortable">舒适音域</string>
+    <string name="compare_result_section_extremes">检测到的音域极值</string>
+    <string name="compare_result_section_passaggio">估计换声点</string>
+    <string name="compare_result_section_voice_type">声部类型匹配</string>
+    <string name="compare_result_label_comfortable_low">下限（P20）</string>
+    <string name="compare_result_label_comfortable_high">上限（P80）</string>
+    <string name="compare_result_label_detected_min">检测到的最低音</string>
+    <string name="compare_result_label_detected_max">检测到的最高音</string>
+    <string name="compare_result_label_passaggio">换声点估计</string>
+    <string name="compare_result_before_label">热身前</string>
+    <string name="compare_result_after_label">热身后</string>
+    <string name="compare_result_disclaimer">结果仅基于这两次分析。两次分析之间的
+        变化反映的是测量数据，而非确定的生理或训练成果。</string>
+    <string name="compare_result_btn_done">完成</string>
+    <string name="compare_result_btn_again">再次对比</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_exit">退出</string>
+    <string name="compare_record_btn_start">开始录制</string>
+    <string name="compare_record_listening">正在聆听…</string>
+    <string name="compare_warmup_card1_range">0–1 分钟</string>
+    <string name="compare_warmup_card1_title">唇颤音</string>
+    <string name="compare_warmup_card1_body">让气息轻轻吹动微闭的双唇使其振动。
+        在你的音域内轻柔地上下滑动。</string>
+    <string name="compare_warmup_card2_range">1–2 分钟</string>
+    <string name="compare_warmup_card2_title">哼鸣</string>
+    <string name="compare_warmup_card2_body">闭口在舒适的音高上哼鸣。
+        缓慢地在五度音程内上下移动。</string>
+    <string name="compare_warmup_card3_range">2–3 分钟</string>
+    <string name="compare_warmup_card3_title">五音音阶</string>
+    <string name="compare_warmup_card3_body">在五音上行音阶中演唱 \'mah-may-mee-mo-moo\'。
+        从中音区开始，每次重复上移半音。</string>
+    <string name="compare_warmup_card4_range">3–4 分钟</string>
+    <string name="compare_warmup_card4_title">八度滑音</string>
+    <string name="compare_warmup_card4_body">选择一个舒适的元音，从舒适的低音滑到
+        舒适的高音，再滑回来。保持轻松——不要用力过猛。</string>
+    <string name="compare_warmup_card5_range">4–5 分钟</string>
+    <string name="compare_warmup_card5_title">轻柔的持续音</string>
+    <string name="compare_warmup_card5_body">保持 3–4 个舒适的音符，每个持续 3 秒。
+        这些正是 Diapason 将要检测的持续音。</string>
+</resources>

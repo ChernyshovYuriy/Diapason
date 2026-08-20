@@ -121,8 +121,8 @@
     <string name="about_creator_pitch_detection_label">Détection de hauteur</string>
     <string name="about_creator_voice_taxonomy_label">Taxonomie vocale</string>
     <string name="about_section_localization">Langues et localisation</string>
-    <string name="about_localization_current_language">Disponible en 5 langues</string>
-    <string name="about_localization_available_languages">L’anglais, le français et l’italien sont disponibles.</string>
+    <string name="about_localization_current_language">Disponible en 6 langues</string>
+    <string name="about_localization_available_languages">L’anglais, le français, l’italien, l’espagnol, le portugais et le chinois sont disponibles.</string>
     <string name="about_localization_choose_language">Choisir la langue de l’application</string>
     <string name="about_section_references">Références</string>
     <string name="about_reference_yin_label">Article YIN</string>

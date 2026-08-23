@@ -15,6 +15,7 @@ import androidx.work.WorkerParameters
 import com.yuriy.diapason.MainActivity
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
+import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 
 /**
@@ -57,11 +58,11 @@ class ReminderWorker(
 
         val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(context.getString(R.string.reminder_notification_title))
-            .setContentText(context.getString(R.string.reminder_notification_body))
+            .setContentTitle(context.localizedString(R.string.reminder_notification_title))
+            .setContentText(context.localizedString(R.string.reminder_notification_body))
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(context.getString(R.string.reminder_notification_body)),
+                    .bigText(context.localizedString(R.string.reminder_notification_body)),
             )
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -100,10 +101,10 @@ class ReminderWorker(
 
             val channel = android.app.NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
-                context.getString(R.string.reminder_channel_name),
+                context.localizedString(R.string.reminder_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT,
             ).apply {
-                description = context.getString(R.string.reminder_channel_description)
+                description = context.localizedString(R.string.reminder_channel_description)
             }
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager

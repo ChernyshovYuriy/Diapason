@@ -15,6 +15,7 @@ import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
+import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +59,7 @@ sealed interface AnalyzeUiState {
 
 class AnalyzeViewModel(application: Application) : AndroidViewModel(application) {
 
-    private fun getString(resId: Int): String = getApplication<Application>().getString(resId)
+    private fun getString(resId: Int): String = getApplication<Application>().localizedString(resId)
 
     private val repository: SessionRepository = (application as MainApp).sessionRepository
     private val reviewHelper = ReviewHelper(application)

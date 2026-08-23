@@ -42,6 +42,24 @@
             </intent-filter>
         </activity>
 
+        <!-- Disable WorkManager's automatic androidx.startup initialization. It runs as a
+             ContentProvider.onCreate() during handleBindApplication, before MainApp.onCreate()
+             — on some Android 14 device firmwares whose framework.jar is missing
+             JobScheduler.forNamespace(String) despite reporting SDK_INT 34, that unconditional
+             call throws NoSuchMethodError there and kills the process unrecoverably on every
+             launch (see WorkManagerSupport). Initializing manually from MainApp.onCreate lets
+             that failure be caught and confined to the reminder feature instead. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
     </application>
 
 </manifest>

@@ -25,8 +25,16 @@ class ReminderScheduler(private val context: Context) {
     /**
      * Schedules a reminder [REMINDER_DELAY_DAYS] from now, replacing any pending one.
      * Marks the user as opted in.
+     *
+     * No-ops (leaving the user not opted in) if [WorkManagerSupport] failed to initialize —
+     * see its doc for why that can happen on some Android 14 device firmwares.
      */
     fun scheduleOrReplace() {
+        if (!WorkManagerSupport.isAvailable) {
+            AppLogger.w("$TAG skipped — WorkManager unavailable on this device")
+            return
+        }
+
         val delayMs = TimeUnit.DAYS.toMillis(REMINDER_DELAY_DAYS)
         val request = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
@@ -48,7 +56,9 @@ class ReminderScheduler(private val context: Context) {
      * dismisses an existing reminder from the Results card.
      */
     fun cancel() {
-        WorkManager.getInstance(context).cancelUniqueWork(ReminderWorker.UNIQUE_WORK_NAME)
+        if (WorkManagerSupport.isAvailable) {
+            WorkManager.getInstance(context).cancelUniqueWork(ReminderWorker.UNIQUE_WORK_NAME)
+        }
         prefs.optedIn = false
         prefs.scheduledAtMs = 0L
         AppLogger.i("$TAG reminder cancelled")

@@ -122,8 +122,8 @@
     <string name="about_creator_pitch_detection_label">音高检测</string>
     <string name="about_creator_voice_taxonomy_label">声部分类体系</string>
     <string name="about_section_localization">语言与本地化</string>
-    <string name="about_localization_current_language">支持 6 种语言</string>
-    <string name="about_localization_available_languages">已支持英语、法语、意大利语、西班牙语、葡萄牙语和中文。</string>
+    <string name="about_localization_current_language">支持 7 种语言</string>
+    <string name="about_localization_available_languages">已支持英语、法语、意大利语、西班牙语、葡萄牙语、中文和波斯语。</string>
     <string name="about_localization_choose_language">选择应用语言</string>
     <string name="about_section_references">参考资料</string>
     <string name="about_reference_yin_label">YIN 论文</string>

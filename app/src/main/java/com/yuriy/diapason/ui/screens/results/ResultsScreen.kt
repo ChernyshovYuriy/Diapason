@@ -60,12 +60,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -545,9 +547,19 @@ private fun ConfidenceBar(label: String, fraction: Float) {
                     color = Color.White.copy(alpha = 0.20f),
                     cornerRadius = CornerRadius(3.dp.toPx())
                 )
+                // Canvas draws in raw pixel coordinates, so it isn't auto-mirrored by
+                // Compose's layout direction the way padding/arrangement are — flip the
+                // fill origin ourselves so it grows from the reading-start edge in RTL.
+                val filledWidth = size.width * fraction
+                val topLeftX = if (layoutDirection == LayoutDirection.Rtl) {
+                    size.width - filledWidth
+                } else {
+                    0f
+                }
                 drawRoundRect(
                     color = Color.White.copy(alpha = 0.80f),
-                    size = size.copy(width = size.width * fraction),
+                    topLeft = Offset(topLeftX, 0f),
+                    size = size.copy(width = filledWidth),
                     cornerRadius = CornerRadius(3.dp.toPx())
                 )
             }

@@ -121,8 +121,8 @@
     <string name="about_creator_pitch_detection_label">Rilevamento dell’intonazione</string>
     <string name="about_creator_voice_taxonomy_label">Tassonomia vocale</string>
     <string name="about_section_localization">Lingue e localizzazione</string>
-    <string name="about_localization_current_language">Disponibile in 6 lingue</string>
-    <string name="about_localization_available_languages">Sono disponibili inglese, francese, italiano, spagnolo, portoghese e cinese.</string>
+    <string name="about_localization_current_language">Disponibile in 7 lingue</string>
+    <string name="about_localization_available_languages">Sono disponibili inglese, francese, italiano, spagnolo, portoghese, cinese e persiano.</string>
     <string name="about_localization_choose_language">Scegli la lingua dell’app</string>
     <string name="about_section_references">Riferimenti</string>
     <string name="about_reference_yin_label">Articolo YIN</string>

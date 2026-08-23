@@ -14,8 +14,8 @@ android {
         applicationId = "com.yuriy.diapason"
         minSdk = 24
         targetSdk = 37
-        versionCode = 17
-        versionName = "2.3"
+        versionCode = 19
+        versionName = "2.4"
     }
 
     buildFeatures {
@@ -29,7 +29,7 @@ android {
     }
 
     androidResources {
-        localeFilters += listOf("en", "fr", "it", "es", "pt", "zh")
+        localeFilters += listOf("en", "fr", "it", "es", "pt", "zh", "fa")
     }
 
     buildTypes {

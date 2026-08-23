@@ -128,8 +128,8 @@
     <string name="about_creator_pitch_detection_label">Pitch detection</string>
     <string name="about_creator_voice_taxonomy_label">Voice taxonomy</string>
     <string name="about_section_localization">Languages &amp; Localisation</string>
-    <string name="about_localization_current_language">Available in 6 languages</string>
-    <string name="about_localization_available_languages">English, French, Italian, Spanish, Portuguese, and Chinese are available.</string>
+    <string name="about_localization_current_language">Available in 7 languages</string>
+    <string name="about_localization_available_languages">English, French, Italian, Spanish, Portuguese, Chinese, and Persian are available.</string>
     <string name="about_localization_choose_language">Choose app language</string>
     <string name="about_section_references">References</string>
     <string name="about_reference_yin_label">YIN paper</string>

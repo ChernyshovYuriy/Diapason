@@ -132,6 +132,11 @@
     <string name="about_privacy_policy_label">隐私政策</string>
     <string name="about_privacy_policy_value">你的声音分析始终保留在设备本地。不会上传或分享任何录音。</string>
     <string name="about_privacy_policy_cta">点击查看完整政策</string>
+    <string name="privacy_consent_title">隐私提示</string>
+    <string name="privacy_consent_body">Diapason 在设备本地分析你的声音，不会上传或分享任何录音。我们使用 Firebase Analytics 和 Crashlytics 了解应用使用情况并诊断崩溃问题；只有在你点击下方“同意”后才会开始收集。请在继续之前阅读我们的隐私政策。</string>
+    <string name="privacy_consent_read_policy">阅读完整隐私政策</string>
+    <string name="privacy_consent_agree">同意并继续</string>
+    <string name="privacy_consent_disagree">不同意</string>
     <string name="about_section_feedback">反馈与问题报告</string>
     <string name="about_feedback_body">发现问题或有功能建议？请在项目代码仓库中提交 issue。</string>
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>

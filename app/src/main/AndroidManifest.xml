@@ -31,6 +31,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Diapason">
 
+        <!-- Firebase auto-initializes both SDKs via a ContentProvider that runs before
+             MainApp.onCreate(), and both collect by default. These flags flip that default
+             to off so nothing is collected until the user agrees to the privacy policy in
+             the first-launch consent dialog, which re-enables collection explicitly
+             (see PrivacyConsentGate / MainApp.setCollectionEnabled). -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

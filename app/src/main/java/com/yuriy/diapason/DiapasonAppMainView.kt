@@ -22,6 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.comparison.WarmUpComparisonViewModel
+import com.yuriy.diapason.consent.PrivacyConsentGate
 import com.yuriy.diapason.ui.navigation.Screen
 import com.yuriy.diapason.ui.navigation.bottomNavItems
 import com.yuriy.diapason.ui.screens.about.AboutScreen
@@ -36,6 +37,10 @@ import com.yuriy.diapason.ui.screens.voicetypes.VoiceTypesScreen
 
 @Composable
 fun DiapasonAppMainView() {
+
+    // Renders a blocking dialog on first launch and nothing afterwards. Placed before
+    // the rest of the tree so the modal scrim covers the whole screen underneath it.
+    PrivacyConsentGate()
 
     val navController = rememberNavController()
     // Activity-scoped so ResultsScreen can pull lastResult from the same instance

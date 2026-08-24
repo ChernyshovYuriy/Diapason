@@ -138,6 +138,11 @@
     <string name="about_privacy_policy_label">Privacy policy</string>
     <string name="about_privacy_policy_value">Your voice analysis stays on-device. No audio recordings are uploaded or shared.</string>
     <string name="about_privacy_policy_cta">Tap to open full policy</string>
+    <string name="privacy_consent_title">Your Privacy</string>
+    <string name="privacy_consent_body">Diapason analyzes your voice on-device — audio is never uploaded or shared. We use Firebase Analytics and Crashlytics to understand app usage and diagnose crashes; this only begins after you tap Agree below. Please read our Privacy Policy before continuing.</string>
+    <string name="privacy_consent_read_policy">Read the full privacy policy</string>
+    <string name="privacy_consent_agree">Agree &amp; Continue</string>
+    <string name="privacy_consent_disagree">Disagree</string>
     <string name="about_section_feedback">Feedback &amp; Bug Reports</string>
     <string name="about_feedback_body">Found a bug or have a feature request? Open an issue on the project repository.</string>
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>

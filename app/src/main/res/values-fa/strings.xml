@@ -110,6 +110,11 @@
     <string name="about_privacy_policy_label">سیاست حریم خصوصی</string>
     <string name="about_privacy_policy_value">تحلیل صدای شما فقط روی دستگاه باقی می‌ماند. هیچ ضبط صوتی بارگذاری یا به اشتراک گذاشته نمی‌شود.</string>
     <string name="about_privacy_policy_cta">برای مشاهده متن کامل سیاست ضربه بزنید</string>
+    <string name="privacy_consent_title">حریم خصوصی شما</string>
+    <string name="privacy_consent_body">دیاپازون صدای شما را روی خود دستگاه تحلیل می‌کند؛ هیچ ضبط صوتی بارگذاری یا به اشتراک گذاشته نمی‌شود. ما از Firebase Analytics و Crashlytics برای درک نحوهٔ استفاده از برنامه و عیب‌یابی خرابی‌ها استفاده می‌کنیم؛ این کار تنها پس از ضربه‌زدن شما روی «موافقم» در زیر آغاز می‌شود. لطفاً پیش از ادامه، سیاست حریم خصوصی ما را مطالعه کنید.</string>
+    <string name="privacy_consent_read_policy">مطالعهٔ کامل سیاست حریم خصوصی</string>
+    <string name="privacy_consent_agree">موافقم و ادامه</string>
+    <string name="privacy_consent_disagree">مخالفم</string>
     <string name="about_section_feedback">بازخورد و گزارش اشکال</string>
     <string name="about_feedback_body">اشکالی پیدا کرده‌اید یا درخواست ویژگی جدیدی دارید؟ در مخزن پروژه یک ایشو باز کنید.</string>
     <string name="about_footer">© 2026 Chernyshov Yurii · دیاپازون %1$s</string>

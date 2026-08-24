@@ -53,6 +53,12 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 |---|---|---|
 | `history_opened` | `item_count` | `HistoryScreen` opened |
 
+## Privacy consent
+
+| Event | Params | Fired from |
+|---|---|---|
+| `privacy_consent_accepted` | — | `PrivacyConsentGate` after the user taps Agree on first launch. No matching "declined"/"shown" event exists on purpose — collection is off by default (`firebase_analytics_collection_enabled`/`firebase_crashlytics_collection_enabled` = `false` in the manifest) until this event fires, so a decline is never itself collected. |
+
 ## Re-test reminder funnel
 
 | Event | Params | Fired from |

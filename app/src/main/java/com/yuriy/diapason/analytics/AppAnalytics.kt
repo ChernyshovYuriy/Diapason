@@ -31,6 +31,18 @@ object AppAnalytics {
         analytics = FirebaseAnalytics.getInstance(context)
     }
 
+    /**
+     * Firebase defaults collection to off via manifest meta-data
+     * (`firebase_analytics_collection_enabled=false`) so nothing is recorded before the
+     * user agrees to the privacy policy. Called with `true` once consent is granted (and
+     * again on every launch of a returning consenting user, since [init] must always run
+     * first for [analytics] to be non-null); never called with `false` — declining just
+     * leaves collection at its manifest default.
+     */
+    fun setCollectionEnabled(enabled: Boolean) {
+        analytics?.setAnalyticsCollectionEnabled(enabled)
+    }
+
     // ── User properties ──────────────────────────────────────────────────────
 
     fun setLanguage(language: String) {
@@ -139,6 +151,17 @@ object AppAnalytics {
         logEvent(EVENT_HISTORY_OPENED) { long(PARAM_ITEM_COUNT, itemCount.toLong()) }
     }
 
+    // ── Privacy consent ──────────────────────────────────────────────────────
+
+    /**
+     * Fired right after collection is switched on, so this is the earliest event
+     * collection can ever record — there is no matching "declined" event, since
+     * declining means collection stays off and nothing about that choice is recorded.
+     */
+    fun privacyConsentAccepted() {
+        logEvent(EVENT_PRIVACY_CONSENT_ACCEPTED) {}
+    }
+
     // ── Re-test reminder funnel ──────────────────────────────────────────────
 
     fun reminderOptInShown() {
@@ -201,6 +224,7 @@ object AppAnalytics {
     private const val EVENT_WARMUP_COMPLETED = "warmup_completed"
     private const val EVENT_COMPARISON_COMPLETED = "comparison_completed"
     private const val EVENT_HISTORY_OPENED = "history_opened"
+    private const val EVENT_PRIVACY_CONSENT_ACCEPTED = "privacy_consent_accepted"
     private const val EVENT_REMINDER_OPT_IN_SHOWN = "reminder_opt_in_shown"
     private const val EVENT_REMINDER_OPT_IN_ACCEPTED = "reminder_opt_in_accepted"
     private const val EVENT_REMINDER_OPT_IN_DISMISSED = "reminder_opt_in_dismissed"

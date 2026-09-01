@@ -79,6 +79,48 @@ class AdversarialBreakageTest {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // 2b. estimateDetectedExtremes — total bypass, not collapse (documented, not
+    //     fixed — second, separate audit pass, 2026-09-01)
+    // ─────────────────────────────────────────────────────────────────────────
+    //
+    // Distinct from the collapse case above: there, one real cluster exists and
+    // absorbs the fallback, so isolated outliers are correctly rejected. Here,
+    // NOTHING has a same-side neighbor anywhere in the list — every pairwise gap
+    // exceeds 2 semitones — so firstOrNull{hasNeighbor}/lastOrNull{hasNeighbor}
+    // both return null and the function falls back to the raw, completely
+    // unvalidated min/max. This is the opposite of the function's stated purpose
+    // ("prevents a single stray high-confidence frame from claiming the floor or
+    // ceiling") — any single stray frame at either extreme becomes the reported
+    // extreme with zero corroboration, exactly when the session gives the LEAST
+    // reason to trust it.
+    //
+    // Not fixed: the one architecturally sound fix (treat temporal adjacency —
+    // frames close together in TIME — as a second corroboration path alongside
+    // value-adjacency, so a genuine fast glissando can be told apart from a
+    // single spurious frame) is a rewrite of comparable scope and risk to
+    // estimatePassaggio's reversal/median fix. This shape is also rare in
+    // practice: it requires a session where the singer never holds a single note
+    // anywhere, directly contradicting the Guide's own "hold each note for at
+    // least 2-3 seconds" instruction, and YIN's confidence tends to drop during
+    // genuinely fast pitch movement anyway. See KNOWN_ISSUES.md.
+
+    @Test
+    fun `when nothing in the session has any neighbor, validation is completely bypassed`() {
+        val pitches = listOf(100f, 300f, 500f, 900f)
+        val (min, max) = FachClassifier.estimateDetectedExtremes(pitches)
+        assertEquals(
+            "No sample has a same-side neighbor, so validation is bypassed entirely " +
+                    "and the raw minimum is returned unvalidated",
+            100f, min, 0.01f
+        )
+        assertEquals(
+            "No sample has a same-side neighbor, so validation is bypassed entirely " +
+                    "and the raw maximum is returned unvalidated",
+            900f, max, 0.01f
+        )
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // 3. estimatePassaggio — Hz-space variance bias + step-transition bias
     //    (FIXED — regression guard; was KNOWN_ISSUES.md #1, hardened further
     //    after this test also caught a step-transition edge winning outright)

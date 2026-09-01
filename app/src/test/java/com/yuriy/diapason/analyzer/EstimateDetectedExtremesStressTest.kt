@@ -235,5 +235,24 @@ class EstimateDetectedExtremesStressTest {
             "All-isolated 200-sample case: 50 calls took ${elapsed} ms (limit: 200 ms)",
             elapsed < 200L
         )
+
+        // Document WHY the two implementations agree here, not just THAT they do:
+        // neither actually validates anything when nothing has a same-side
+        // neighbor anywhere in the list — both silently fall back to the raw,
+        // unvalidated min/max. This is the total-bypass case (see
+        // AdversarialBreakageTest's dedicated, smaller-scale demonstration),
+        // distinct from the partial-collapse case tested elsewhere in this file.
+        // Asserting it explicitly so this test can't be satisfied by two
+        // implementations quietly sharing the same flaw with nobody noticing what
+        // the "agreement" actually means. See KNOWN_ISSUES.md.
+        val (min, max) = FachClassifier.estimateDetectedExtremes(pitches)
+        assertEquals(
+            "Bypass returns the raw minimum unvalidated",
+            pitches.minOrNull()!!, min, 0.01f
+        )
+        assertEquals(
+            "Bypass returns the raw maximum unvalidated",
+            pitches.maxOrNull()!!, max, 0.01f
+        )
     }
 }

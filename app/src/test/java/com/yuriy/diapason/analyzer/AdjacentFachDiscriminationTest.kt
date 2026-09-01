@@ -673,34 +673,28 @@ class AdjacentFachDiscriminationTest {
 
     /**
      * Every adjacent fach pair (ordered as they appear in ALL_FACH) must satisfy:
-     * a perfect-match profile for fach[i] scores AT LEAST AS HIGH on fach[i] as on fach[i+1].
+     * a perfect-match profile for fach[i] scores strictly higher on fach[i] than on
+     * fach[i+1] — anything else would be an outright reversal.
      *
      * "Perfect match" = every profile dimension set to the fach's own definition value.
      *
-     * Known ties documented here — pairs whose acoustic definitions overlap so closely
-     * that the scoring function cannot separate them with a perfect-profile alone:
-     *
-     *   • Spinto Tenor (123–494 Hz) / Dramatic Tenor (110–466 Hz): both score 14.
-     *     The ceiling ratio 494/466 = 1.060 and floor ratio 123/110 = 1.118 both
-     *     fall comfortably inside each other's ±10% and ±15% windows.
-     *
-     *   • Lyric Baritone (110–392 Hz) / Kavalierbariton (98–370 Hz): both score 14.
-     *     The overlap is structurally identical — ceiling ratio 392/370 = 1.059,
-     *     floor ratio 110/98 = 1.122 both inside the top bands.
-     *
-     * These are known classifier limitations, not regressions.  The test verifies that
-     * fach[i] does NOT score LESS than its neighbour (that would be an outright reversal)
-     * and separately asserts strict separation for all non-tied pairs.
+     * No exact ties currently exist among adjacent pairs (verified by running every
+     * pair through classify() directly, not assumed). This is a correction: an
+     * earlier version of this test carved out Spinto Tenor/Dramatic Tenor and Lyric
+     * Baritone/Kavalierbariton as "known ties, both score 14," which was true before
+     * the ceiling/floor scoring swap (KNOWN_ISSUES.md #6) but silently stopped being
+     * true after it — that swap changed which ratio tiers apply to which measurement,
+     * and these two pairs now separate by exactly 1 point (14 vs 13) instead of tying.
+     * The carve-out's own assertion (`>=`, not `==`) never caught the drift because a
+     * 14-vs-13 result still satisfies "not less than." Found during a later, separate
+     * audit pass — see KNOWN_ISSUES.md's "Inherent architectural limitations" for the
+     * corrected acoustic-overlap note. Both pairs remain genuinely close (checked
+     * directly: a 1-point margin is the smallest that occurs anywhere in the table —
+     * but it is not unique to these two; 4 other adjacent pairs separate by exactly
+     * 1 point too), just no longer identical.
      */
     @Test
-    fun `perfect match profile for each fach scores at least as high on that fach as its neighbour`() {
-        // Range pairs that are acoustically indistinct — documented ties
-        val knownTies = setOf(
-            Pair(123f, 494f),   // Spinto Tenor — ties with Dramatic Tenor
-            Pair(110f, 466f),   // Dramatic Tenor — symmetric entry (not tested as [i] here)
-            Pair(110f, 392f),   // Lyric Baritone — ties with Kavalierbariton
-        )
-
+    fun `perfect match profile for each fach scores strictly higher on itself than on its neighbour`() {
         val adjacentPairs = ALL_FACH.zipWithNext()
 
         for ((fachA, fachB) in adjacentPairs) {
@@ -716,25 +710,13 @@ class AdjacentFachDiscriminationTest {
             val results = FachClassifier.classify(profileA)
             val scoreOnA = scoreOf(fachA, results)
             val scoreOnB = scoreOf(fachB, results)
-            val isKnownTie = knownTies.contains(Pair(fachA.rangeMinHz, fachA.rangeMaxHz))
 
-            if (isKnownTie) {
-                // For known ties, assert fach[i] does not score LESS than its neighbour
-                assertTrue(
-                    "Known-tie pair: fach (${fachA.rangeMinHz}–${fachA.rangeMaxHz}) must not " +
-                            "score LESS than its neighbour (${fachB.rangeMinHz}–${fachB.rangeMaxHz}) " +
-                            "($scoreOnA vs $scoreOnB)",
-                    scoreOnA >= scoreOnB
-                )
-            } else {
-                // For all other pairs, require strict separation
-                assertTrue(
-                    "Perfect profile for fach (${fachA.rangeMinHz}–${fachA.rangeMaxHz}) " +
-                            "must score strictly higher on itself ($scoreOnA) than on its neighbour " +
-                            "(${fachB.rangeMinHz}–${fachB.rangeMaxHz}) ($scoreOnB)",
-                    scoreOnA > scoreOnB
-                )
-            }
+            assertTrue(
+                "Perfect profile for fach (${fachA.rangeMinHz}–${fachA.rangeMaxHz}) " +
+                        "must score strictly higher on itself ($scoreOnA) than on its neighbour " +
+                        "(${fachB.rangeMinHz}–${fachB.rangeMaxHz}) ($scoreOnB)",
+                scoreOnA > scoreOnB
+            )
         }
     }
 

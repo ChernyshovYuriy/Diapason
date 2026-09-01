@@ -98,6 +98,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     // ── Baseline ──────────────────────────────────────────────────────────────
 
     fun startBaseline() {
+        // Mirrors VoiceAnalyzer.start()'s own internal guard — see the identical
+        // comment in AnalyzeViewModel.startRecording() for why this is needed here too.
+        if (analyzer.isRunning) return
         AppLogger.i("$TAG startBaseline()")
         AppAnalytics.analysisStarted(AppAnalytics.Flow.Baseline)
         _stage.value =
@@ -190,6 +193,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     // ── Retest ────────────────────────────────────────────────────────────────
 
     fun startRetest() {
+        // Mirrors VoiceAnalyzer.start()'s own internal guard — see the identical
+        // comment in AnalyzeViewModel.startRecording() for why this is needed here too.
+        if (analyzer.isRunning) return
         AppLogger.i("$TAG startRetest()")
         AppAnalytics.analysisStarted(AppAnalytics.Flow.Retest)
         _stage.value = ComparisonStage.Retest(

@@ -25,18 +25,16 @@ import org.robolectric.annotation.Config
 /**
  * Tests for [WarmUpComparisonViewModel] state transitions.
  *
- * Because [WarmUpComparisonViewModel] depends on [VoiceAnalyzer] (which uses the
- * microphone) we cannot exercise full start→stop cycles in a unit test.  Instead
- * these tests validate:
- *
- *  - resetToIntro clears all state and returns to Intro
- *  - retryBaseline after BaselineInsufficient returns to Intro
- *  - skipWarmUpTimer from WarmUp transitions to Retest
- *  - retryRetest after RetestInsufficient returns to Retest
- *  - initial stage is Intro
- *
- * Integration of the actual VoiceAnalyzer/FachClassifier pipeline is covered by
- * the existing AnalyzerScenarioTest and AnalyzerInvariantTest suites.
+ * [VoiceAnalyzer] constructs a real `AudioRecord`; under Robolectric its shadow
+ * reports `STATE_INITIALIZED`, so `analyzer.start()` genuinely succeeds and calls
+ * like [WarmUpComparisonViewModel.startBaseline]/[WarmUpComparisonViewModel.startRetest]
+ * can be exercised directly (verified — see the BUG-04 regression tests below).
+ * What still isn't exercised here is a full start→stop cycle with real audio
+ * feeding pitch samples through YIN — no fake microphone input exists, so states
+ * reachable only via a completed analysis (`WarmUp`, `BaselineInsufficient`,
+ * `RetestInsufficient`, `Done`) are still reached via [forceStage] rather than a
+ * real recording. Integration of the actual VoiceAnalyzer/FachClassifier pipeline
+ * is covered by the existing AnalyzerScenarioTest and AnalyzerInvariantTest suites.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -167,6 +165,52 @@ class WarmUpComparisonViewModelTest {
         val stage = viewModel.stage.value as ComparisonStage.WarmUp
         assertEquals(expected, stage.remainingSeconds)
     }
+
+    // ── BUG-04 regression: a redundant start() must not desync the visible counter ──
+    //
+    // VoiceAnalyzer.start() already no-ops internally if already running, but
+    // without a mirroring guard, a redundant call (e.g. a double-tap before the
+    // UI visually responds) still reset the stage to a fresh sampleCount = 0
+    // while the real, still-running analyzer kept accumulating from the
+    // original session. See KNOWN_ISSUES.md.
+
+    @Test
+    fun `startBaseline while already recording does not reset the visible sample count`() =
+        runTest {
+            viewModel.startBaseline()
+            forceStage(
+                ComparisonStage.Baseline(currentNote = "A4", currentHz = 440f, sampleCount = 12)
+            )
+
+            viewModel.startBaseline()
+
+            val stage = viewModel.stage.value
+            assertTrue("Expected Baseline but got $stage", stage is ComparisonStage.Baseline)
+            assertEquals(
+                "A redundant startBaseline() call must not reset the sample count",
+                12, (stage as ComparisonStage.Baseline).sampleCount
+            )
+        }
+
+    @Test
+    fun `startRetest while already recording does not reset the visible sample count`() =
+        runTest {
+            viewModel.startRetest()
+            forceStage(
+                ComparisonStage.Retest(
+                    currentNote = "A4", currentHz = 440f, sampleCount = 12, isRecording = true
+                )
+            )
+
+            viewModel.startRetest()
+
+            val stage = viewModel.stage.value
+            assertTrue("Expected Retest but got $stage", stage is ComparisonStage.Retest)
+            assertEquals(
+                "A redundant startRetest() call must not reset the sample count",
+                12, (stage as ComparisonStage.Retest).sampleCount
+            )
+        }
 
     // ── ComparisonStage.Done invariant ────────────────────────────────────────
 

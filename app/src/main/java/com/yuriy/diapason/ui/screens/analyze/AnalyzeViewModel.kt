@@ -105,6 +105,12 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun startRecording() {
+        // VoiceAnalyzer.start() already no-ops internally if already running, but
+        // without this mirror guard a redundant call (e.g. a double-tap before the
+        // UI visually responds) still resets _uiState to a fresh Recording(sampleCount
+        // = 0) while the real, still-running analyzer keeps accumulating from the
+        // original session — desyncing the visible counter from the real buffer.
+        if (analyzer.isRunning) return
         AppLogger.i("$TAG startRecording()")
         AppAnalytics.analysisStarted(AppAnalytics.Flow.Single)
         _uiState.value = AnalyzeUiState.Recording(

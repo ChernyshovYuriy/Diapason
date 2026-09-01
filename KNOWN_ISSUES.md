@@ -196,6 +196,37 @@ during the range-covering exercise this app uses to locate the passaggio.
 
 ---
 
+## 9 · A double-tap on Start could desync the visible sample counter [FIXED 2026-09-01]
+
+**File:** `AnalyzeViewModel.startRecording()`, `WarmUpComparisonViewModel.startBaseline()`/`startRetest()`
+
+Found during a second, separate adversarial audit pass. `VoiceAnalyzer.start()` already
+guards against being called while already running (`if (isRunning) return`, before it
+clears its sample buffer or touches `AudioRecord`), but none of the three ViewModel call
+sites mirrored that guard. A redundant call — e.g. a double-tap on Start before the UI
+visually responds — still reset the ViewModel's own observable state to a fresh
+`Recording(sampleCount = 0)` / `Baseline(sampleCount = 0)` / `Retest(sampleCount = 0)`,
+even though the real, still-running analyzer kept accumulating from the original
+session untouched. The eventual classification was unaffected (it's built from the
+real underlying buffer, not the UI counter), but the live counter shown to the user
+during recording would desync from reality until it caught back up.
+
+**Fix:** added the identical `if (analyzer.isRunning) return` guard to all three call
+sites, as the very first line before any state reset or analytics event.
+
+**Verified against:** the full suite, plus 4 new regression tests — 2 in a new
+`AnalyzeViewModelTest` (previously the only untested ViewModel in the app) and 2 added
+to the existing `WarmUpComparisonViewModelTest`. All 4 were confirmed to actually fail
+against the pre-fix code (via a temporary `git stash` of the fix, not just written and
+assumed correct) before being locked in as regression guards. Testing this required
+checking, rather than assuming, that `VoiceAnalyzer.start()` can genuinely succeed
+under this suite's Robolectric setup — `CLAUDE.md`'s "pure JVM, no Robolectric" claim
+is stale; `WarmUpComparisonViewModelTest`, `HistoryViewModelTest`, and `SessionDaoTest`
+already use `RobolectricTestRunner`, and its `AudioRecord` shadow reports
+`STATE_INITIALIZED`, letting `analyzer.isRunning` genuinely become `true` in a test.
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.

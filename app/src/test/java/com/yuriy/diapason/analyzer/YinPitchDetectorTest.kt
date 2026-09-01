@@ -121,6 +121,37 @@ class YinPitchDetectorTest {
         }
     }
 
+    // ── 2b. DC offset ─────────────────────────────────────────────────────────
+
+    /**
+     * A sung vowel captured through a phone mic can carry a DC bias (mic
+     * self-bias, ADC offset). Algebraically this should have zero effect on
+     * detection: YIN's Step 1 difference function computes
+     * `buffer[j] - buffer[j+tau]`, and a constant added to every sample cancels
+     * out exactly in that subtraction. Reasoned about but never empirically
+     * verified until now — found during a second, separate adversarial audit
+     * pass's review of the YIN implementation.
+     */
+    @Test
+    fun `sine wave with a DC offset is detected as accurately as without one`() {
+        val withOffset = FloatArray(N) { i ->
+            0.3f + 0.5f * sin(2.0 * PI * 440f * i / SR).toFloat()
+        }
+        val (pitch, confidence) = YinPitchDetector.detect(withOffset, SR, THRESH)
+
+        assertTrue("Detected pitch ($pitch Hz) must be > 0", pitch > 0f)
+        assertTrue(
+            "DC-offset sine: pitch error ${centsDiff(pitch, 440f).toInt()} cents exceeds the " +
+                    "20-cent tolerance used for a clean sine (detected $pitch Hz)",
+            centsDiff(pitch, 440f) <= 20f
+        )
+        assertTrue(
+            "DC-offset sine: confidence ($confidence) must be ≥ MIN_CONFIDENCE ($MIN_CONFIDENCE), " +
+                    "same as a clean sine — a DC bias must not degrade confidence",
+            confidence >= MIN_CONFIDENCE
+        )
+    }
+
     // ── 3. Silence ────────────────────────────────────────────────────────────
 
     /**

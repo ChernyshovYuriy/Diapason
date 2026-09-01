@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.PI
+import kotlin.math.pow
 import kotlin.math.sin
 
 /**
@@ -202,6 +203,51 @@ class AdversarialBreakageTest {
             "estimatePassaggio picked $passaggio Hz — expected the genuine soprano break " +
                     "(~659-698 Hz) to win over the much larger unrelated 220->1046 Hz jump",
             passaggio in 600f..750f
+        )
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3b. estimatePassaggio — ordinary vibrato defeats the reversal+median fix
+    //     (NOT fixed — documented as [Inherent] in KNOWN_ISSUES.md #8; this test
+    //     is the permanent record of the finding, previously proven only via a
+    //     throwaway Python simulation during the second, separate audit pass)
+    // ─────────────────────────────────────────────────────────────────────────
+    //
+    // The fix above rewards a window for having many direction reversals — but
+    // ordinary vocal vibrato IS a small, fast, regularly-alternating pitch
+    // oscillation, exactly the shape the algorithm is built to reward. A held
+    // note decorated with completely ordinary ±1-semitone vibrato, placed
+    // anywhere else in the session, can outscore a genuine register break
+    // whose own magnitude is comparable. Verified this is not fixable with any
+    // pitch-only signal available today (see KNOWN_ISSUES.md #8 for the three
+    // rejected mitigations and why); the mitigation shipped instead was
+    // product-side (Guide copy asking the user to sing straight tone), not
+    // algorithmic. This test documents the actual, current, accepted behavior —
+    // like the estimateDetectedExtremes collapse/bypass tests elsewhere in this
+    // file, it is expected to keep passing, not to be "fixed" into failing.
+
+    @Test
+    fun `ordinary vibrato on an unrelated note outscores a genuine register break`() {
+        val realBreak = List(15) { i -> if (i % 2 == 0) 196f else 220f }   // ~2-semitone break
+        // 350 Hz held note decorated with ordinary +/-1-semitone vibrato — not a
+        // register break, just a normally-sung sustained note with healthy vibrato.
+        val vibratoNote = List(15) { i ->
+            val semitoneOffset = if (i % 2 == 0) 1.0 else -1.0
+            350f * 2.0.pow(semitoneOffset / 12.0).toFloat()
+        }
+        val stableBelow = List(15) { 165f }
+        val stableMiddle = List(15) { 262f }
+        val stableAbove = List(15) { 523f }
+
+        val pitches = stableBelow + realBreak + stableMiddle + vibratoNote + stableAbove
+        val passaggio = FachClassifier.estimatePassaggio(pitches)
+
+        assertTrue(
+            "Documents KNOWN_ISSUES.md #8: ordinary vibrato (~350 Hz) is expected to win " +
+                    "over the genuine register break (~196-220 Hz) here — got $passaggio Hz. " +
+                    "If this now fails, the algorithm changed; update KNOWN_ISSUES.md #8 rather " +
+                    "than just loosening this assertion.",
+            passaggio in 330f..370f
         )
     }
 

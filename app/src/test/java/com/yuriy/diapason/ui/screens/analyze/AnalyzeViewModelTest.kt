@@ -66,6 +66,18 @@ class AnalyzeViewModelTest {
         assertTrue(viewModel.uiState.value is AnalyzeUiState.Recording)
     }
 
+    @Test
+    fun `stopRecording without a prior startRecording is a no-op and does not crash`() {
+        // Mirrors VoiceAnalyzer.stop()'s own "not running" guard at the ViewModel
+        // layer, which was tested directly for VoiceAnalyzer itself but never at
+        // this layer — found during a second, separate adversarial audit pass.
+        viewModel.stopRecording()
+        assertTrue(
+            "stopRecording() with nothing running must leave the state at Idle",
+            viewModel.uiState.value is AnalyzeUiState.Idle
+        )
+    }
+
     // ── BUG-04 regression: a redundant start() must not desync the visible counter ──
     //
     // VoiceAnalyzer.start() already no-ops internally if already running, but

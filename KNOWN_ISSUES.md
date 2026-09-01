@@ -194,6 +194,11 @@ vibrato** — specifically because vibrato and register instability can look and
 sound alike. `guide_step4_body` (all 5 locales) now asks the user to do the same
 during the range-covering exercise this app uses to locate the passaggio.
 
+**Evidence:** `AdversarialBreakageTest.kt`'s `ordinary vibrato on an unrelated note
+outscores a genuine register break` — a permanent, passing test recording the
+actual behavior (added later than the rest of this entry; the finding above was
+originally proven only via a throwaway Python simulation during the audit itself).
+
 ---
 
 ## 9 · A double-tap on Start could desync the visible sample counter [FIXED 2026-09-01]

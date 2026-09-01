@@ -63,6 +63,7 @@ class AdjacentFachDiscriminationTest {
     private val bassoProfundo = fach(65f, 294f)
     private val dramaticMezzo = fach(175f, 784f)
     private val contralto = fach(165f, 698f)
+    private val dramaticTenor = fach(110f, 466f)
 
     // ── Profile factory ───────────────────────────────────────────────────────
 
@@ -735,5 +736,57 @@ class AdjacentFachDiscriminationTest {
                 )
             }
         }
+    }
+
+    // ── TIER 3b — Ranked-list tie-break order is deterministic ────────────────
+    //
+    // classify() relies on Kotlin's sortedByDescending being a stable sort: when
+    // two fachs tie exactly, the results list must show them in ALL_FACH's
+    // declaration order, not whichever order the sort implementation happens to
+    // produce. This matters because the Results screen shows a ranked list — an
+    // unstable sort would make which fach appears at a tied rank nondeterministic
+    // across runs or Kotlin stdlib versions. The existing determinism test above
+    // only confirms the same profile gives the same order on repeated calls,
+    // which would also hold for a merely-deterministic-but-unstable sort — it
+    // does not confirm the order actually follows declaration order on a tie.
+    //
+    // A perfect Spinto Tenor profile produces a genuine, verified 13-13 tie for
+    // 2nd place between Lyric Tenor (130–523 Hz) and Dramatic Tenor (110–466 Hz)
+    // under the current classify() formula — found by running the classifier
+    // directly rather than trusting the TIER 3 comment above, which predates the
+    // ceiling/floor scoring swap (KNOWN_ISSUES.md #6) and now describes a pair
+    // that no longer ties exactly (Lyric Baritone/Kavalierbariton and Spinto
+    // Tenor/Dramatic Tenor both now separate by 1 point against their own
+    // "primary" fach's perfect profile — a stale-comment finding worth a follow-up,
+    // not fixed here since it doesn't affect this test's correctness).
+
+    @Test
+    fun `tied fachs preserve ALL_FACH declaration order in the ranked results`() {
+        val profile = VoiceProfile(
+            detectedMinHz = spintoTenor.rangeMinHz,
+            detectedMaxHz = spintoTenor.rangeMaxHz,
+            comfortableLowHz = spintoTenor.tessituraMinHz,
+            comfortableHighHz = spintoTenor.tessituraMaxHz,
+            estimatedPassaggioHz = spintoTenor.passaggioHz,
+            sampleCount = 60,
+            durationSeconds = 40f,
+        )
+        val results = FachClassifier.classify(profile)
+        val lyricTenorScore = scoreOf(lyricTenor, results)
+        val dramaticTenorScore = scoreOf(dramaticTenor, results)
+        assertEquals(
+            "Precondition: this profile must actually tie Lyric Tenor and Dramatic Tenor " +
+                    "for this test to prove anything about tie-break order",
+            lyricTenorScore, dramaticTenorScore
+        )
+
+        val lyricTenorRank = rankOf(lyricTenor, results)
+        val dramaticTenorRank = rankOf(dramaticTenor, results)
+        assertTrue(
+            "On a tie, Lyric Tenor (declared before Dramatic Tenor in ALL_FACH) must rank " +
+                    "before it (rank $lyricTenorRank vs $dramaticTenorRank) — classify() relies on " +
+                    "sortedByDescending being a stable sort for a deterministic ranked list",
+            lyricTenorRank < dramaticTenorRank
+        )
     }
 }

@@ -66,6 +66,24 @@ class WarmUpComparisonViewModelTest {
         assertTrue(viewModel.stage.value is ComparisonStage.Intro)
     }
 
+    @Test
+    fun `stopBaseline and stopRetest without a prior start are no-ops and do not crash`() = runTest {
+        // Mirrors VoiceAnalyzer.stop()'s own "not running" guard at the ViewModel
+        // layer, which was tested directly for VoiceAnalyzer itself but never at
+        // this layer — found during a second, separate adversarial audit pass.
+        viewModel.stopBaseline()
+        assertTrue(
+            "stopBaseline() with nothing running must leave the stage at Intro",
+            viewModel.stage.value is ComparisonStage.Intro
+        )
+
+        viewModel.stopRetest()
+        assertTrue(
+            "stopRetest() with nothing running must leave the stage at Intro",
+            viewModel.stage.value is ComparisonStage.Intro
+        )
+    }
+
     // ── resetToIntro ──────────────────────────────────────────────────────────
 
     @Test

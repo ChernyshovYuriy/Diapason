@@ -79,7 +79,9 @@
     <string name="guide_step4_title">Cubre todo tu rango</string>
     <string name="guide_step4_body">Empieza en tu nota más grave cómoda y asciende cromáticamente
         o por escala hasta tu nota más aguda. Luego vuelve a bajar. Esto ayuda a detectar
-        tanto tu rango absoluto como tu pasaje (cambio de registro). Intenta cantar al menos 30–45 segundos.</string>
+        tanto tu rango absoluto como tu pasaje (cambio de registro). Intenta cantar al menos 30–45 segundos.
+        Canta con un sonido recto (sin vibrato); el vibrato puede parecerse a una inestabilidad de
+        registro y hacer que la estimación del pasaje sea menos fiable.</string>
     <string name="guide_step5_title">Pulsa Detener y revisa</string>
     <string name="guide_step5_body">Diapason mostrará tu mejor coincidencia de tipo de voz con una
         puntuación de coincidencia, tu rango medido, tesitura y pasaje estimado. El detalle completo

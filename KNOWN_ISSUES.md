@@ -141,6 +141,61 @@ by this tool — only that the floor dimension no longer counts against them for
 
 ---
 
+## 8 · `estimatePassaggio` cannot reliably tell a register break from ordinary vibrato [Inherent]
+
+**File:** `FachClassifier.estimatePassaggio()`
+
+Found during a second, separate adversarial audit pass, aimed specifically at the
+reversal+median fix from issue #1 above. That fix scores a sliding window on
+`magnitude² × 2^reversals` — direction-reversal count weighted exponentially — to
+tell a genuine wobble apart from a single clean jump. It does **not** tell a
+genuine wobble apart from a *controlled* wobble: ordinary vocal vibrato is, by
+definition, a small, fast, regularly-alternating pitch oscillation — exactly the
+shape the algorithm is built to reward. A constructed session (stable block, real
+196/220 Hz register-break oscillation, stable block, a *single held note*
+decorated with ordinary ±1-semitone vibrato, stable block) had the vibrato note
+outscore the genuine break outright.
+
+**Why this is inherent, not a fixable bug:** three pitch-only mitigations were
+tried and rejected, each for a concrete reason rather than difficulty:
+- **Oscillation-rate discrimination** (downweight windows oscillating at a typical
+  5–7 Hz vibrato rate) — defeated by the app's own sampling rate. At ~160 ms/frame
+  (≈6.25 fps), the Nyquist limit is ~3.1 Hz, *below* typical vibrato rate. Real
+  vibrato in that range is structurally aliased: the exact same true vibrato can
+  sample as anything from flat to perfectly-alternating-every-frame depending on
+  phase, so "does this window oscillate at vibrato rate" cannot be answered
+  reliably from this data.
+- **Session-relative instability threshold** (only count a window as a break
+  candidate if it's meaningfully more unstable than the rest of the session) —
+  doesn't discriminate the actual failure case: most of a real session is flat
+  either way, so the real break and a vibrato'd note both clear a session-wide
+  baseline equally and remain in direct, unresolved competition.
+- **Before/after net pitch drift** (prefer windows where the surrounding stable
+  blocks differ meaningfully in mean pitch, since a genuine register transition
+  moves from one resting pitch to another while a decorated note returns to
+  roughly the same one) — would false-positive on ordinary ascending/descending
+  scale and arpeggio exercises, where every window's surroundings differ in mean
+  pitch by construction.
+
+A real fix needs a signal the app doesn't currently capture at all — amplitude/RMS
+energy per frame, since a genuine break is often accompanied by a dip or catch in
+loudness that controlled vibrato isn't, or a much higher pitch-sampling rate to
+make rate-based discrimination viable without aliasing. Both are substantial,
+cross-cutting projects (new field through `VoiceAnalyzer`'s audio loop, the
+`PitchSample`/DSL fixture model, the JSON fixture format in `CAPTURING.md`, and a
+**freshly re-captured** real hardware fixture, since the existing
+`mezzo_passaggio_exercise.json` has no amplitude data) — not follow-up fixes to
+issue #1.
+
+**Mitigation shipped instead — coaching, not code:** this is exactly the situation
+a voice teacher already has a standard answer for. When diagnosing a register
+break in person, a teacher asks the student to sing **straight tone, no
+vibrato** — specifically because vibrato and register instability can look and
+sound alike. `guide_step4_body` (all 5 locales) now asks the user to do the same
+during the range-covering exercise this app uses to locate the passaggio.
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.

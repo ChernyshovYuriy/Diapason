@@ -81,7 +81,8 @@
     <string name="guide_step4_body">Commencez par votre note confortable la plus grave puis montez
         chromatiquement ou par gamme jusqu’à la plus aiguë. Redescendez ensuite. Cela aide à détecter
         votre étendue absolue et votre passaggio (rupture de registre). Visez au moins 30 à 45 secondes
-        de chant.</string>
+        de chant. Chantez avec un son droit (sans vibrato) — le vibrato peut ressembler à une
+        instabilité de registre et rendre l’estimation du passaggio moins fiable.</string>
     <string name="guide_step5_title">Appuyez sur Arrêter puis consultez</string>
     <string name="guide_step5_body">Diapason affichera le type de voix le plus probable avec un score de
         correspondance, votre étendue mesurée, votre tessiture et votre passaggio estimé. Les détails complets du

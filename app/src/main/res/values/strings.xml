@@ -86,7 +86,8 @@
     <string name="guide_step4_body">Start at your lowest comfortable note and step upward
         chromatically or by scale to your highest. Then come back down. This helps detect both
         your absolute range and your passaggio (register break). Aim for at least 30–45 seconds
-        of singing.</string>
+        of singing. Sing with a straight tone (no vibrato) — vibrato can look like register
+        instability and make the passaggio estimate less reliable.</string>
     <string name="guide_step5_title">Press Stop and review</string>
     <string name="guide_step5_body">Diapason will show your top voice type match with a match
         score, your measured range, tessitura, and estimated passaggio. Full scoring detail is in

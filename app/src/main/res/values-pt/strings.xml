@@ -81,7 +81,8 @@
     <string name="guide_step4_body">Comece pela sua nota mais grave confortável e suba
         cromaticamente ou por escala até a mais aguda. Depois desça novamente. Isso ajuda a detectar tanto
         sua extensão absoluta quanto seu passaggio (quebra de registro). Mire em pelo menos 30–45 segundos
-        de canto.</string>
+        de canto. Cante com um som reto (sem vibrato) — o vibrato pode parecer instabilidade de
+        registro e tornar a estimativa do passaggio menos confiável.</string>
     <string name="guide_step5_title">Pressione Parar e revise</string>
     <string name="guide_step5_body">O Diapason mostrará a melhor correspondência do seu tipo de voz com uma pontuação de
         correspondência, sua extensão medida, tessitura e passaggio estimado. O detalhe completo da pontuação está no

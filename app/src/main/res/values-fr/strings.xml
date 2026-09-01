@@ -34,7 +34,7 @@
     <string name="voice_types_cd_expand">Développer</string>
     <string name="results_title">Vos résultats</string>
     <string name="results_best_match_label">Meilleure correspondance</string>
-    <string name="results_confidence_label">Confiance de classification</string>
+    <string name="results_confidence_label">Score de correspondance</string>
     <string name="results_famous_roles_subheading">Rôles célèbres pour cette voix</string>
     <string name="results_section_range">Étendue mesurée</string>
     <string name="results_section_other_matches">Autres correspondances possibles</string>
@@ -84,7 +84,7 @@
         de chant.</string>
     <string name="guide_step5_title">Appuyez sur Arrêter puis consultez</string>
     <string name="guide_step5_body">Diapason affichera le type de voix le plus probable avec un score de
-        confiance, votre étendue mesurée, votre tessiture et votre passaggio estimé. Les détails complets du
+        correspondance, votre étendue mesurée, votre tessiture et votre passaggio estimé. Les détails complets du
         score sont dans Logcat.</string>
     <string name="guide_fach_section_title">Qu’est-ce que le Fach ?</string>
     <string name="guide_fach_body1">"Fach" (prononcé /fax/, mot allemand signifiant "compartiment") est le

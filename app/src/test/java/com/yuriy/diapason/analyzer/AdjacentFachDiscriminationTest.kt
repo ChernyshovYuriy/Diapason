@@ -21,14 +21,16 @@ import org.junit.Test
  *     A3. Basso Profundo vs Basso Cantante
  *     A4. Dramatic Mezzo vs Contralto
  *
- *   TIER 2 — Scoring dimension boundaries (±10%/±20%/±30%)
- *     B1. Upper ceiling exactly at ±10% boundary → +3 points
- *     B2. Upper ceiling just outside ±10% → +2 points
- *     B3. Upper ceiling exactly at ±20% boundary → +2 points
- *     B4. Upper ceiling just outside ±20% → +1 point
- *     B5. Upper ceiling just outside ±30% → 0 points
- *     B6. Lower floor exactly at ±15% boundary → +2 points
- *     B7. Lower floor just outside ±15% → +1 point
+ *   TIER 2 — Scoring dimension boundaries
+ *     Floor is weighted higher (0-3, finer bands) than ceiling (0-2, coarser
+ *     bands) — see the comment above FachClassifier.classify()'s floor block.
+ *     B1. Lower floor exactly at ±10% boundary → +3 points
+ *     B2. Lower floor just outside ±10% → +2 points
+ *     B3. Lower floor exactly at ±20% boundary → +2 points
+ *     B4. Lower floor just outside ±20% → +1 point
+ *     B5. Lower floor just outside ±30% → 0 points
+ *     B6. Upper ceiling exactly at ±15% boundary → +2 points
+ *     B7. Upper ceiling just outside ±15% → +1 point
  *
  *   TIER 3 — Classify invariants across all adjacent pairs
  *     C1. A profile exactly matching fach A ranks fach A above the adjacent fach B
@@ -160,7 +162,7 @@ class AdjacentFachDiscriminationTest {
     }
 
     /**
-     * Spinto Tenor profile (range 123–494 Hz, tessitura F3–G#4, passaggio D4).
+     * Spinto Tenor profile (range 123–494 Hz, tessitura F3–G#4, passaggio D#4).
      * Expected: Spinto Tenor 14/14, Lyric Tenor 13/14.
      */
     @Test
@@ -170,7 +172,7 @@ class AdjacentFachDiscriminationTest {
             detectedMax = 492f,
             comfortableLow = 175f,
             comfortableHigh = 413f,
-            passaggio = 294f,
+            passaggio = 311f,
         )
         val results = FachClassifier.classify(p)
         assertTrue(
@@ -181,7 +183,7 @@ class AdjacentFachDiscriminationTest {
     }
 
     /**
-     * Lyric Tenor profile (range 130–523 Hz, tessitura G3–A4, passaggio D#4).
+     * Lyric Tenor profile (range 130–523 Hz, tessitura G3–A4, passaggio E4).
      * Expected: Lyric Tenor 14/14, Spinto Tenor 13/14.
      */
     @Test
@@ -191,7 +193,7 @@ class AdjacentFachDiscriminationTest {
             detectedMax = 523f,
             comfortableLow = 196f,
             comfortableHigh = 440f,
-            passaggio = 311f,
+            passaggio = 330f,
         )
         val results = FachClassifier.classify(p)
         assertTrue(
@@ -227,7 +229,7 @@ class AdjacentFachDiscriminationTest {
     }
 
     /**
-     * Basso Cantante profile (range 73–330 Hz, tessitura D2–C4, passaggio F3).
+     * Basso Cantante profile (range 73–330 Hz, tessitura D2–C4, passaggio F#3).
      * Expected: Basso Cantante 14, Basso Profundo 9 (large margin).
      */
     @Test
@@ -237,7 +239,7 @@ class AdjacentFachDiscriminationTest {
             detectedMax = 328f,
             comfortableLow = 99f,
             comfortableHigh = 260f,
-            passaggio = 175f,
+            passaggio = 185f,
         )
         val results = FachClassifier.classify(p)
         assertTrue(
@@ -289,141 +291,133 @@ class AdjacentFachDiscriminationTest {
     }
 
     // ── TIER 2 — Scoring dimension boundary conditions ────────────────────────
+    //
+    // Floor is isolated by holding the ceiling at an exact match (detectedMax =
+    // rangeMaxHz → its own top tier, +2). Ceiling is isolated by holding the
+    // floor at an exact match (detectedMin = rangeMinHz → its own top tier, +3).
+    // tessHigh/tessLow/passaggio are exact matches throughout (+3 each = +9).
 
     /**
-     * Upper-ceiling ratio exactly at 1.10 (the +3 / +2 boundary).
-     * A detected max that is exactly 10% above the fach ceiling should award +3.
-     * This pins the boundary as inclusive: ratio 1.10 → +3, not +2.
+     * Lower-floor ratio exactly at 1.10 (the +3 / +2 boundary).
+     * Ceiling held at an exact match (+2). Baseline excluding floor: 2+9=11.
      */
     @Test
-    fun `upper ceiling at exactly 10 percent above fach max awards 3 points`() {
-        // Spinto Soprano rangeMaxHz = 988. 10% above = 988 * 1.10 = 1086.8
+    fun `lower floor at exactly 10 percent above fach min awards 3 points`() {
+        // Spinto Soprano rangeMinHz = 233. 10% above = 233 * 1.10 = 256.3
         val p = profile(
-            detectedMin = 233f,
-            detectedMax = 988f * 1.10f,
+            detectedMin = 233f * 1.10f,
+            detectedMax = 988f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
         )
         val results = FachClassifier.classify(p)
         assertEquals(
-            "Upper ceiling exactly at +10% of Spinto Soprano max must score 14/14",
+            "Lower floor exactly at +10% of Spinto Soprano min must score 14/14 (11 baseline + 3)",
             14, scoreOf(spintoSoprano, results)
         )
     }
 
     /**
-     * Upper-ceiling ratio just outside 1.10 (10.1% above).
-     * This should drop from +3 to +2, reducing total score by 1.
+     * Lower-floor ratio just outside 1.10 (10.1% above). Drops from +3 to +2.
      */
     @Test
-    fun `upper ceiling at 10_1 percent above fach max awards 2 points not 3`() {
+    fun `lower floor at 10_1 percent above fach min awards 2 points not 3`() {
         val p = profile(
-            detectedMin = 233f,
-            detectedMax = 988f * 1.101f,
+            detectedMin = 233f * 1.101f,
+            detectedMax = 988f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
         )
         val results = FachClassifier.classify(p)
         assertEquals(
-            "Upper ceiling at 10.1% above Spinto max should score 13/14 (not 14)",
+            "Lower floor at 10.1% above Spinto min should score 13/14 (11 baseline + 2)",
             13, scoreOf(spintoSoprano, results)
         )
     }
 
     /**
-     * Upper-ceiling ratio exactly at 1.20 (the +2 / +1 boundary).
-     * Ratio 1.20 is within [0.80, 1.20] → +2.
+     * Lower-floor ratio exactly at 1.20 (the +2 / +1 boundary).
      */
     @Test
-    fun `upper ceiling at exactly 20 percent above fach max awards 2 points`() {
+    fun `lower floor at exactly 20 percent above fach min awards 2 points`() {
         val p = profile(
-            detectedMin = 233f,
-            detectedMax = 988f * 1.20f,
+            detectedMin = 233f * 1.20f,
+            detectedMax = 988f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
         )
         val results = FachClassifier.classify(p)
         val score = scoreOf(spintoSoprano, results)
-        // Max possible without the ceiling: 2+3+3+3 = 11, plus 2 for ceiling = 13
-        assertEquals("Upper ceiling at exactly +20% should award +2, giving score 13", 13, score)
+        assertEquals("Lower floor at exactly +20% should award +2, giving 13 (11 baseline + 2)", 13, score)
     }
 
     /**
-     * Upper-ceiling ratio just outside 1.20 (20.1% above).
-     * Should drop to +1.
+     * Lower-floor ratio just outside 1.20 (20.1% above). Drops to +1.
      */
     @Test
-    fun `upper ceiling at 20_1 percent above fach max awards 1 point`() {
+    fun `lower floor at 20_1 percent above fach min awards 1 point`() {
         val p = profile(
-            detectedMin = 233f,
-            detectedMax = 988f * 1.201f,
+            detectedMin = 233f * 1.201f,
+            detectedMax = 988f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
         )
         val results = FachClassifier.classify(p)
         val score = scoreOf(spintoSoprano, results)
-        assertEquals("Upper ceiling at 20.1% above should award +1, giving score 12", 12, score)
+        assertEquals("Lower floor at 20.1% above should award +1, giving 12 (11 baseline + 1)", 12, score)
     }
 
     /**
-     * Upper-ceiling ratio outside 1.30 (30.1% above).
-     * Should award 0 points for the ceiling dimension.
+     * Lower-floor ratio outside 1.30 (30.1% above). Awards 0 points.
      */
     @Test
-    fun `upper ceiling beyond 30 percent above fach max awards 0 points`() {
+    fun `lower floor beyond 30 percent above fach min awards 0 points`() {
         val p = profile(
-            detectedMin = 233f,
-            detectedMax = 988f * 1.31f,
+            detectedMin = 233f * 1.31f,
+            detectedMax = 988f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
         )
         val results = FachClassifier.classify(p)
         val score = scoreOf(spintoSoprano, results)
-        assertEquals("Upper ceiling at 31% above should award 0, giving score 11", 11, score)
+        assertEquals("Lower floor at 31% above should award 0, giving 11 (11 baseline + 0)", 11, score)
     }
 
     /**
-     * Lower floor ratio exactly at 1.15 (the +2 / +1 boundary for the floor).
-     * Ratio 1.15 is within [0.85, 1.15] → +2.
-     *
-     * To isolate the floor dimension, the ceiling is placed at +25% above fach max
-     * (ratio 1.25 → in [0.70,1.30] → +1).  The non-floor dimensions score 1+3+3+3=10,
-     * so floor +2 gives a total of 12.
+     * Upper-ceiling ratio exactly at 1.15 (the +2 / +1 boundary for the ceiling).
+     * Floor held at an exact match (+3). Baseline excluding ceiling: 3+9=12.
      */
     @Test
-    fun `lower floor at exactly 15 percent above fach min awards 2 points`() {
-        // Spinto Soprano rangeMinHz = 233. 15% above = 233 * 1.15 = 267.95
-        // Ceiling at 25% above to score +1 there, making total isolatable
+    fun `upper ceiling at exactly 15 percent above fach max awards 2 points`() {
+        // Spinto Soprano rangeMaxHz = 988. 15% above = 988 * 1.15 = 1136.2
         val p = profile(
-            detectedMin = 233f * 1.15f,
-            detectedMax = 988f * 1.25f,   // +25% → +1 (not +3), isolates floor
+            detectedMin = 233f,
+            detectedMax = 988f * 1.15f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
         )
         val results = FachClassifier.classify(p)
         val s = scoreOf(spintoSoprano, results)
-        // ceiling=+1, floor=+2, tessHigh=+3, tessLow=+3, pass=+3 → 12
         assertEquals(
-            "Lower floor at exactly +15% should award +2, giving 12 (ceiling deliberately at +1 zone)",
-            12, s
+            "Upper ceiling at exactly +15% should award +2, giving 14 (12 baseline + 2)",
+            14, s
         )
     }
 
     /**
-     * Lower floor ratio just outside 1.15 (15.1% above).
-     * Should drop from +2 to +1 → total score decreases by 1.
+     * Upper-ceiling ratio just outside 1.15 (15.1% above). Drops from +2 to +1.
      */
     @Test
-    fun `lower floor at 15_1 percent above fach min awards 1 point`() {
+    fun `upper ceiling at 15_1 percent above fach max awards 1 point`() {
         val p = profile(
-            detectedMin = 233f * 1.151f,
-            detectedMax = 988f * 1.25f,   // +25% ceiling → +1 zone, isolates floor
+            detectedMin = 233f,
+            detectedMax = 988f * 1.151f,
             comfortableLow = 277f,
             comfortableHigh = 784f,
             passaggio = 466f,
@@ -431,9 +425,8 @@ class AdjacentFachDiscriminationTest {
         val results = FachClassifier.classify(p)
         val score = scoreOf(spintoSoprano, results)
         assertEquals(
-
-            "Lower floor at 15.1% above should award +1, giving 11 (ceiling at +1 zone)",
-            11, score
+            "Upper ceiling at 15.1% above should award +1, giving 13 (12 baseline + 1)",
+            13, score
         )
     }
 

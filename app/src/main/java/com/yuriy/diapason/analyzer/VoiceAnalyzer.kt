@@ -17,6 +17,7 @@ private const val YIN_THRESHOLD = 0.15
 private const val MIN_PITCH_HZ = 60f
 private const val MAX_PITCH_HZ = 2200f
 private const val MIN_YIN_CONFIDENCE = 0.80f
+private const val MIN_ACCEPTED_SAMPLES = 40
 
 /**
  * Localised strings required by [VoiceAnalyzer].
@@ -136,8 +137,12 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
         val duration = (System.currentTimeMillis() - sessionStartMs) / 1000f
         AppLogger.i("Session stopped — %.1fs, %d valid samples".format(duration, pitchSamples.size))
 
-        if (pitchSamples.size < 20) {
-            AppLogger.w("Insufficient samples (${pitchSamples.size} < 20) — need more singing")
+        // 40 frames (~7s of confident singing at ~160ms/frame) rather than 20 (~3.2s):
+        // the comfortable-range estimate rests on P20/P80 of this list, and 20 frames
+        // gives only 4 data points at each tail — too fragile for a reliable estimate.
+        // See KNOWN_ISSUES.md #3.
+        if (pitchSamples.size < MIN_ACCEPTED_SAMPLES) {
+            AppLogger.w("Insufficient samples (${pitchSamples.size} < $MIN_ACCEPTED_SAMPLES) — need more singing")
             onStatusUpdate?.invoke(tooFewSamplesMessage)
             return null
         }

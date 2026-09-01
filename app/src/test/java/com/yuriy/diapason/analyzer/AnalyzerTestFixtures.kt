@@ -59,11 +59,11 @@ object SessionReplay {
     /**
      * Convenience: build a [VoiceProfile] from a fixture session using the same
      * logic [VoiceAnalyzer.stop] uses. Returns null when too few samples survive
-     * (mirrors the 20-sample guard in production).
+     * (mirrors the 40-sample guard in production).
      */
     fun buildProfile(samples: List<PitchSample>, durationSeconds: Float = 0f): VoiceProfile? {
         val pitches = acceptedPitches(samples)
-        if (pitches.size < 20) return null
+        if (pitches.size < 40) return null
 
         val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(pitches)
         val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(pitches)
@@ -346,15 +346,15 @@ object Fixtures {
 
     /**
      * Three short sung phrases, each separated by a long silence gap.
-     * Total voiced frames = 30 (just above the minimum).
+     * Total voiced frames = 45 (just above the 40-sample minimum).
      * Expected: profile builds successfully; extremes are from the sung pitches only.
      */
     val LONG_SILENCE_GAPS: List<PitchSample> = buildSession {
-        sustainedNote(E4, 10)
+        sustainedNote(E4, 15)
         silenceGap(30)
-        sustainedNote(A4, 10)
+        sustainedNote(A4, 15)
         silenceGap(30)
-        sustainedNote(C5, 10)
+        sustainedNote(C5, 15)
     }
 
     // ── Scenario 9: Repeated boundary notes ──────────────────────────────────

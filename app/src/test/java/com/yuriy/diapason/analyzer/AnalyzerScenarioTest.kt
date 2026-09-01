@@ -193,11 +193,11 @@ class AnalyzerScenarioTest {
 
     @Test
     fun `session with too few valid samples fails safely without crashing`() {
-        // The fixture contains 10 voiced frames — below the 20-sample minimum.
+        // The fixture contains 10 voiced frames — below the 40-sample minimum.
         val profile = SessionReplay.buildProfile(Fixtures.TOO_FEW_VALID_SAMPLES)
 
         assertNull(
-            "buildProfile should return null when fewer than 20 samples are accepted",
+            "buildProfile should return null when fewer than 40 samples are accepted",
             profile
         )
     }
@@ -222,16 +222,16 @@ class AnalyzerScenarioTest {
             pitches.all { it > 0f }
         )
         assertEquals(
-            "Only the 30 voiced frames should be accepted",
-            30, pitches.size
+            "Only the 45 voiced frames should be accepted",
+            45, pitches.size
         )
     }
 
     @Test
     fun `session with long gaps between phrases still builds a valid profile`() {
-        // 30 voiced samples is >= 20, so profile should succeed.
+        // 45 voiced samples is >= 40, so profile should succeed.
         val profile = SessionReplay.buildProfile(Fixtures.LONG_SILENCE_GAPS)
-        assertNotNull("Profile should be non-null with 30 valid voiced frames", profile)
+        assertNotNull("Profile should be non-null with 45 valid voiced frames", profile)
     }
 
     @Test

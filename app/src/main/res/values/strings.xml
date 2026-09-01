@@ -34,7 +34,7 @@
     <string name="voice_types_cd_expand">Expand</string>
     <string name="results_title">Your Results</string>
     <string name="results_best_match_label">Best Match</string>
-    <string name="results_confidence_label">Classification confidence</string>
+    <string name="results_confidence_label">Match score</string>
     <string name="results_famous_roles_subheading">Famous roles for this voice</string>
     <string name="results_section_range">Voice Range — This Session</string>
     <string name="results_section_other_matches">Other Possible Matches</string>
@@ -88,7 +88,7 @@
         your absolute range and your passaggio (register break). Aim for at least 30–45 seconds
         of singing.</string>
     <string name="guide_step5_title">Press Stop and review</string>
-    <string name="guide_step5_body">Diapason will show your top voice type match with a confidence
+    <string name="guide_step5_body">Diapason will show your top voice type match with a match
         score, your measured range, tessitura, and estimated passaggio. Full scoring detail is in
         Logcat.</string>
     <string name="guide_fach_section_title">What is Fach?</string>

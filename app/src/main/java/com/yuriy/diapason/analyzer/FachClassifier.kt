@@ -3,6 +3,7 @@ package com.yuriy.diapason.analyzer
 import com.yuriy.diapason.logging.AppLogger
 import kotlin.math.abs
 import kotlin.math.ln
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object FachClassifier {
@@ -10,7 +11,10 @@ object FachClassifier {
     // ── Note name utility ──────────────────────────────────────────────────────
 
     fun hzToNoteName(hz: Float): String {
-        if (hz <= 0f) return "—"
+        // hz <= 0f also rejects NaN/negative values (NaN fails every IEEE comparison);
+        // !hz.isFinite() additionally catches NaN and +/-Infinity explicitly, since NaN
+        // would otherwise reach roundToInt() below and throw IllegalArgumentException.
+        if (hz <= 0f || !hz.isFinite()) return "—"
         val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         val midi = (12 * ln(hz / 440.0) / ln(2.0) + 69).roundToInt()
         if (midi !in 0..127) return "%.0f Hz".format(hz)
@@ -80,21 +84,93 @@ object FachClassifier {
     }
 
     // ── Passaggio (zone of highest pitch instability) ─────────────────────────
+    //
+    // A passaggio is a genuine register break: the voice wavering back and forth
+    // near a specific pitch, not just any two notes that happen to be far apart.
+    // Plain window variance can't tell those apart — it only measures spread, not
+    // order, so a real wobble (many small back-and-forth moves) and one clean
+    // jump between two held notes produce the same "spread" if the numbers work
+    // out similarly. The search below runs in semitone space (a semitone is worth
+    // ~4x more Hz at soprano register than bass register, so raw-Hz variance
+    // always drifted toward the higher voice — KNOWN_ISSUES.md #1) and scores
+    // each window on two order-sensitive signals instead of variance alone:
+    //
+    //  - reversals: how many times the frame-to-frame direction actually flips.
+    //    A flat run or a single step has zero; a real wobble has many. Weighted
+    //    exponentially (2^reversals) because a *partial* overlap with a real
+    //    wobble — e.g. one contaminating sample from an adjacent stable block —
+    //    still reverses on almost every frame, so a linear weight isn't enough
+    //    margin to stop that near-miss from beating a window that's genuinely
+    //    oscillating throughout.
+    //  - magnitude: the MEDIAN (not variance) of the qualifying frame-to-frame
+    //    moves. Median is robust to the one big delta a contaminating sample
+    //    from a neighboring block introduces — that one outlier doesn't move the
+    //    median the way it would inflate a variance-from-mean calculation, so a
+    //    window doesn't get an unearned magnitude boost just for grabbing a
+    //    single sample from a much more distant register.
+    //
+    // A flat run or single step has zero reversals and one qualifying delta —
+    // median of one value is just that value — so this reduces to exactly the
+    // old variance-like behavior for the no-oscillation fallback case (e.g. a
+    // bimodal chest/head session with no transition frames). See
+    // AdversarialBreakageTest for the constructed case this was built against.
+
+    private const val PASSAGGIO_WINDOW_SIZE = 15
+
+    // Minimum frame-to-frame move (in semitones) to count as a real move at all.
+    // Filters out hardware/measurement jitter on an otherwise-held note, which
+    // real captured sessions (not just clean synthetic ones) do exhibit.
+    private const val MIN_MOVE_DELTA_SEMITONES = 0.15
+
+    private fun median(values: List<Double>): Double {
+        if (values.isEmpty()) return 0.0
+        val sorted = values.sorted()
+        val mid = sorted.size / 2
+        return if (sorted.size % 2 == 0) (sorted[mid - 1] + sorted[mid]) / 2.0 else sorted[mid]
+    }
 
     fun estimatePassaggio(pitches: List<Float>): Float {
         if (pitches.size < 30) return pitches.average().toFloat()
-        val windowSize = 15
-        var maxVariance = 0.0
-        var passaggioHz = pitches.average().toFloat()
-        for (i in 0..(pitches.size - windowSize)) {
-            val window = pitches.subList(i, i + windowSize)
+
+        val semitones = pitches.map { 12.0 * ln(it.toDouble()) / ln(2.0) }
+        val windowSize = PASSAGGIO_WINDOW_SIZE
+
+        var bestScore = -1.0
+        var bestVariance = -1.0
+        var passaggioSemitone = semitones.average()
+
+        for (i in 0..(semitones.size - windowSize)) {
+            val window = semitones.subList(i, i + windowSize)
             val mean = window.average()
             val variance = window.sumOf { (it - mean) * (it - mean) } / windowSize
-            if (variance > maxVariance) {
-                maxVariance = variance; passaggioHz = mean.toFloat()
+
+            val qualifyingDeltas = mutableListOf<Double>()
+            var reversals = 0
+            var prevDelta = 0.0
+            for (j in 1 until window.size) {
+                val delta = window[j] - window[j - 1]
+                if (abs(delta) >= MIN_MOVE_DELTA_SEMITONES) {
+                    qualifyingDeltas += delta
+                    if (prevDelta != 0.0 && (delta > 0) != (prevDelta > 0)) reversals++
+                    prevDelta = delta
+                }
+            }
+            val magnitude = median(qualifyingDeltas.map { abs(it) })
+            val score = magnitude * magnitude * 2.0.pow(reversals)
+
+            // On an exact score tie — e.g. a single clean jump between two flat
+            // blocks scores identically no matter how centered the window is on
+            // that jump, since median-of-one ignores window position — prefer the
+            // more centered/balanced window, matching what plain variance did
+            // before for that case (KNOWN_ISSUES.md #1's bimodal fallback).
+            if (score > bestScore || (score == bestScore && variance > bestVariance)) {
+                bestScore = score
+                bestVariance = variance
+                passaggioSemitone = mean
             }
         }
-        return passaggioHz
+
+        return 2.0.pow(passaggioSemitone / 12.0).toFloat()
     }
 
     // ── Classification ────────────────────────────────────────────────────────
@@ -103,11 +179,15 @@ object FachClassifier {
      * Scores each Fach definition against [profile] and returns a ranked list.
      *
      * Scoring (max 14 pts):
-     *   Upper ceiling match → 0–3 pts
-     *   Lower floor match   → 0–2 pts
+     *   Lower floor match   → 0–3 pts  (weighted higher than ceiling — see below)
+     *   Upper ceiling match → 0–2 pts
      *   Tessitura high      → 0–3 pts
      *   Tessitura low       → 0–3 pts
      *   Passaggio proximity → 0–3 pts
+     *
+     * Floor outweighs ceiling on purpose: the lowest comfortably-produced pitch is a
+     * harder-to-fake Fach signal than the top of the range, which a singer can stretch
+     * with falsetto/head-voice technique in a single take.
      */
     fun classify(profile: VoiceProfile): List<FachMatch> {
         AppLogger.i("═══════════════════════════════════════════════════")
@@ -128,36 +208,40 @@ object FachClassifier {
             val breakdown = mutableListOf<String>()
             var score = 0
 
-            // 1. Upper ceiling
-            val maxRatio = profile.detectedMaxHz / fach.rangeMaxHz
-            when (maxRatio) {
+            // 1. Lower floor — weighted higher (0-3, finer-grained tolerance bands) than
+            // the ceiling below. The lowest comfortably-produced pitch (real chest-voice
+            // depth) is a harder-to-fake, more stable Fach indicator than the top of the
+            // range, which a singer can stretch with falsetto/head-voice technique in a
+            // single phone-mic take. See KNOWN_ISSUES.md "Ceiling vs floor scoring weight".
+            val minRatio = profile.detectedMinHz / fach.rangeMinHz
+            when (minRatio) {
                 in 0.90f..1.10f -> {
-                    score += 3; breakdown += "+3 upper ceiling ≈ ${hzToNoteName(fach.rangeMaxHz)}"
+                    score += 3; breakdown += "+3 lower floor ≈ ${hzToNoteName(fach.rangeMinHz)}"
                 }
 
                 in 0.80f..1.20f -> {
-                    score += 2; breakdown += "+2 upper ceiling near ${hzToNoteName(fach.rangeMaxHz)}"
+                    score += 2; breakdown += "+2 lower floor near ${hzToNoteName(fach.rangeMinHz)}"
                 }
 
                 in 0.70f..1.30f -> {
-                    score += 1; breakdown += "+1 upper ceiling roughly near ${hzToNoteName(fach.rangeMaxHz)}"
-                }
-
-                else -> breakdown += "  0 upper ceiling far from ${hzToNoteName(fach.rangeMaxHz)}"
-            }
-
-            // 2. Lower floor
-            val minRatio = profile.detectedMinHz / fach.rangeMinHz
-            when (minRatio) {
-                in 0.85f..1.15f -> {
-                    score += 2; breakdown += "+2 lower floor ≈ ${hzToNoteName(fach.rangeMinHz)}"
-                }
-
-                in 0.70f..1.30f -> {
-                    score += 1; breakdown += "+1 lower floor near ${hzToNoteName(fach.rangeMinHz)}"
+                    score += 1; breakdown += "+1 lower floor roughly near ${hzToNoteName(fach.rangeMinHz)}"
                 }
 
                 else -> breakdown += "  0 lower floor far from ${hzToNoteName(fach.rangeMinHz)}"
+            }
+
+            // 2. Upper ceiling — weighted lower (0-2) than the floor above; see comment there.
+            val maxRatio = profile.detectedMaxHz / fach.rangeMaxHz
+            when (maxRatio) {
+                in 0.85f..1.15f -> {
+                    score += 2; breakdown += "+2 upper ceiling ≈ ${hzToNoteName(fach.rangeMaxHz)}"
+                }
+
+                in 0.70f..1.30f -> {
+                    score += 1; breakdown += "+1 upper ceiling near ${hzToNoteName(fach.rangeMaxHz)}"
+                }
+
+                else -> breakdown += "  0 upper ceiling far from ${hzToNoteName(fach.rangeMaxHz)}"
             }
 
             // 3. Comfortable range high

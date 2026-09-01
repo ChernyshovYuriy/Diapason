@@ -175,7 +175,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_tenor,
         rangeMinHz = 130f, rangeMaxHz = 523f,
         tessituraMinHz = 196f, tessituraMaxHz = 440f,
-        passaggioHz = 311f,
+        passaggioHz = 330f,
         descriptionRes = R.string.fach_description_lyric_tenor,
         famousRolesRes = R.array.fach_famous_roles_lyric_tenor,
         exampleSingersRes = R.array.fach_example_singers_lyric_tenor
@@ -186,7 +186,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_tenor,
         rangeMinHz = 123f, rangeMaxHz = 494f,
         tessituraMinHz = 175f, tessituraMaxHz = 415f,
-        passaggioHz = 294f,
+        passaggioHz = 311f,
         descriptionRes = R.string.fach_description_spinto_tenor,
         famousRolesRes = R.array.fach_famous_roles_spinto_tenor,
         exampleSingersRes = R.array.fach_example_singers_spinto_tenor
@@ -197,7 +197,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_tenor,
         rangeMinHz = 110f, rangeMaxHz = 466f,
         tessituraMinHz = 165f, tessituraMaxHz = 392f,
-        passaggioHz = 277f,
+        passaggioHz = 294f,
         descriptionRes = R.string.fach_description_dramatic_tenor_heldentenor,
         famousRolesRes = R.array.fach_famous_roles_dramatic_tenor_heldentenor,
         exampleSingersRes = R.array.fach_example_singers_dramatic_tenor_heldentenor
@@ -208,7 +208,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_baritone,
         rangeMinHz = 110f, rangeMaxHz = 392f,
         tessituraMinHz = 147f, tessituraMaxHz = 330f,
-        passaggioHz = 220f,
+        passaggioHz = 233f,
         descriptionRes = R.string.fach_description_lyric_baritone,
         famousRolesRes = R.array.fach_famous_roles_lyric_baritone,
         exampleSingersRes = R.array.fach_example_singers_lyric_baritone
@@ -219,7 +219,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_baritone,
         rangeMinHz = 98f, rangeMaxHz = 370f,
         tessituraMinHz = 138f, tessituraMaxHz = 311f,
-        passaggioHz = 207f,
+        passaggioHz = 220f,
         descriptionRes = R.string.fach_description_kavalierbariton,
         famousRolesRes = R.array.fach_famous_roles_kavalierbariton,
         exampleSingersRes = R.array.fach_example_singers_kavalierbariton
@@ -230,7 +230,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_baritone,
         rangeMinHz = 87f, rangeMaxHz = 349f,
         tessituraMinHz = 123f, tessituraMaxHz = 294f,
-        passaggioHz = 196f,
+        passaggioHz = 207f,
         descriptionRes = R.string.fach_description_dramatic_baritone,
         famousRolesRes = R.array.fach_famous_roles_dramatic_baritone,
         exampleSingersRes = R.array.fach_example_singers_dramatic_baritone
@@ -241,7 +241,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_bass,
         rangeMinHz = 82f, rangeMaxHz = 330f,
         tessituraMinHz = 110f, tessituraMaxHz = 277f,
-        passaggioHz = 185f,
+        passaggioHz = 207f,
         descriptionRes = R.string.fach_description_bass_baritone,
         famousRolesRes = R.array.fach_famous_roles_bass_baritone,
         exampleSingersRes = R.array.fach_example_singers_bass_baritone
@@ -252,7 +252,10 @@ val ALL_FACH: List<FachDefinition> = listOf(
         categoryRes = R.string.fach_category_bass,
         rangeMinHz = 73f, rangeMaxHz = 330f,
         tessituraMinHz = 98f, tessituraMaxHz = 262f,
-        passaggioHz = 175f,
+        // Literature gives F#3-G3 (185-196 Hz) as a range rather than a single note;
+        // using the lower bound, consistent with the ~1-semitone correction applied
+        // to the other male Fach passaggio values above (KNOWN_ISSUES.md #2).
+        passaggioHz = 185f,
         descriptionRes = R.string.fach_description_basso_cantante,
         famousRolesRes = R.array.fach_famous_roles_basso_cantante,
         exampleSingersRes = R.array.fach_example_singers_basso_cantante

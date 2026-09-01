@@ -34,7 +34,7 @@
     <string name="voice_types_cd_expand">Expandir</string>
     <string name="results_title">Tus resultados</string>
     <string name="results_best_match_label">Mejor coincidencia</string>
-    <string name="results_confidence_label">Confianza de clasificación</string>
+    <string name="results_confidence_label">Puntuación de coincidencia</string>
     <string name="results_famous_roles_subheading">Roles famosos para este tipo de voz</string>
     <string name="results_section_range">Rango medido</string>
     <string name="results_section_other_matches">Otras coincidencias posibles</string>
@@ -82,7 +82,7 @@
         tanto tu rango absoluto como tu pasaje (cambio de registro). Intenta cantar al menos 30–45 segundos.</string>
     <string name="guide_step5_title">Pulsa Detener y revisa</string>
     <string name="guide_step5_body">Diapason mostrará tu mejor coincidencia de tipo de voz con una
-        puntuación de confianza, tu rango medido, tesitura y pasaje estimado. El detalle completo
+        puntuación de coincidencia, tu rango medido, tesitura y pasaje estimado. El detalle completo
         del cálculo se encuentra en Logcat.</string>
     <string name="guide_fach_section_title">¿Qué es Fach?</string>
     <string name="guide_fach_body1">“Fach” (pronunciado /fax/, alemán para “categoría”) es el

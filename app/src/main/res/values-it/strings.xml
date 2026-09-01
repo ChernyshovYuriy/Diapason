@@ -34,7 +34,7 @@
     <string name="voice_types_cd_expand">Espandi</string>
     <string name="results_title">I tuoi risultati</string>
     <string name="results_best_match_label">Migliore corrispondenza</string>
-    <string name="results_confidence_label">Affidabilità della classificazione</string>
+    <string name="results_confidence_label">Punteggio di corrispondenza</string>
     <string name="results_famous_roles_subheading">Ruoli famosi per questa voce</string>
     <string name="results_section_range">Estensione misurata</string>
     <string name="results_section_other_matches">Altre possibili corrispondenze</string>
@@ -84,7 +84,7 @@
         di canto.</string>
     <string name="guide_step5_title">Premi Ferma e rivedi</string>
     <string name="guide_step5_body">Diapason mostrerà il tipo di voce più compatibile con un punteggio di
-        affidabilità, la tua estensione misurata, la tessitura e il passaggio stimato. Il dettaglio completo
+        corrispondenza, la tua estensione misurata, la tessitura e il passaggio stimato. Il dettaglio completo
         del punteggio è in Logcat.</string>
     <string name="guide_fach_section_title">Che cos’è il Fach?</string>
     <string name="guide_fach_body1">"Fach" (pronunciato /fax/, parola tedesca per "compartimento") è il

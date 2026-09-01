@@ -226,19 +226,19 @@ class AnalyzerInvariantTest {
     // ─────────────────────────────────────────────────────────────────────────
 
     @Test
-    fun `session with exactly 19 accepted samples returns null profile`() {
-        val session = buildSession { sustainedNote(440f, 19) }
+    fun `session with exactly 39 accepted samples returns null profile`() {
+        val session = buildSession { sustainedNote(440f, 39) }
         assertNull(
-            "buildProfile should return null with only 19 samples (< 20 minimum)",
+            "buildProfile should return null with only 39 samples (< 40 minimum)",
             SessionReplay.buildProfile(session)
         )
     }
 
     @Test
-    fun `session with exactly 20 accepted samples returns a valid profile`() {
-        val session = buildSession { sustainedNote(440f, 20) }
+    fun `session with exactly 40 accepted samples returns a valid profile`() {
+        val session = buildSession { sustainedNote(440f, 40) }
         assertNotNull(
-            "buildProfile should succeed with exactly 20 samples",
+            "buildProfile should succeed with exactly 40 samples",
             SessionReplay.buildProfile(session)
         )
     }

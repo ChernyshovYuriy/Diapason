@@ -45,6 +45,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuriy.diapason.R
+import java.util.Locale
+
+// internal, not private: lets a unit test call this directly rather than only
+// reasoning about it. Locale.ROOT — this is a live pitch readout, not localized
+// prose; the device's default locale must not change its digit glyphs (e.g.
+// Persian renders Eastern Arabic-Indic digits and a different decimal mark for
+// an unqualified .format() call).
+internal fun formatHz(hz: Float): String = "%.1f".format(Locale.ROOT, hz)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,7 +126,7 @@ fun CompareRecordScreen(
                     )
                     MiniStatCard(
                         stringResource(R.string.analyze_stat_hz),
-                        if (currentHz > 0f) "%.1f".format(currentHz) else stringResource(R.string.no_pitch_placeholder),
+                        if (currentHz > 0f) formatHz(currentHz) else stringResource(R.string.no_pitch_placeholder),
                     )
                 }
             }

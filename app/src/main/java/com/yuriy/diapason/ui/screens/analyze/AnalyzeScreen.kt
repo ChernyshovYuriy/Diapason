@@ -60,6 +60,14 @@ import com.google.android.play.core.review.testing.FakeReviewManager
 import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analyzer.FachClassifier
+import java.util.Locale
+
+// internal, not private: lets a unit test call this directly rather than only
+// reasoning about it. Locale.ROOT — this is a live pitch readout, not localized
+// prose; the device's default locale must not change its digit glyphs (e.g.
+// Persian renders Eastern Arabic-Indic digits and a different decimal mark for
+// an unqualified .format() call).
+internal fun formatHz(hz: Float): String = "%.1f".format(Locale.ROOT, hz)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -179,7 +187,7 @@ fun AnalyzeScreen(
                 StatCard(
                     label = stringResource(R.string.analyze_stat_hz),
                     value = if ((recording?.currentHz ?: 0f) > 0)
-                        "%.1f".format(recording?.currentHz) else stringResource(R.string.no_pitch_placeholder)
+                        formatHz(recording?.currentHz ?: 0f) else stringResource(R.string.no_pitch_placeholder)
                 )
             }
         }

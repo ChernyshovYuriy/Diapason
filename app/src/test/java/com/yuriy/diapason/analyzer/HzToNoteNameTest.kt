@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.Locale
 
 /**
  * Comprehensive tests for [FachClassifier.hzToNoteName].
@@ -169,6 +170,26 @@ class HzToNoteNameTest {
     fun `coloratura soprano range max 1568 Hz maps to G6`() {
         // Coloratura Soprano rangeMaxHz = 1568f (G6)
         assertEquals("G6", note(1568.0f))
+    }
+
+    // ── Locale safety of the out-of-MIDI-range fallback ───────────────────────
+    //
+    // BUG-05 (KNOWN_ISSUES.md): the "%.0f Hz" fallback used an unqualified
+    // .format(), which renders non-Latin digit glyphs (and a different decimal
+    // separator) when the device's default locale is e.g. Persian. This is a
+    // number in an otherwise Latin-script UI, not localized prose, so it must
+    // stay Western-digit regardless of locale.
+
+    @Test
+    fun `out-of-MIDI-range fallback renders Western digits regardless of default locale`() {
+        val original = Locale.getDefault()
+        Locale.setDefault(Locale.forLanguageTag("fa"))
+        try {
+            // 20 000 Hz pushes MIDI well past 127, taking the "%.0f Hz" fallback branch.
+            assertEquals("20000 Hz", note(20000f))
+        } finally {
+            Locale.setDefault(original)
+        }
     }
 
     // ── N9. Edge values return the placeholder ─────────────────────────────────

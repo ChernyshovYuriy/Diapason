@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuriy.diapason.R
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -229,8 +230,12 @@ private fun WarmUpCard(minuteRange: String, title: String, body: String) {
     }
 }
 
-private fun formatTime(totalSeconds: Int): String {
+// internal, not private: lets a unit test call this directly rather than only
+// reasoning about it — this is also the fix for KNOWN_ISSUES.md's Locale finding
+// (Locale.ROOT: a countdown timer's digits must not change glyph on the device's
+// default locale, e.g. Persian's Eastern Arabic-Indic digits).
+internal fun formatTime(totalSeconds: Int): String {
     val m = totalSeconds / 60
     val s = totalSeconds % 60
-    return "%d:%02d".format(m, s)
+    return "%d:%02d".format(Locale.ROOT, m, s)
 }

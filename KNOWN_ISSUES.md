@@ -227,6 +227,44 @@ already use `RobolectricTestRunner`, and its `AudioRecord` shadow reports
 
 ---
 
+## 10 · Live numeric readouts used default-locale formatting [FIXED 2026-09-01]
+
+**File:** `AnalyzeScreen.kt`, `CompareRecordScreen.kt`, `WarmUpTimerScreen.kt`, `FachClassifier.hzToNoteName()`
+
+Found during a second, separate adversarial audit pass. Four `.format()` calls with
+numeric conversions (`%.1f`, `%d:%02d`, `%.0f`) had no explicit `Locale`, so Java's
+`Formatter` applied the JVM's *default* locale's digit glyphs and decimal separator —
+not just its punctuation. Verified empirically in this project's own JVM (not assumed):
+`"%.1f".format(440.0f)` under a Persian (`fa`) default locale renders `"۴۴۰٫۰"` — Eastern
+Arabic-Indic digits *and* the Arabic decimal separator, not a period. Two of the four
+sites are the live pitch readout shown during every single recording
+(`AnalyzeScreen`/`CompareRecordScreen`), one is the warm-up countdown timer
+(`WarmUpTimerScreen`), and one is `hzToNoteName`'s rarely-reached out-of-MIDI-range
+fallback. Since the app added Persian support (`1c9528c`), this was live and reachable,
+not theoretical.
+
+**Fix:** added `Locale.ROOT` to all four `.format()` calls — these are numbers in an
+otherwise Latin-script UI, not localized prose, so digit glyphs must not vary with the
+device's language setting (unlike a genuinely localized decimal separator, e.g.
+`fr`/`it`/`es`/`pt`'s comma, which is correct behavior and untouched here).
+
+Two of the four call sites (`AnalyzeScreen.kt`, `CompareRecordScreen.kt`) were inline
+expressions inside `@Composable` functions with no test seam; extracted each into a
+small `internal fun formatHz(hz: Float): String`, matching the pattern
+`WarmUpTimerScreen.kt`'s own `formatTime()` already used, so both could be unit-tested
+directly instead of only reasoned about. `formatTime()` itself was `private` and was
+changed to `internal` for the same reason.
+
+**Verified against:** the full suite, plus 5 new tests across `HzToNoteNameTest`,
+`AnalyzeScreenTest`, `CompareRecordScreenTest` (new files), and `WarmUpTimerScreenTest`
+(new file) — each asserting the formatted output stays Western-digit under a Persian
+default locale. Confirmed all of them actually fail against the pre-fix code: the
+`hzToNoteName` one with a genuine locale-mismatch assertion failure, and the three
+extraction-dependent ones by the stronger signal of not compiling at all without the
+fix (`formatHz` didn't exist yet; `formatTime` was inaccessible).
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.

@@ -1,6 +1,7 @@
 package com.yuriy.diapason.analyzer
 
 import com.yuriy.diapason.logging.AppLogger
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
@@ -17,7 +18,11 @@ object FachClassifier {
         if (hz <= 0f || !hz.isFinite()) return "—"
         val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         val midi = (12 * ln(hz / 440.0) / ln(2.0) + 69).roundToInt()
-        if (midi !in 0..127) return "%.0f Hz".format(hz)
+        // Locale.ROOT: this is a number rendered into an otherwise Latin-script UI, not
+        // localized prose — the device's default locale must not change its digit glyphs
+        // (e.g. Persian renders Eastern Arabic-Indic digits and a different decimal mark
+        // for an unqualified .format() call).
+        if (midi !in 0..127) return "%.0f Hz".format(Locale.ROOT, hz)
         return "${noteNames[midi % 12]}${(midi / 12) - 1}"
     }
 

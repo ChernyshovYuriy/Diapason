@@ -303,6 +303,65 @@ not a wrong-result bug.
 
 ---
 
+## 12 · `estimateComfortableRange`'s percentile index truncated instead of rounding [FIXED 2026-09-01]
+
+**File:** `FachClassifier.estimateComfortableRange()`
+
+Found during a second, separate adversarial audit pass. `sorted[(sorted.size * 0.20).toInt()]`
+used `.toInt()`, which truncates (floors) rather than rounds. Truncation always rounds
+*down*, so for a non-round-by-5/10 sample count both P20 and P80 land slightly below
+their intended percentile — e.g. for 13 samples, P20's index is `0.20 * 13 = 2.6`;
+truncating always gives 2 (15.4% of the data below it, undershooting the intended 20%),
+while rounding correctly gives 3 (23.1% below, closer to 20%). Every existing test in
+the suite happened to use a sample count divisible by 5 or 10, where truncation and
+rounding agree, which is why this went unnoticed.
+
+**Fix:** changed both indices from `.toInt()` to `.roundToInt()`. No sample count used
+anywhere else in the suite was affected (verified — full suite green unchanged); the
+fix only changes behavior for non-round-by-5/10 sample counts, which real sessions can
+easily have (accepted-sample counts depend on how long and how confidently someone sang).
+
+**Verified against:** the full suite, plus 2 new tests in `FachClassifierTest`
+constructing lists where truncation and rounding disagree (13 samples for P20, 17 for
+P80) and asserting the rounded index wins. Confirmed both fail against the pre-fix
+code via a targeted mutation (reverted to `.toInt()`, confirmed exactly those 2 tests
+failed, then restored).
+
+---
+
+## 13 · `HzDelta.isMeaningful`'s flat percentage was an asymmetric proxy for a semitone [FIXED 2026-09-01]
+
+**File:** `ComparisonResult.kt` — `HzDelta.isMeaningful`, `comfortableRangeWidened`, `detectedRangeWidened`
+
+Found during a second, separate adversarial audit pass. `isMeaningful` used a flat
+`>= 5.9%` threshold as a proxy for "at least one semitone." A semitone is a fixed
+*ratio* (2^(1/12) ≈ 1.0595), not a fixed percentage, so the same flat threshold
+corresponds to different true semitone distances depending on direction: a −5.9%
+change is ≈1.05 true semitones, but a +5.9% change is only ≈0.99 true semitones —
+just under a full semitone. Verified numerically: a +5.925% rise (400 → 423.7 Hz)
+clears the old flat threshold but is only ~0.997 true semitones, meaning the old
+formula called a sub-semitone change "meaningful."
+
+Separately, `comfortableRangeWidened` and `detectedRangeWidened` re-derived the same
+flat-percentage formula independently rather than calling `HzDelta.isMeaningful` —
+duplicating both the asymmetry bug and missing `isMeaningful`'s zero/negative-Hz guard.
+
+**Fix:** `isMeaningful` now computes the true semitone distance
+(`12 * log2(afterHz / beforeHz)`) and compares against `1.0`, matching the semitone-space
+math already standard elsewhere in this app (`FachClassifier`). `comfortableRangeWidened`
+and `detectedRangeWidened` now call `isMeaningful` directly instead of duplicating the
+formula, so the two can no longer drift out of sync and both inherit the guard against
+non-positive Hz values for free.
+
+**Verified against:** the full suite (all existing `isMeaningful`/`*RangeWidened` tests
+already used magnitudes comfortably inside or outside the ~1-semitone mark, so none were
+sensitive to the old formula's specific asymmetry and all still pass unchanged), plus 2
+new tests: the +5.925%-rise case above, and a negative-`beforeHz` guard case the old
+`!= 0f` check didn't cover. Confirmed both fail against the pre-fix code via a targeted
+mutation, then restored.
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.

@@ -3,6 +3,8 @@ package com.yuriy.diapason.comparison
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceProfile
+import kotlin.math.abs
+import kotlin.math.ln
 
 /**
  * A delta value between two voice sessions.
@@ -17,8 +19,25 @@ data class HzDelta(
 ) {
     val deltaHz: Float get() = afterHz - beforeHz
 
-    /** True if the absolute difference is large enough to be meaningful (>= 1 semitone ≈ 6%). */
-    val isMeaningful: Boolean get() = beforeHz != 0f && kotlin.math.abs(deltaHz / beforeHz) >= 0.059f
+    /**
+     * True if the change is at least one semitone, computed as a true log-ratio
+     * distance (`12 * log2(afterHz / beforeHz)`), not a flat percentage.
+     *
+     * A flat percentage is not a symmetric proxy for "one semitone": a semitone is
+     * a fixed *ratio* (2^(1/12) ≈ 1.0595), so the same +/-5.9% used before this fix
+     * corresponded to different true semitone distances depending on direction
+     * (-5.9% ≈ -1.05 semitones, +5.9% ≈ +0.99 semitones — just under a full
+     * semitone) — found during a second, separate adversarial audit pass. Using
+     * the actual semitone formula, already the standard elsewhere in this app
+     * (`FachClassifier`'s semitone-space calculations), removes the asymmetry
+     * entirely rather than picking a better-tuned percentage.
+     */
+    val isMeaningful: Boolean
+        get() {
+            if (beforeHz <= 0f || afterHz <= 0f) return false
+            val semitones = 12.0 * ln(afterHz / beforeHz.toDouble()) / ln(2.0)
+            return abs(semitones) >= 1.0
+        }
 }
 
 /**
@@ -55,17 +74,23 @@ data class ComparisonResult(
     /**
      * True if the comfortable range widened (low went down OR high went up by a meaningful amount).
      * Not exposed as a "improvement" claim — just a factual observation.
+     *
+     * Reuses [HzDelta.isMeaningful] rather than re-deriving the same threshold — this used
+     * to duplicate the formula independently (with its own copy of the old flat-percentage
+     * threshold, and without [HzDelta.isMeaningful]'s zero/negative-Hz guard), which is
+     * exactly the kind of hand-mirrored constant that can silently drift out of sync.
      */
     val comfortableRangeWidened: Boolean
-        get() = (comfortableLow.deltaHz < -comfortableLow.beforeHz * 0.059f) ||
-                (comfortableHigh.deltaHz > comfortableHigh.beforeHz * 0.059f)
+        get() = (comfortableLow.deltaHz < 0f && comfortableLow.isMeaningful) ||
+                (comfortableHigh.deltaHz > 0f && comfortableHigh.isMeaningful)
 
     /**
      * True if the detected range widened in either direction by a meaningful amount.
+     * See [comfortableRangeWidened] for why this reuses [HzDelta.isMeaningful].
      */
     val detectedRangeWidened: Boolean
-        get() = (detectedMin.deltaHz < -detectedMin.beforeHz * 0.059f) ||
-                (detectedMax.deltaHz > detectedMax.beforeHz * 0.059f)
+        get() = (detectedMin.deltaHz < 0f && detectedMin.isMeaningful) ||
+                (detectedMax.deltaHz > 0f && detectedMax.isMeaningful)
 
     companion object {
         /**

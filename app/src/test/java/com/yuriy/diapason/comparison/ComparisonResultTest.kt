@@ -90,6 +90,34 @@ class ComparisonResultTest {
         assertFalse(d.isMeaningful)
     }
 
+    @Test
+    fun `isMeaningful is false when beforeHz is negative`() {
+        val d = HzDelta(beforeHz = -50f, afterHz = 300f)
+        assertFalse(d.isMeaningful)
+    }
+
+    // ── Asymmetry fix: a flat percentage is not a symmetric proxy for a semitone ──
+    //
+    // Found during a second, separate adversarial audit pass. A semitone is a
+    // fixed ratio (2^(1/12) ≈ 1.0595), not a fixed percentage, so the old flat
+    // +/-5.9% threshold corresponded to different true semitone distances
+    // depending on direction. Verified numerically before writing this test: a
+    // +5.925% rise is only ~0.997 true semitones (just under a full semitone) —
+    // the old formula would have called it "meaningful" anyway, since 5.925% is
+    // itself above the flat 5.9% cutoff.
+
+    @Test
+    fun `isMeaningful correctly rejects a rise that clears the old flat percentage but not a true semitone`() {
+        // 400 -> 423.7 Hz is a +5.925% change (clears the old ">= 5.9%" threshold)
+        // but only ~0.997 true semitones (does not clear ">= 1 semitone").
+        val d = HzDelta(beforeHz = 400f, afterHz = 423.7f)
+        assertFalse(
+            "A +5.925% rise is under 1 true semitone (~0.997) and must not be meaningful, " +
+                    "even though it clears the old flat 5.9% threshold",
+            d.isMeaningful
+        )
+    }
+
     // ── ComparisonResult.compute – delta correctness ───────────────────────────
 
     @Test

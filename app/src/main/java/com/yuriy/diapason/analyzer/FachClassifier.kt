@@ -32,11 +32,24 @@ object FachClassifier {
     // the sorted-percentile approach is time-weighted: P20 is the pitch below which the
     // singer spent only the bottom 20% of their time, and P80 the mirror at the top.
     // This is a defensible proxy for "comfortable range".
+    //
+    // Index uses roundToInt(), not toInt() (truncation): truncating always floors,
+    // which systematically pulls BOTH P20 and P80 toward the low end of the sorted
+    // list — for a non-round sample count (e.g. 13), P20 undershoots the intended
+    // 20% mark and P80 undershoots the intended 80% mark by the same fractional
+    // amount, narrowing the reported range at the top and widening it slightly at
+    // the bottom instead of centering the error. Rounding to the nearest index
+    // halves the expected error and removes the directional bias; a round-by-5/10
+    // sample count is unaffected either way (found during a second, separate
+    // adversarial audit pass — see KNOWN_ISSUES.md).
 
     fun estimateComfortableRange(pitches: List<Float>): Pair<Float, Float> {
         if (pitches.size < 10) return Pair(pitches.minOrNull() ?: 0f, pitches.maxOrNull() ?: 0f)
         val sorted = pitches.sorted()
-        return Pair(sorted[(sorted.size * 0.20).toInt()], sorted[(sorted.size * 0.80).toInt()])
+        return Pair(
+            sorted[(sorted.size * 0.20).roundToInt()],
+            sorted[(sorted.size * 0.80).roundToInt()]
+        )
     }
 
     // ── Detected extremes (neighbor-validated min/max) ────────────────────────

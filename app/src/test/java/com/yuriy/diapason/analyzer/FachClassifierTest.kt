@@ -362,4 +362,42 @@ class FachClassifierTest {
             assertTrue("hzToNoteName($hz) must not return the dash sentinel", result != "—")
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 9. estimateComfortableRange — percentile index rounds, does not truncate
+    // ─────────────────────────────────────────────────────────────────────────
+    //
+    // Found during a second, separate adversarial audit pass. For a round-by-5/10
+    // sample count (every other test in this suite), truncation and rounding give
+    // the same index, which is why this went unnoticed. For n=13, P20's index is
+    // 0.20*13=2.6 — truncating always floors to 2, systematically undershooting
+    // the intended 20% mark; rounding correctly gives 3. Demonstrated directly by
+    // constructing a list where the two methods disagree and asserting the
+    // rounded (correct) index wins.
+
+    @Test
+    fun `estimateComfortableRange rounds the P20 index instead of truncating it`() {
+        // 13 consecutive integer values 100..112. 0.20 * 13 = 2.6 -> rounds to 3,
+        // not 2. sorted[3] = 103; the old truncating behavior would have given
+        // sorted[2] = 102.
+        val pitches = (100..112).map { it.toFloat() }
+        val (low, _) = FachClassifier.estimateComfortableRange(pitches)
+        assertEquals(
+            "P20 index for 13 samples should round 2.6 to 3 (sorted[3]=103), not truncate to 2 (sorted[2]=102)",
+            103f, low, 0.01f
+        )
+    }
+
+    @Test
+    fun `estimateComfortableRange rounds the P80 index instead of truncating it`() {
+        // 17 consecutive integer values 100..116. 0.80 * 17 = 13.6 -> rounds to
+        // 14, not 13. sorted[14] = 114; the old truncating behavior would have
+        // given sorted[13] = 113.
+        val pitches = (100..116).map { it.toFloat() }
+        val (_, high) = FachClassifier.estimateComfortableRange(pitches)
+        assertEquals(
+            "P80 index for 17 samples should round 13.6 to 14 (sorted[14]=114), not truncate to 13 (sorted[13]=113)",
+            114f, high, 0.01f
+        )
+    }
 }

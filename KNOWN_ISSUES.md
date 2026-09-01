@@ -265,6 +265,44 @@ fix (`formatHz` didn't exist yet; `formatTime` was inaccessible).
 
 ---
 
+## 11 · `ComparisonResult`'s passaggio gate was tied to the wrong constant [FIXED 2026-09-01]
+
+**File:** `ComparisonResult.compute()`, `FachClassifier.estimatePassaggio()`
+
+Found during a second, separate adversarial audit pass. `ComparisonResult.compute()`
+omitted the passaggio delta when either session had fewer than a hardcoded `30`
+samples — but that literal predates issue #3 above, which raised
+`VoiceAnalyzer.MIN_ACCEPTED_SAMPLES` from 20 to 40. Since every real `VoiceProfile`
+now has `sampleCount >= 40 > 30`, the check was always true and the `else null` branch
+was dead in production — not wrong, just vacuous, with a doc comment describing a
+state that could no longer occur.
+
+The real bug wasn't the number being stale — 30 was still numerically correct — it
+was that it was tied to the **wrong constant's job**. `VoiceAnalyzer.MIN_ACCEPTED_SAMPLES`
+answers "is there enough data for a profile at all"; `estimatePassaggio()`'s own
+(previously bare, unnamed) `30`-sample threshold answers a different question — "was
+the real windowed passaggio algorithm used, or just a plain average" — and that second
+question is what `ComparisonResult` actually needs to know before showing a
+before/after passaggio comparison. The two constants only *happened* to agree because
+40 > 30; had they diverged the other way, `ComparisonResult` would have shown a
+comparison built from at least one side's plain-average fallback.
+
+**Fix:** extracted `estimatePassaggio()`'s bare `30` into `FachClassifier.PASSAGGIO_MIN_SAMPLES`
+(`internal`, not `private`), and pointed `ComparisonResult.compute()` at that same
+constant instead of its own hardcoded `30`. No behavior change today (still 30, still
+vacuously satisfied by every real profile) — the value is that if either threshold
+ever moves independently again, `ComparisonResult` stays correct because it's now
+asking the right question rather than duplicating a number that happened to match.
+
+**Verified against:** the full suite. `ComparisonResultTest`'s 4 existing
+passaggio-threshold tests were updated to reference `FachClassifier.PASSAGGIO_MIN_SAMPLES`
+at the exact boundary (and one below it) instead of a hardcoded `30`/`29`, so they can't
+silently drift from the real constant again. No new test was needed to prove a
+behavior change, since this is a consistency fix with an unchanged numeric outcome,
+not a wrong-result bug.
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.

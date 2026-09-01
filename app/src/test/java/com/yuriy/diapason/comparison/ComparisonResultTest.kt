@@ -1,5 +1,6 @@
 package com.yuriy.diapason.comparison
 
+import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.VoiceProfile
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -19,7 +20,8 @@ class ComparisonResultTest {
 
     /**
      * Build a [VoiceProfile] with explicit fields for testing.
-     * [sampleCount] defaults to 30 so passaggio is included by default.
+     * [sampleCount] defaults to [FachClassifier.PASSAGGIO_MIN_SAMPLES] so passaggio is
+     * included by default.
      */
     private fun profile(
         detectedMin: Float = 200f,
@@ -27,7 +29,7 @@ class ComparisonResultTest {
         comfortableLow: Float = 250f,
         comfortableHigh: Float = 700f,
         passaggio: Float = 400f,
-        sampleCount: Int = 30,
+        sampleCount: Int = FachClassifier.PASSAGGIO_MIN_SAMPLES,
     ) = VoiceProfile(
         detectedMinHz = detectedMin,
         detectedMaxHz = detectedMax,
@@ -135,9 +137,9 @@ class ComparisonResultTest {
     // ── Passaggio presence ────────────────────────────────────────────────────
 
     @Test
-    fun `passaggio is present when both sessions have 30 or more samples`() {
-        val before = profile(passaggio = 380f, sampleCount = 30)
-        val after = profile(passaggio = 400f, sampleCount = 45)
+    fun `passaggio is present when both sessions have PASSAGGIO_MIN_SAMPLES or more`() {
+        val before = profile(passaggio = 380f, sampleCount = FachClassifier.PASSAGGIO_MIN_SAMPLES)
+        val after = profile(passaggio = 400f, sampleCount = FachClassifier.PASSAGGIO_MIN_SAMPLES + 15)
         val result = compute(before, after)
 
         assertNotNull(result.passaggio)
@@ -146,8 +148,8 @@ class ComparisonResultTest {
     }
 
     @Test
-    fun `passaggio is null when before session has fewer than 30 samples`() {
-        val before = profile(sampleCount = 29)
+    fun `passaggio is null when before session has fewer than PASSAGGIO_MIN_SAMPLES`() {
+        val before = profile(sampleCount = FachClassifier.PASSAGGIO_MIN_SAMPLES - 1)
         val after = profile(sampleCount = 50)
         val result = compute(before, after)
 
@@ -155,7 +157,7 @@ class ComparisonResultTest {
     }
 
     @Test
-    fun `passaggio is null when after session has fewer than 30 samples`() {
+    fun `passaggio is null when after session has fewer than PASSAGGIO_MIN_SAMPLES`() {
         val before = profile(sampleCount = 50)
         val after = profile(sampleCount = 15)
         val result = compute(before, after)
@@ -164,7 +166,7 @@ class ComparisonResultTest {
     }
 
     @Test
-    fun `passaggio is null when both sessions are below 30 samples`() {
+    fun `passaggio is null when both sessions are below PASSAGGIO_MIN_SAMPLES`() {
         val before = profile(sampleCount = 20)
         val after = profile(sampleCount = 22)
         val result = compute(before, after)

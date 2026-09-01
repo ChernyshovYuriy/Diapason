@@ -1,5 +1,6 @@
 package com.yuriy.diapason.comparison
 
+import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceProfile
 
@@ -69,8 +70,16 @@ data class ComparisonResult(
     companion object {
         /**
          * Compute a [ComparisonResult] from two completed sessions.
-         * Passaggio delta is omitted when either session has too few samples to produce
-         * a reliable estimate (fewer than 30 samples).
+         *
+         * Passaggio delta is omitted when either session has fewer than
+         * [FachClassifier.PASSAGGIO_MIN_SAMPLES] — below that, [FachClassifier.estimatePassaggio]
+         * itself falls back to a plain average rather than the windowed algorithm, so the two
+         * sides wouldn't be comparable numbers. In current production builds
+         * `VoiceAnalyzer.MIN_ACCEPTED_SAMPLES` (40) is stricter than this threshold (30), so no
+         * real session can ever fail this check today — but the two constants answer different
+         * questions and have already diverged once, so this stays tied to the one that actually
+         * governs whether the passaggio estimate itself is meaningful, not to whatever the outer
+         * sample gate happens to be.
          */
         fun compute(
             before: VoiceProfile,
@@ -78,7 +87,10 @@ data class ComparisonResult(
             after: VoiceProfile,
             afterTopMatch: FachMatch?,
         ): ComparisonResult {
-            val passagio = if (before.sampleCount >= 30 && after.sampleCount >= 30) {
+            val passagio = if (
+                before.sampleCount >= FachClassifier.PASSAGGIO_MIN_SAMPLES &&
+                after.sampleCount >= FachClassifier.PASSAGGIO_MIN_SAMPLES
+            ) {
                 HzDelta(before.estimatedPassaggioHz, after.estimatedPassaggioHz)
             } else null
 

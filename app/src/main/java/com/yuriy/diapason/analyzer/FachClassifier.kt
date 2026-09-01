@@ -127,6 +127,18 @@ object FachClassifier {
     // real captured sessions (not just clean synthetic ones) do exhibit.
     private const val MIN_MOVE_DELTA_SEMITONES = 0.15
 
+    // Below this many samples, estimatePassaggio() below falls back to a plain
+    // average instead of the windowed algorithm — too few frames for a reliable
+    // sliding window. internal (not private): ComparisonResult.compute() reads
+    // this too, to decide whether a passaggio delta is worth showing at all. Kept
+    // as its own constant rather than reusing VoiceAnalyzer.MIN_ACCEPTED_SAMPLES —
+    // that constant answers a different question ("is there enough data for a
+    // profile at all") and has already changed independently once
+    // (KNOWN_ISSUES.md #3); this one answers "was the real windowed passaggio
+    // algorithm used, or just an average," which must stay correct regardless of
+    // where the outer sample gate happens to sit.
+    internal const val PASSAGGIO_MIN_SAMPLES = 30
+
     private fun median(values: List<Double>): Double {
         if (values.isEmpty()) return 0.0
         val sorted = values.sorted()
@@ -135,7 +147,7 @@ object FachClassifier {
     }
 
     fun estimatePassaggio(pitches: List<Float>): Float {
-        if (pitches.size < 30) return pitches.average().toFloat()
+        if (pitches.size < PASSAGGIO_MIN_SAMPLES) return pitches.average().toFloat()
 
         val semitones = pitches.map { 12.0 * ln(it.toDouble()) / ln(2.0) }
         val windowSize = PASSAGGIO_WINDOW_SIZE

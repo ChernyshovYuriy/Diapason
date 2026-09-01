@@ -5,6 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /**
  * Comprehensive tests for [FachClassifier.hzToNoteName].
@@ -14,9 +15,10 @@ import java.util.Locale
  * Even a small rounding error in the MIDI math would silently mislabel an entire
  * octave of notes.
  *
- * The implementation uses truncating integer conversion (`toInt()`), which floors
- * positive MIDI values.  All expected values below were independently derived
- * from the equal-temperament formula `f = 440 × 2^((midi−69)/12)`.
+ * The implementation uses `roundToInt()` (standard rounding to nearest integer;
+ * an exact .5 tie rounds toward positive infinity — see the rounding-tie tests
+ * below). All expected values below were independently derived from the
+ * equal-temperament formula `f = 440 × 2^((midi−69)/12)`.
  *
  * Tests:
  *  N1.  Reference note A4 = 440 Hz → "A4"
@@ -170,6 +172,46 @@ class HzToNoteNameTest {
     fun `coloratura soprano range max 1568 Hz maps to G6`() {
         // Coloratura Soprano rangeMaxHz = 1568f (G6)
         assertEquals("G6", note(1568.0f))
+    }
+
+    // ── Rounding-tie behavior (KNOWN_ISSUES.md #5) ────────────────────────────
+    //
+    // The docblock this test file used to carry (see KNOWN_ISSUES.md #5)
+    // claimed truncating `toInt()`; the implementation actually uses
+    // `roundToInt()`. Every test above uses an exact equal-temperament
+    // frequency yielding an integer MIDI number, so the rounding path itself —
+    // specifically what happens exactly halfway between two notes — was never
+    // exercised by any of them. Closed during a second, separate audit pass.
+    //
+    // `roundToInt()` on a Double delegates to `Math.round`, which rounds an
+    // exact .5 tie toward positive infinity (always up, never "round half to
+    // even") — verified directly below, since that's the actual fact this
+    // function's correctness depends on, decoupled from any floating-point
+    // risk in how a real Hz value maps to a MIDI number.
+    //
+    // A genuine IEEE-754 tie is not reliably reachable by feeding a real `Float`
+    // Hz value through the hz→MIDI formula — verified empirically before
+    // writing this test: the closest constructible round-trip lands at
+    // 60.49999993811784 (rounds down to C4), and the very next representable
+    // Float jumps straight to 60.500001900044325 (rounds up to C#4) — there is
+    // no Float value in between that hits exactly 60.5. So the second test
+    // below characterizes the finest boundary `hzToNoteName` can actually be
+    // asked to cross, rather than claiming to test an unreachable exact tie.
+
+    @Test
+    fun `roundToInt on Double rounds an exact half-integer tie toward positive infinity`() {
+        assertEquals(60, 59.5.roundToInt())
+        assertEquals(61, 60.5.roundToInt())
+        assertEquals(-59, (-59.5).roundToInt())
+    }
+
+    @Test
+    fun `the finest reachable boundary around a half-integer MIDI value rounds the correct direction`() {
+        // These are the two closest representable Float Hz values straddling
+        // MIDI 60.5 (the C4/C#4 boundary) — see the section comment above for
+        // how they were derived and verified.
+        assertEquals("C4", note(269.29178f))
+        assertEquals("C#4", note(269.2918f))
     }
 
     // ── Locale safety of the out-of-MIDI-range fallback ───────────────────────

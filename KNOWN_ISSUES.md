@@ -68,13 +68,13 @@ Went with the simple relabel option (not the margin-to-runner-up option, which w
 
 ---
 
-## 5 · HzToNoteNameTest class docblock documents the wrong rounding mode [Cosmetic]
+## 5 · HzToNoteNameTest class docblock documents the wrong rounding mode [FIXED 2026-09-01]
 
 **File:** `HzToNoteNameTest.kt`, line 18
 
-The docblock states "The implementation uses truncating integer conversion (`toInt()`), which floors positive MIDI values." The implementation uses `roundToInt()` (standard rounding). All test frequencies are exact equal-temperament values that yield integer MIDI numbers, so rounding and truncation produce the same result — which is why the tests pass despite the wrong description.
+The docblock stated "The implementation uses truncating integer conversion (`toInt()`), which floors positive MIDI values." The implementation uses `roundToInt()` (standard rounding). All test frequencies were exact equal-temperament values yielding integer MIDI numbers, so rounding and truncation produced the same result — which is why the tests passed despite the wrong description; the rounding path itself, specifically the tie-break rule exactly halfway between two notes, was never exercised by any of them.
 
-**Fix:** Change the docblock sentence to: "The implementation uses `roundToInt()` (standard rounding to nearest integer)."
+**Fix:** corrected the docblock sentence to describe `roundToInt()`, and — while closing coverage gaps found in a second, separate audit pass — added tests that actually exercise the rounding behavior: `roundToInt()`'s tie-break rule (an exact .5 tie rounds toward positive infinity) tested directly, plus the finest boundary `hzToNoteName` can actually be asked to cross (a genuine bit-exact IEEE tie was checked empirically and found unreachable via a real `Float` Hz input at this precision — the closest constructible round-trip lands at 60.49999993811784, and the next representable `Float` jumps straight past 60.5).
 
 ---
 

@@ -21,9 +21,13 @@ import org.junit.Test
  *     A3. Basso Profundo vs Basso Cantante
  *     A4. Dramatic Mezzo vs Contralto
  *
- *   TIER 2 — Scoring dimension boundaries
+ *   TIER 2 — Scoring dimension boundaries (floor/ceiling, both sides of ±)
  *     Floor is weighted higher (0-3, finer bands) than ceiling (0-2, coarser
  *     bands) — see the comment above FachClassifier.classify()'s floor block.
+ *     Every boundary is tested on both sides of the symmetric ratio band
+ *     (detected value above AND below the fach's reference value) — the
+ *     original set only covered the upper half; the lower half was a
+ *     coverage gap found and closed during a second, separate audit pass.
  *     B1. Lower floor exactly at ±10% boundary → +3 points
  *     B2. Lower floor just outside ±10% → +2 points
  *     B3. Lower floor exactly at ±20% boundary → +2 points
@@ -31,6 +35,12 @@ import org.junit.Test
  *     B5. Lower floor just outside ±30% → 0 points
  *     B6. Upper ceiling exactly at ±15% boundary → +2 points
  *     B7. Upper ceiling just outside ±15% → +1 point
+ *
+ *   TIER 2c — tessHigh / tessLow / passaggio boundaries
+ *     tessHigh and tessLow share floor's identical 3-tier formula but never had
+ *     boundary tests before; passaggio's tolerance-multiplier tiers didn't
+ *     either — both closed in the same audit pass as TIER 2's lower half,
+ *     table-driven rather than one test per case given the volume.
  *
  *   TIER 3 — Classify invariants across all adjacent pairs
  *     C1. A profile exactly matching fach A ranks fach A above the adjacent fach B
@@ -428,6 +438,234 @@ class AdjacentFachDiscriminationTest {
             "Upper ceiling at 15.1% above should award +1, giving 13 (12 baseline + 1)",
             13, score
         )
+    }
+
+    // ── TIER 2b — Lower half of the symmetric ratio bands ─────────────────────
+    //
+    // Every test above scaled detectedMin/detectedMax UPWARD from the fach's
+    // reference value. The bands (`0.90f..1.10f` etc.) are symmetric around 1.0,
+    // but the downward half was never exercised — found during a second,
+    // separate audit pass. Mirrors the tests above exactly, just below 1.0.
+
+    @Test
+    fun `lower floor at exactly 10 percent below fach min awards 3 points`() {
+        val p = profile(
+            detectedMin = 233f * 0.90f,
+            detectedMax = 988f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        assertEquals(
+            "Lower floor exactly at -10% of Spinto Soprano min must score 14/14 (11 baseline + 3)",
+            14, scoreOf(spintoSoprano, results)
+        )
+    }
+
+    @Test
+    fun `lower floor at 10_1 percent below fach min awards 2 points not 3`() {
+        val p = profile(
+            detectedMin = 233f * 0.899f,
+            detectedMax = 988f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        assertEquals(
+            "Lower floor at 10.1% below Spinto min should score 13/14 (11 baseline + 2)",
+            13, scoreOf(spintoSoprano, results)
+        )
+    }
+
+    @Test
+    fun `lower floor at exactly 20 percent below fach min awards 2 points`() {
+        val p = profile(
+            detectedMin = 233f * 0.80f,
+            detectedMax = 988f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        val score = scoreOf(spintoSoprano, results)
+        assertEquals("Lower floor at exactly -20% should award +2, giving 13 (11 baseline + 2)", 13, score)
+    }
+
+    @Test
+    fun `lower floor at 20_1 percent below fach min awards 1 point`() {
+        val p = profile(
+            detectedMin = 233f * 0.799f,
+            detectedMax = 988f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        val score = scoreOf(spintoSoprano, results)
+        assertEquals("Lower floor at 20.1% below should award +1, giving 12 (11 baseline + 1)", 12, score)
+    }
+
+    @Test
+    fun `lower floor beyond 30 percent below fach min awards 0 points`() {
+        val p = profile(
+            detectedMin = 233f * 0.69f,
+            detectedMax = 988f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        val score = scoreOf(spintoSoprano, results)
+        assertEquals("Lower floor at 31% below should award 0, giving 11 (11 baseline + 0)", 11, score)
+    }
+
+    @Test
+    fun `upper ceiling at exactly 15 percent below fach max awards 2 points`() {
+        val p = profile(
+            detectedMin = 233f,
+            detectedMax = 988f * 0.85f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        val s = scoreOf(spintoSoprano, results)
+        assertEquals(
+            "Upper ceiling at exactly -15% should award +2, giving 14 (12 baseline + 2)",
+            14, s
+        )
+    }
+
+    @Test
+    fun `upper ceiling at 15_1 percent below fach max awards 1 point`() {
+        val p = profile(
+            detectedMin = 233f,
+            detectedMax = 988f * 0.849f,
+            comfortableLow = 277f,
+            comfortableHigh = 784f,
+            passaggio = 466f,
+        )
+        val results = FachClassifier.classify(p)
+        val score = scoreOf(spintoSoprano, results)
+        assertEquals(
+            "Upper ceiling at 15.1% below should award +1, giving 13 (12 baseline + 1)",
+            13, score
+        )
+    }
+
+    // ── TIER 2c — tessHigh / tessLow / passaggio boundaries ───────────────────
+    //
+    // These three dimensions never had exact-boundary tests at all before this
+    // — found during the same second audit pass — despite tessHigh/tessLow
+    // sharing floor's identical 3-tier formula, meaning a silent off-by-one on
+    // either during a refactor would have gone completely uncaught. Table-driven
+    // rather than one test per case (matching the individual style above) to
+    // avoid several hundred lines of near-identical copy-paste across three
+    // dimensions with up to 10 boundary points apiece.
+
+    /**
+     * tessHigh ratio boundaries (comfortableHigh / fach.tessituraMaxHz), both
+     * above and below the reference. Isolated by holding floor(+3), ceiling(+2),
+     * tessLow(+3), and passaggio(+3) at exact matches — baseline 11.
+     */
+    @Test
+    fun `tessitura high boundaries award the correct tier on both sides of the reference`() {
+        val cases = listOf(
+            1.10f to 3, 1.101f to 2, 1.20f to 2, 1.201f to 1, 1.31f to 0,
+            0.90f to 3, 0.899f to 2, 0.80f to 2, 0.799f to 1, 0.69f to 0,
+        )
+        for ((multiplier, expectedPts) in cases) {
+            val p = profile(
+                detectedMin = 233f,
+                detectedMax = 988f,
+                comfortableLow = 277f,
+                comfortableHigh = 784f * multiplier,
+                passaggio = 466f,
+            )
+            val score = scoreOf(spintoSoprano, FachClassifier.classify(p))
+            assertEquals(
+                "tessHigh at ${multiplier}x tessituraMaxHz should award $expectedPts pts, " +
+                        "giving ${11 + expectedPts} (11 baseline + $expectedPts) — got $score",
+                11 + expectedPts, score
+            )
+        }
+    }
+
+    /**
+     * tessLow ratio boundaries (comfortableLow / fach.tessituraMinHz), both
+     * sides. Isolated by holding floor(+3), ceiling(+2), tessHigh(+3), and
+     * passaggio(+3) at exact matches — baseline 11.
+     */
+    @Test
+    fun `tessitura low boundaries award the correct tier on both sides of the reference`() {
+        val cases = listOf(
+            1.10f to 3, 1.101f to 2, 1.20f to 2, 1.201f to 1, 1.31f to 0,
+            0.90f to 3, 0.899f to 2, 0.80f to 2, 0.799f to 1, 0.69f to 0,
+        )
+        for ((multiplier, expectedPts) in cases) {
+            val p = profile(
+                detectedMin = 233f,
+                detectedMax = 988f,
+                comfortableLow = 277f * multiplier,
+                comfortableHigh = 784f,
+                passaggio = 466f,
+            )
+            val score = scoreOf(spintoSoprano, FachClassifier.classify(p))
+            assertEquals(
+                "tessLow at ${multiplier}x tessituraMinHz should award $expectedPts pts, " +
+                        "giving ${11 + expectedPts} (11 baseline + $expectedPts) — got $score",
+                11 + expectedPts, score
+            )
+        }
+    }
+
+    /**
+     * Passaggio tolerance boundaries (|estimatedPassaggioHz - fach.passaggioHz|
+     * vs. tol = fach.passaggioHz * 0.10). Unlike the ratio-based dimensions
+     * above, this formula uses an absolute difference, so it is already
+     * symmetric by construction (`abs()`) — exercising one direction (passaggio
+     * above the reference) fully covers the logic. Isolated by holding floor(+3),
+     * ceiling(+2), tessHigh(+3), and tessLow(+3) at exact matches — baseline 11.
+     *
+     * The "exactly at" cases use a tiny inward margin (0.02, far larger than
+     * float rounding error at this magnitude but far smaller than the ~46 Hz
+     * gap between tiers) rather than the literal boundary value: unlike the
+     * ratio dimensions above, where production's own multiply-then-divide
+     * mirrors the test's math almost exactly, this formula computes
+     * `passaggio - fach.passaggioHz` after the test has already added the two
+     * together — an add-then-subtract round trip that does not reliably recover
+     * the original value bit-for-bit (confirmed empirically: the literal `tol *
+     * 2` boundary landed a few millionths past the cutoff and flipped tiers).
+     */
+    @Test
+    fun `passaggio tolerance boundaries award the correct tier`() {
+        val tol = 466f * 0.10f
+        val margin = 0.02f
+        val cases = listOf(
+            tol - margin to 3,
+            tol + 0.1f to 2,
+            tol * 2 - margin to 2,
+            tol * 2 + 0.1f to 1,
+            tol * 3.5f - margin to 1,
+            tol * 3.5f + 0.1f to 0,
+        )
+        for ((diff, expectedPts) in cases) {
+            val p = profile(
+                detectedMin = 233f,
+                detectedMax = 988f,
+                comfortableLow = 277f,
+                comfortableHigh = 784f,
+                passaggio = 466f + diff,
+            )
+            val score = scoreOf(spintoSoprano, FachClassifier.classify(p))
+            assertEquals(
+                "passaggio diff=$diff (tol=$tol) should award $expectedPts pts, " +
+                        "giving ${11 + expectedPts} (11 baseline + $expectedPts) — got $score",
+                11 + expectedPts, score
+            )
+        }
     }
 
     // ── TIER 3 — Adjacent-pair invariant across the full table ────────────────

@@ -188,6 +188,15 @@ object FachClassifier {
      * Floor outweighs ceiling on purpose: the lowest comfortably-produced pitch is a
      * harder-to-fake Fach signal than the top of the range, which a singer can stretch
      * with falsetto/head-voice technique in a single take.
+     *
+     * Floor scoring special case: a Fach whose own [FachDefinition.rangeMinHz] sits
+     * below [MIN_PITCH_HZ] (currently only Contrabass Oktavist, 43 Hz vs. the mic's
+     * 60 Hz floor) can never produce a `detectedMinHz` close enough to its true range
+     * minimum to score above 0 — not because the singer's range is wrong, but because
+     * the ratio-tier math is comparing against a number the hardware can never confirm.
+     * When the detected floor sits at that hardware limit, this is scored as
+     * inconclusive (the "near" tier) rather than "far" — the app shouldn't turn its own
+     * measurement gap into evidence against the singer. See KNOWN_ISSUES.md.
      */
     fun classify(profile: VoiceProfile): List<FachMatch> {
         AppLogger.i("═══════════════════════════════════════════════════")
@@ -213,17 +222,35 @@ object FachClassifier {
             // depth) is a harder-to-fake, more stable Fach indicator than the top of the
             // range, which a singer can stretch with falsetto/head-voice technique in a
             // single phone-mic take. See KNOWN_ISSUES.md "Ceiling vs floor scoring weight".
+            //
+            // Special case: this fach's own range floor is below what the mic can ever
+            // register (currently only Contrabass Oktavist, 43 Hz vs. MIN_PITCH_HZ=60 Hz).
+            // A detected floor sitting at that hardware limit is inconclusive, not
+            // disconfirming — score it as "near" rather than run it through ratio tiers
+            // that can mathematically never clear even the loosest band. If the detected
+            // floor is clearly NOT near the sensor limit (e.g. a soprano profile being
+            // ranked against this fach), that's real evidence and falls through to the
+            // normal tiers below. See KNOWN_ISSUES.md.
+            val twoSemitonesUp = 1.1225f   // 2^(2/12) — same tolerance used elsewhere in this file
+            val floorIsUnmeasurable = fach.rangeMinHz < MIN_PITCH_HZ
+            val atSensorFloor = profile.detectedMinHz <= MIN_PITCH_HZ * twoSemitonesUp
             val minRatio = profile.detectedMinHz / fach.rangeMinHz
-            when (minRatio) {
-                in 0.90f..1.10f -> {
+            when {
+                floorIsUnmeasurable && atSensorFloor -> {
+                    score += 2
+                    breakdown += "+2 lower floor inconclusive — true floor may be below " +
+                            "this app's ${MIN_PITCH_HZ.toInt()} Hz detection limit"
+                }
+
+                minRatio in 0.90f..1.10f -> {
                     score += 3; breakdown += "+3 lower floor ≈ ${hzToNoteName(fach.rangeMinHz)}"
                 }
 
-                in 0.80f..1.20f -> {
+                minRatio in 0.80f..1.20f -> {
                     score += 2; breakdown += "+2 lower floor near ${hzToNoteName(fach.rangeMinHz)}"
                 }
 
-                in 0.70f..1.30f -> {
+                minRatio in 0.70f..1.30f -> {
                     score += 1; breakdown += "+1 lower floor roughly near ${hzToNoteName(fach.rangeMinHz)}"
                 }
 

@@ -88,6 +88,59 @@ Not from the original 2026-05-27 review — raised during the same-day adversari
 
 ---
 
+## 7 · Contrabass Oktavist's floor is below the app's detection limit [MITIGATED 2026-09-01]
+
+**File:** `FachClassifier.classify()`; `VoiceAnalyzer.kt` (`MIN_PITCH_HZ`, now `internal`)
+
+Found during an adversarial audit pass. `VoiceAnalyzer` discards every sample below
+`MIN_PITCH_HZ = 60 Hz`, but Contrabass Oktavist's `rangeMinHz` is 43 Hz — a real,
+literature-grounded value for this voice type (Russian Orthodox liturgical basses
+singing an octave below the bass line), not an error. No session can ever produce
+a `detectedMinHz` below 60 Hz, so the floor ratio (`detectedMinHz / 43`) could never
+land closer than ≈1.4 — outside even the loosest tolerance band — meaning this one
+Fach scored 0/3 on the floor dimension for every physically possible session,
+regardless of how well a real Oktavist sang.
+
+**This is a mitigation, not a fix — the underlying measurement gap is untouched.**
+Three directions were weighed against what a professional singer/voice teacher
+would actually want, since this is a singers' app:
+- Lowering `MIN_PITCH_HZ` globally to reach 43 Hz was rejected: 50/60 Hz mains hum
+  sits almost exactly in the 43–60 Hz gap and is a clean, high-confidence periodic
+  signal YIN would happily report as a real pitch — a noise-robustness cost paid by
+  every user to serve the single rarest classification in the whole table.
+- Quietly raising Contrabass Oktavist's `rangeMinHz` to something the mic can reach
+  was rejected: that misrepresents the voice type with a number grounded in the
+  tool's limitation rather than vocal literature, echoing the opposite (correct)
+  call already made for issue #2 above.
+- Instead: both numbers stay honest, and `classify()` stops treating "the mic
+  couldn't measure that low" as evidence *against* the Fach. A detected floor
+  sitting at the sensor's own hard limit (within 2 semitones of `MIN_PITCH_HZ`) now
+  scores as inconclusive (+2, the "near" tier) instead of "far" (0) — but only for
+  a Fach whose own range floor is itself below `MIN_PITCH_HZ`; every other Fach,
+  and even Oktavist itself when the detected floor is clearly elsewhere, keep
+  today's ratio-tier scoring unchanged. `MIN_PITCH_HZ` was changed from `private`
+  to `internal` so `FachClassifier` reads the same real constant `VoiceAnalyzer`
+  gates on, rather than duplicating the literal.
+
+**Verified against:** the full suite, plus six new targeted tests in
+`FachClassifierClassifyTest` — Oktavist scores inconclusive (13/14) with the floor
+at the sensor limit and again at the exact 2-semitone tolerance boundary
+(`MIN_PITCH_HZ * 1.1225f`, computed the same way production does rather than a
+hand-typed literal); falls through to the normal 0-point tier both with a floor
+clearly elsewhere (150 Hz) and just past that same boundary; Basso Profundo
+(whose own 65 Hz floor *is* measurable) scores via the normal tiers at a 60 Hz
+detected floor, confirming the special case doesn't leak into fachs that don't
+need it; and a whole-profile ranking check confirms a genuine Basso Profundo
+session (detected floor 62 Hz, inside Oktavist's trigger zone) still ranks Basso
+Profundo first — the mitigation can't flip a ranking on its own when every other
+dimension points elsewhere.
+
+**Still open, by design:** the app genuinely cannot verify a singer's true floor
+below 60 Hz. A true Oktavist will never see their full historical range confirmed
+by this tool — only that the floor dimension no longer counts against them for it.
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.
@@ -95,4 +148,5 @@ These are not bugs but constraints of the phone-microphone approach. The Guide a
 - **Timbre and vocal weight** cannot be captured by a microphone. Distinctions between adjacent types (Lyric vs. Spinto Soprano; Spinto vs. Dramatic Tenor) rely on vocal color that requires a trained human ear.
 - **Spinto Tenor / Dramatic Tenor** and **Lyric Baritone / Kavalierbariton** score 14/14 against each other's reference parameters. These are genuine acoustic overlaps, documented in `AdjacentFachDiscriminationTest`.
 - **Passaggio detection accuracy** depends on exercise structure. A scale or arpeggio fixture cannot produce a reliable passaggio estimate (see `CAPTURING.md`). Users who sing freely rather than following the guide will get less reliable results.
+- **Contrabass Oktavist's true floor (down to 43 Hz in the literature) can never be confirmed by this app** — `VoiceAnalyzer`'s 60 Hz detection floor is below it, and lowering that floor globally would trade mains-hum robustness for every user to serve the rarest classification in the table (see issue #7 above for the scoring-side mitigation; the detection gap itself is not fixable without a different microphone/DSP approach).
 - **A detected extreme needs ≥2 corroborating frames (~320 ms) within 2 semitones of each other** — `FachClassifier.estimateDetectedExtremes()`'s neighbor-validation rejects any pitch with no same-side neighbor, regardless of which side it's on. A fast glissando that touches the true floor or ceiling for only a single frame will never register as the detected extreme; if that happens at *both* ends of a session, `detectedMinHz` and `detectedMaxHz` collapse to the same value (the one cluster that *did* get corroborated), even though the singer's real range was much wider. This was investigated as a possible bug (2026-09-01): a fix that falls back to the raw min/max whenever the validated result collapses was tried and reverted, because it broke two pre-existing, deliberately-asserted cases in `EstimateDetectedExtremesStressTest` (`one isolated high outlier is rejected…`, `two isolated outliers at both extremes — both rejected`) — those collapse to the same shape (one genuine cluster + isolated junk) and rely on being rejected, not un-collapsed. Nothing in the collapsed `(min, max)` pair distinguishes "one real cluster, N isolated outliers" from "two real-but-once-sampled extremes around a real cluster" — telling them apart would need information the algorithm doesn't have (frame timing/duration, or a dedicated glissando detector), so this is a deliberate trade-off, not a fixable bug. Evidence: `AdversarialBreakageTest.kt`, `isolated outliers at both ends collapse the range to the only corroborated pitch`. Practical mitigation, if ever revisited: coach users (Guide screen copy) to hold extreme notes for at least ~1/3 second rather than touching them briefly.

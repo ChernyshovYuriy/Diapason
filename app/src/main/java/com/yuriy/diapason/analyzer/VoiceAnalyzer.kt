@@ -14,7 +14,10 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 private const val SAMPLE_RATE = 44100
 private const val YIN_THRESHOLD = 0.15
-private const val MIN_PITCH_HZ = 60f
+// internal (not private): FachClassifier.classify() needs this to recognize when a
+// Fach's own rangeMinHz sits below what the mic can ever register — see the floor
+// scoring special case there and KNOWN_ISSUES.md's Contrabass Oktavist entry.
+internal const val MIN_PITCH_HZ = 60f
 private const val MAX_PITCH_HZ = 2200f
 private const val MIN_YIN_CONFIDENCE = 0.80f
 private const val MIN_ACCEPTED_SAMPLES = 40

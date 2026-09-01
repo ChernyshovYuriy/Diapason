@@ -459,4 +459,149 @@ class FachClassifierClassifyTest {
             )
         }
     }
+
+    // ── Floor scoring: unmeasurable-range special case (Contrabass Oktavist) ──
+    //
+    // Contrabass Oktavist's rangeMinHz (43 Hz) sits below VoiceAnalyzer's
+    // MIN_PITCH_HZ (60 Hz) — no session can ever produce a detectedMinHz that
+    // low, so the plain ratio (detectedMin / 43) can never clear even the
+    // loosest tolerance band. classify() special-cases this: a detected floor
+    // sitting at the sensor's own hard limit is scored as inconclusive (+2)
+    // rather than "far" (0), but only when the measurement is actually at that
+    // limit — a floor that's clearly elsewhere still scores normally.
+
+    private val contrabassOktavist = fachByRange(43f, 220f)
+    private val bassoProfundo = fachByRange(65f, 294f)
+
+    /** Builds a profile matching [fach]'s own tessitura/ceiling/passaggio exactly. */
+    private fun profileWithFloor(fach: FachDefinition, detectedMin: Float) = VoiceProfile(
+        detectedMinHz = detectedMin,
+        detectedMaxHz = fach.rangeMaxHz,
+        comfortableLowHz = fach.tessituraMinHz,
+        comfortableHighHz = fach.tessituraMaxHz,
+        estimatedPassaggioHz = fach.passaggioHz,
+        sampleCount = 60,
+        durationSeconds = 30f
+    )
+
+    @Test
+    fun `contrabass oktavist floor at the mic's sensor limit scores inconclusive not far`() {
+        // Ceiling(+2) + tessHigh(+3) + tessLow(+3) + passaggio(+3) = 11 baseline.
+        // Detected floor sits exactly at MIN_PITCH_HZ (60 Hz) — the lowest value
+        // any real session could ever report, since VoiceAnalyzer discards
+        // everything below it. This can never mean "confirmed far from 43 Hz";
+        // it means "we couldn't measure any lower."
+        val profile = profileWithFloor(contrabassOktavist, detectedMin = 60f)
+        val results = FachClassifier.classify(profile)
+        val match = results.first { it.fach.rangeMinHz == 43f }
+
+        assertEquals(
+            "Floor at the sensor limit should score as inconclusive (+2), giving 13 (11 baseline + 2)",
+            13, match.score
+        )
+        val floorEntry = match.scoreBreakdown.first { it.contains("lower floor") }
+        assertTrue(
+            "Floor breakdown entry should read as awarded points, not zero (got: '$floorEntry')",
+            floorEntry.trimStart().startsWith("+2")
+        )
+        assertTrue(
+            "Floor breakdown entry should explain the measurement is inconclusive (got: '$floorEntry')",
+            floorEntry.contains("inconclusive")
+        )
+    }
+
+    @Test
+    fun `contrabass oktavist floor clearly above the sensor limit still scores far`() {
+        // A detected floor of 150 Hz is real evidence this singer's range doesn't
+        // reach anywhere near Oktavist territory — the inconclusive special case
+        // must not apply just because the fach's own floor is unmeasurable.
+        val profile = profileWithFloor(contrabassOktavist, detectedMin = 150f)
+        val results = FachClassifier.classify(profile)
+        val match = results.first { it.fach.rangeMinHz == 43f }
+
+        assertEquals(
+            "Floor clearly away from the sensor limit should still score 0, giving 11 (11 baseline + 0)",
+            11, match.score
+        )
+        val floorEntry = match.scoreBreakdown.first { it.contains("lower floor") }
+        assertTrue(
+            "Floor breakdown entry should read as zero, not the inconclusive special case (got: '$floorEntry')",
+            floorEntry.startsWith("  0")
+        )
+    }
+
+    @Test
+    fun `basso profundo floor at 60 Hz uses the normal ratio tiers, not the special case`() {
+        // Basso Profundo's own rangeMinHz (65 Hz) IS above MIN_PITCH_HZ, so its
+        // floor is fully measurable — a detected floor of 60 Hz should be scored
+        // by the ordinary ratio tiers (60/65 = 0.923, inside 0.90..1.10 → +3),
+        // not the inconclusive special case meant only for unmeasurable fachs.
+        val profile = profileWithFloor(bassoProfundo, detectedMin = 60f)
+        val results = FachClassifier.classify(profile)
+        val match = results.first { it.fach.rangeMinHz == 65f }
+
+        assertEquals(
+            "Basso Profundo at 60 Hz floor should score 14/14 via the normal tiers (11 baseline + 3)",
+            14, match.score
+        )
+        val floorEntry = match.scoreBreakdown.first { it.contains("lower floor") }
+        assertTrue(
+            "Floor breakdown entry should be the normal '≈' wording, not the inconclusive special case (got: '$floorEntry')",
+            floorEntry.contains("≈") && !floorEntry.contains("inconclusive")
+        )
+    }
+
+    @Test
+    fun `contrabass oktavist floor exactly at the two-semitone sensor tolerance still scores inconclusive`() {
+        // The trigger is detectedMinHz <= MIN_PITCH_HZ * 1.1225f (~67.35 Hz). Computed
+        // the same way production does, rather than a hand-typed literal, so the test
+        // can't silently drift from the real float value.
+        val atLimit = MIN_PITCH_HZ * 1.1225f
+        val profile = profileWithFloor(contrabassOktavist, detectedMin = atLimit)
+        val results = FachClassifier.classify(profile)
+        val match = results.first { it.fach.rangeMinHz == 43f }
+
+        assertEquals(
+            "Floor exactly at the 2-semitone sensor tolerance boundary should still be inconclusive (+2)",
+            13, match.score
+        )
+    }
+
+    @Test
+    fun `contrabass oktavist floor just outside the two-semitone sensor tolerance falls through to normal tiers`() {
+        val justOutside = MIN_PITCH_HZ * 1.1225f + 0.01f
+        val profile = profileWithFloor(contrabassOktavist, detectedMin = justOutside)
+        val results = FachClassifier.classify(profile)
+        val match = results.first { it.fach.rangeMinHz == 43f }
+
+        // justOutside / 43 ≈ 1.567 — outside even the loosest 0.70..1.30 band → 0 points.
+        assertEquals(
+            "Floor just past the sensor tolerance boundary must fall through to the normal ratio tiers (0 here), not stay inconclusive",
+            11, match.score
+        )
+    }
+
+    @Test
+    fun `a genuine basso profundo profile still ranks basso profundo first despite oktavist's floor boost`() {
+        // Whole-profile check, not just an isolated dimension score: a singer whose
+        // detected floor (62 Hz) sits inside Oktavist's inconclusive-floor trigger zone,
+        // but who otherwise perfectly matches Basso Profundo, must still rank Basso
+        // Profundo #1 — the floor mitigation must not be able to flip a ranking on its
+        // own when the other four dimensions clearly point elsewhere.
+        val profile = profileWithFloor(bassoProfundo, detectedMin = 62f)
+        val results = FachClassifier.classify(profile)
+
+        val winner = results.first()
+        assertEquals(
+            "Basso Profundo must still rank first (winner rangeMin=${winner.fach.rangeMinHz})",
+            65f, winner.fach.rangeMinHz, 0.01f
+        )
+
+        val oktavistScore = results.first { it.fach.rangeMinHz == 43f }.score
+        assertTrue(
+            "Contrabass Oktavist's floor boost must not let it come close to winning " +
+                    "against a genuine Basso Profundo profile (got $oktavistScore vs winner ${winner.score})",
+            oktavistScore < winner.score
+        )
+    }
 }

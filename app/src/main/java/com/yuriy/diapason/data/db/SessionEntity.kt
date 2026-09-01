@@ -72,8 +72,15 @@ data class SessionEntity(
     val topFachMaxScore: Int?,
 
     /**
-     * Reserved for future use: marks sessions saved with marginal quality
-     * (e.g. very short duration or low sample count) so the UI can warn the user.
+     * Vestigial — always `false` at every call site (`AnalyzeViewModel`,
+     * `WarmUpComparisonViewModel`), never read anywhere. Originally reserved for
+     * marking marginal-quality sessions so the UI could warn the user, but no
+     * concrete plan for that ever materialized (confirmed with the author,
+     * 2026-09-01). Not removed: dropping a column from a Room entity on a
+     * published app requires a real schema migration (version bump + rebuild-table
+     * migration, or `fallbackToDestructiveMigration()` wiping every installed
+     * user's session history) — judged not worth that risk for one dead boolean.
+     * Left in place, deliberately, rather than silently forgotten again.
      */
     @ColumnInfo(name = "is_partial", defaultValue = "0")
     val isPartial: Boolean = false,

@@ -205,6 +205,11 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     override fun onCleared() {
         super.onCleared()
+        // Deliberately discards the profile here even if enough samples had already
+        // accumulated to classify — the user never chose to stop and save this
+        // session, so nothing is persisted on their behalf. analyzer.stop()'s return
+        // value is intentionally unused; this is purely to release AudioRecord.
+        // Confirmed with the author, 2026-09-01, rather than left as an open question.
         if (analyzer.isRunning) {
             val abandonedSampleCount =
                 (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0

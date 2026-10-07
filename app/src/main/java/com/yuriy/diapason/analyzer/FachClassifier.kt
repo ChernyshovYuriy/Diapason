@@ -217,6 +217,12 @@ object FachClassifier {
     /**
      * Scores each Fach definition against [profile] and returns a ranked list.
      *
+     * With a [group], only that half of the table is ranked. Without it (the user chose
+     * "Not sure", or a caller that predates the setting) all 19 types compete — which is
+     * what produced male↔female flips on repeated takes in production (28% of
+     * consecutive runs, always between range-overlapping pairs like contralto ↔ lyric
+     * tenor), since pitch carries no information about which half a voice belongs to.
+     *
      * Scoring (max 14 pts):
      *   Lower floor match   → 0–3 pts  (weighted higher than ceiling — see below)
      *   Upper ceiling match → 0–2 pts
@@ -237,7 +243,7 @@ object FachClassifier {
      * inconclusive (the "near" tier) rather than "far" — the app shouldn't turn its own
      * measurement gap into evidence against the singer. See KNOWN_ISSUES.md.
      */
-    fun classify(profile: VoiceProfile): List<FachMatch> {
+    fun classify(profile: VoiceProfile, group: VoiceGroup? = null): List<FachMatch> {
         AppLogger.i("═══════════════════════════════════════════════════")
         AppLogger.i("  FACH CLASSIFICATION")
         AppLogger.i(
@@ -250,9 +256,11 @@ object FachClassifier {
             "  Passaggio  : ${hzToNoteName(profile.estimatedPassaggioHz)} (${profile.estimatedPassaggioHz.toInt()} Hz)"
         )
         AppLogger.i("  Samples    : ${profile.sampleCount} over ${profile.durationSeconds}s")
+        AppLogger.i("  Voice group: ${group ?: "any"}")
         AppLogger.i("───────────────────────────────────────────────────")
 
-        val results = ALL_FACH.map { fach ->
+        val candidates = if (group == null) ALL_FACH else ALL_FACH.filter { it.voiceGroup == group }
+        val results = candidates.map { fach ->
             val breakdown = mutableListOf<String>()
             var score = 0
 
@@ -382,4 +390,41 @@ object FachClassifier {
 
         return results
     }
+
+    // ── Result summary (family first, Fach as a leaning) ─────────────────────
+
+    /**
+     * Two adjacent Fach types within this many points of each other are presented as
+     * "leaning X, close to Y" rather than a single verdict. One point is the smallest
+     * possible gap and the one the production data showed flipping between takes.
+     */
+    internal const val CLOSE_RUNNER_UP_POINTS = 1
+
+    /**
+     * Turns a ranked [classify] result into what the Results screen headlines: the voice
+     * family ([FachDefinition.categoryRes]), the top Fach as a leaning, and — when the
+     * runner-up is within [CLOSE_RUNNER_UP_POINTS] — that runner-up too. Returns null for
+     * an empty list.
+     *
+     * Leads with the family because nearly all take-to-take changes in production stayed
+     * inside one family (basso cantante ↔ profundo, Kavalier ↔ lyric baritone): the
+     * family is the part of the answer pitch can actually support.
+     */
+    fun summarize(matches: List<FachMatch>): ResultSummary? {
+        val top = matches.firstOrNull() ?: return null
+        val runnerUp = matches.getOrNull(1)
+            ?.takeIf { top.score - it.score <= CLOSE_RUNNER_UP_POINTS }
+        return ResultSummary(
+            familyRes = top.fach.categoryRes,
+            leaning = top,
+            closeRunnerUp = runnerUp,
+        )
+    }
 }
+
+/** See [FachClassifier.summarize]. */
+data class ResultSummary(
+    val familyRes: Int,
+    val leaning: FachMatch,
+    val closeRunnerUp: FachMatch?,
+)

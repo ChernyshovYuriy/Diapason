@@ -79,28 +79,9 @@ fun CompareResultScreen(
                 PassaggioCard(passaggio)
             }
 
-            val beforeMatch = result.beforeTopMatch
-            val afterMatch = result.afterTopMatch
-            if (beforeMatch != null && afterMatch != null) {
-                val beforeName = stringResource(beforeMatch.fach.nameRes)
-                val afterName = stringResource(afterMatch.fach.nameRes)
-                Spacer(Modifier.height(16.dp))
-                SectionLabel(stringResource(R.string.compare_result_section_voice_type))
-                VoiceTypeCard(
-                    beforeName = beforeName,
-                    afterName = afterName,
-                    beforeScore = stringResource(
-                        R.string.results_score_format,
-                        beforeMatch.score,
-                        beforeMatch.maxScore
-                    ),
-                    afterScore = stringResource(
-                        R.string.results_score_format,
-                        afterMatch.score,
-                        afterMatch.maxScore
-                    ),
-                )
-            }
+            // No before/after Fach here on purpose: a warm-up changes comfort and access,
+            // not voice type, and showing a "changed" Fach (78% of comparisons in
+            // production) contradicted that. Range and passaggio deltas only.
 
             Spacer(Modifier.height(16.dp))
 
@@ -254,72 +235,6 @@ private fun PassaggioCard(passaggio: HzDelta) {
             delta = passaggio,
             positiveWhenDown = false,
             modifier = Modifier.padding(16.dp),
-        )
-    }
-}
-
-@Composable
-private fun VoiceTypeCard(
-    beforeName: String,
-    afterName: String,
-    beforeScore: String,
-    afterScore: String,
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            SessionColumn(
-                sessionLabel = stringResource(R.string.compare_result_before_label),
-                voiceType = beforeName,
-                score = beforeScore,
-                modifier = Modifier.weight(1f),
-            )
-            Spacer(Modifier.width(8.dp))
-            SessionColumn(
-                sessionLabel = stringResource(R.string.compare_result_after_label),
-                voiceType = afterName,
-                score = afterScore,
-                modifier = Modifier.weight(1f),
-            )
-        }
-    }
-}
-
-@Composable
-private fun SessionColumn(
-    sessionLabel: String,
-    voiceType: String,
-    score: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier,
-    ) {
-        Text(
-            text = sessionLabel,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = voiceType,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = score,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary,
         )
     }
 }

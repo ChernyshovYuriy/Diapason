@@ -42,6 +42,9 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -61,6 +64,7 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.review.testing.FakeReviewManager
 import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import java.util.Locale
 
@@ -80,6 +84,10 @@ fun AnalyzeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lastResult by viewModel.lastResultFlow.collectAsStateWithLifecycle()
+    val voiceChoice by viewModel.voiceChoice.collectAsStateWithLifecycle()
+
+    // First-run "Male or female voice?" prompt; recording starts once it's answered.
+    var showVoiceDialog by remember { mutableStateOf(false) }
 
     // Auto-navigate when a new result is produced
     LaunchedEffect(uiState) {
@@ -111,6 +119,22 @@ fun AnalyzeScreen(
     val micPermission = rememberPermissionState(
         android.Manifest.permission.RECORD_AUDIO
     )
+
+    fun startOrRequestPermission() {
+        if (micPermission.status.isGranted) viewModel.startRecording()
+        else micPermission.launchPermissionRequest()
+    }
+
+    if (showVoiceDialog) {
+        VoiceGroupDialog(
+            onSelect = { choice ->
+                showVoiceDialog = false
+                viewModel.setVoiceChoice(choice, AppAnalytics.VoiceGroupSource.FirstRun)
+                startOrRequestPermission()
+            },
+            onDismiss = { showVoiceDialog = false },
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -204,6 +228,16 @@ fun AnalyzeScreen(
 
         Spacer(Modifier.weight(1f))
 
+        // ── Voice switch (per recording; hidden while recording and until first answered) ──
+        val currentChoice = voiceChoice
+        if (currentChoice != null && uiState !is AnalyzeUiState.Recording) {
+            VoiceGroupSwitch(
+                selected = currentChoice,
+                onSelect = { viewModel.setVoiceChoice(it, AppAnalytics.VoiceGroupSource.Change) },
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
+        }
+
         // ── Start / Stop button ───────────────────────────────────────────────
         val isRecording = uiState is AnalyzeUiState.Recording
         if (isRecording) {
@@ -213,11 +247,8 @@ fun AnalyzeScreen(
         } else {
             Button(
                 onClick = {
-                    if (micPermission.status.isGranted) {
-                        viewModel.startRecording()
-                    } else {
-                        micPermission.launchPermissionRequest()
-                    }
+                    if (voiceChoice == null) showVoiceDialog = true
+                    else startOrRequestPermission()
                 },
                 modifier = Modifier
                     .fillMaxWidth()

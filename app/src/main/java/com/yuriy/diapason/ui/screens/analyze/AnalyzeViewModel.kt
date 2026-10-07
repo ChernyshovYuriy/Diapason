@@ -9,15 +9,21 @@ import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachDefinition
+import com.yuriy.diapason.analyzer.CombinedVoiceProfile
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
+import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
+import com.yuriy.diapason.analyzer.VoiceProfileAggregator
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
+import com.yuriy.diapason.data.recordedWith
+import com.yuriy.diapason.data.toTimedProfile
 import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
+import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,6 +88,22 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     /** Convenience accessor for ResultsScreen (non-reactive, always up-to-date). */
     val lastResult: AnalyzeUiState.ResultReady? get() = _lastResult.value
+
+    private val voiceGroupPreferences = VoiceGroupPreferences(application)
+
+    /** The Male · Female · Not sure switch; null until the first-run prompt is answered. */
+    private val _voiceChoice = MutableStateFlow(voiceGroupPreferences.choice)
+    val voiceChoice: StateFlow<VoiceGroupChoice?> = _voiceChoice.asStateFlow()
+
+    /** Unanswered can't reach a recording (Start asks first); treat it as "Not sure" if it does. */
+    private val effectiveChoice: VoiceGroupChoice get() = _voiceChoice.value ?: VoiceGroupChoice.UNSURE
+
+    /**
+     * The last [VoiceProfileAggregator.MAX_SESSIONS] sessions combined into one profile,
+     * refreshed after every saved analysis; null until at least two recent sessions exist.
+     */
+    private val _combinedProfile = MutableStateFlow<CombinedVoiceProfile?>(null)
+    val combinedProfile: StateFlow<CombinedVoiceProfile?> = _combinedProfile.asStateFlow()
 
     init {
         analyzer.onPitchDetected = { hz, noteName ->
@@ -148,7 +170,9 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
             return
         }
 
-        val matches = FachClassifier.classify(profile)
+        val voiceChoice = effectiveChoice
+        val voiceGroup = voiceChoice.group
+        val matches = FachClassifier.classify(profile, voiceGroup)
         val topMatch = matches.firstOrNull()
         val topFachKey = topMatch?.let { fachKeyOf(it.fach) }
         AppAnalytics.analysisCompleted(
@@ -156,6 +180,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
             profile = profile,
             matches = matches,
             topFachKey = topFachKey,
+            voiceGroup = voiceGroup,
         )
 
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
@@ -189,11 +214,47 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 topFachScore = topMatch?.score,
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,
+                voiceGroupChoice = voiceChoice,
             )
             runCatching { repository.save(record) }
                 .onSuccess { AppLogger.i("$TAG Session saved: ${record.topFachKey} (${record.id})") }
                 .onFailure { AppLogger.e("$TAG Failed to save session", it) }
+            // After the save, so the session just recorded is part of the combination.
+            refreshCombinedProfile()
         }
+    }
+
+    /**
+     * Sets the Male · Female · Not sure switch; it stays as the default for the next
+     * recording. A result already on screen is re-ranked within the new group — its
+     * profile is kept, so the user sees the effect without recording again — and the
+     * combined profile switches to sessions recorded with the new choice.
+     */
+    fun setVoiceChoice(choice: VoiceGroupChoice, source: AppAnalytics.VoiceGroupSource) {
+        voiceGroupPreferences.choice = choice
+        _voiceChoice.value = choice
+        AppAnalytics.voiceGroupSelected(choice.group, source)
+        _lastResult.value?.let { last ->
+            val reranked = last.copy(matches = FachClassifier.classify(last.profile, choice.group))
+            _lastResult.value = reranked
+            if (_uiState.value is AnalyzeUiState.ResultReady) _uiState.value = reranked
+        }
+        viewModelScope.launch(Dispatchers.IO) { refreshCombinedProfile() }
+    }
+
+    private suspend fun refreshCombinedProfile() {
+        val choice = effectiveChoice
+        runCatching {
+            VoiceProfileAggregator.combine(
+                // Same choice only: with a per-recording switch, a session recorded as the
+                // other voice group is most likely a different singer on the same phone.
+                sessions = repository.getAll().recordedWith(choice).map { it.toTimedProfile() },
+                nowMs = System.currentTimeMillis(),
+                group = choice.group,
+            )
+        }
+            .onSuccess { _combinedProfile.value = it }
+            .onFailure { AppLogger.e("$TAG Failed to combine recent sessions", it) }
     }
 
     fun resetToIdle() {

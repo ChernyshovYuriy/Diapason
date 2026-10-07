@@ -68,6 +68,13 @@ android {
         }
     }
 
+    // Exported Room schemas are added to the *debug* assets so MigrationTestHelper can
+    // open old versions: Robolectric reads the merged debug assets (mergeDebugAssets) and
+    // ignores test-only assets. Debug builds carry a few KB of schema JSON; release doesn't.
+    sourceSets {
+        getByName("debug").assets.directories.add("$projectDir/schemas")
+    }
+
     testOptions {
         unitTests {
             isReturnDefaultValues = true

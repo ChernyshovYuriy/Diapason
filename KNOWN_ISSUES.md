@@ -367,6 +367,23 @@ mutation, then restored.
 
 ---
 
+## Planned · Singer profiles ("Who's singing?") [TODO — next release after 2.7]
+
+**Why:** the Male/Female voice switch (2.7) is per recording, so a teacher or a shared phone no
+longer gets a silently wrong voice group — but every recording on the device still belongs to one
+implicit singer. The combined "Your voice profile" card therefore averages different students of
+the same voice group together, and History mixes everyone. Decided with the author 2026-10-07:
+ship the per-recording switch now, singer profiles next.
+
+**Shape:** a small `singers` table (name + voice group) and a `singer_id` on each session (Room
+migration v2 → v3 — v2 already stores the voice group per session, so existing rows can be
+assigned to an auto-created default singer). A picker before recording, hidden until a second
+singer exists so one-singer users never see it. Combined profile, History and progress filtered
+per singer; the voice switch becomes the singer's own setting. Candidate paid feature
+("Teacher mode": more than one singer).
+
+---
+
 ## Inherent architectural limitations
 
 These are not bugs but constraints of the phone-microphone approach. The Guide and Results screens already communicate them.

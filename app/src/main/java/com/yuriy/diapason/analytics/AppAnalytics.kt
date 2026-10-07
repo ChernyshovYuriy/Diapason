@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.VoiceGroup
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.logging.AppLogger
 
@@ -81,6 +82,7 @@ object AppAnalytics {
         profile: VoiceProfile,
         matches: List<FachMatch>,
         topFachKey: String?,
+        voiceGroup: VoiceGroup?,
     ) {
         val top = matches.getOrNull(0)
         val runnerUp = matches.getOrNull(1)
@@ -89,6 +91,7 @@ object AppAnalytics {
             long(PARAM_DURATION_SECONDS, profile.durationSeconds.toLong())
             long(PARAM_SAMPLE_COUNT, profile.sampleCount.toLong())
             str(PARAM_TOP_FACH_KEY, topFachKey ?: VALUE_UNKNOWN)
+            str(PARAM_VOICE_GROUP, voiceGroupValue(voiceGroup))
             long(PARAM_SCORE, (top?.score ?: 0).toLong())
             long(PARAM_MAX_SCORE, (top?.maxScore ?: 0).toLong())
             if (top != null && runnerUp != null) {
@@ -117,6 +120,26 @@ object AppAnalytics {
             long(PARAM_DURATION_SECONDS, durationSeconds.toLong())
         }
     }
+
+    // ── Voice group ──────────────────────────────────────────────────────────
+
+    enum class VoiceGroupSource(val value: String) {
+        /** Answered in the prompt shown before the first recording. */
+        FirstRun("first_run"),
+        /** Changed later from the Analyze screen. */
+        Change("change"),
+    }
+
+    fun voiceGroupSelected(voiceGroup: VoiceGroup?, source: VoiceGroupSource) {
+        logEvent(EVENT_VOICE_GROUP_SELECTED) {
+            str(PARAM_VOICE_GROUP, voiceGroupValue(voiceGroup))
+            str(PARAM_SOURCE, source.value)
+        }
+    }
+
+    /** "male" / "female", or "unsure" for the full-table "Not sure" answer. */
+    private fun voiceGroupValue(voiceGroup: VoiceGroup?): String =
+        voiceGroup?.name?.lowercase() ?: VALUE_UNSURE
 
     // ── Result screen ────────────────────────────────────────────────────────
 
@@ -244,6 +267,7 @@ object AppAnalytics {
     private const val EVENT_WARMUP_COMPLETED = "warmup_completed"
     private const val EVENT_COMPARISON_COMPLETED = "comparison_completed"
     private const val EVENT_HISTORY_OPENED = "history_opened"
+    private const val EVENT_VOICE_GROUP_SELECTED = "voice_group_selected"
     private const val EVENT_PRIVACY_CONSENT_ACCEPTED = "privacy_consent_accepted"
     private const val EVENT_REMINDER_OPT_IN_SHOWN = "reminder_opt_in_shown"
     private const val EVENT_REMINDER_OPT_IN_ACCEPTED = "reminder_opt_in_accepted"
@@ -265,6 +289,8 @@ object AppAnalytics {
     private const val PARAM_DETECTED_WIDENED = "detected_widened"
     private const val PARAM_ITEM_COUNT = "item_count"
     private const val PARAM_RUNNER_UP_GAP = "runner_up_gap"
+    private const val PARAM_VOICE_GROUP = "voice_group"
+    private const val PARAM_SOURCE = "source"
     private const val PARAM_DETECTED_MIN_MIDI = "detected_min_midi"
     private const val PARAM_DETECTED_MAX_MIDI = "detected_max_midi"
     private const val PARAM_COMFORTABLE_LOW_MIDI = "comfortable_low_midi"
@@ -274,4 +300,5 @@ object AppAnalytics {
     private const val USER_PROP_LANGUAGE = "app_language"
 
     private const val VALUE_UNKNOWN = "unknown"
+    private const val VALUE_UNSURE = "unsure"
 }

@@ -1,5 +1,7 @@
 package com.yuriy.diapason.data
 
+import com.yuriy.diapason.analyzer.VoiceGroupChoice
+
 /**
  * Domain-layer representation of a completed, persisted voice-analysis session.
  *
@@ -40,4 +42,10 @@ data class SessionRecord(
 
     /** True if the session was saved despite marginal quality. */
     val isPartial: Boolean,
+
+    /**
+     * The Male · Female · Not sure choice the session was recorded with; null for sessions
+     * saved before that choice was stored (schema v1).
+     */
+    val voiceGroupChoice: VoiceGroupChoice? = null,
 )

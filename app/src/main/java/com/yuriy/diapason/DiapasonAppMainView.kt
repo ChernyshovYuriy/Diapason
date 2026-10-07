@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -163,9 +164,12 @@ fun DiapasonAppMainView() {
                     return@composable
                 }
 
+                val combinedProfile by analyzeViewModel.combinedProfile.collectAsStateWithLifecycle()
+
                 ResultsScreen(
                     profile = result.profile,
                     matches = result.matches,
+                    combinedProfile = combinedProfile,
                     onBack = {
                         // Reset state BEFORE popping so AnalyzeScreen's LaunchedEffect
                         // does not see ResultReady and immediately re-navigate to Results.

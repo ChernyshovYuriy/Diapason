@@ -11,12 +11,14 @@ import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
+import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
+import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -133,7 +135,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         }
 
         baselineProfile = profile
-        baselineMatches = FachClassifier.classify(profile)
+        baselineMatches = FachClassifier.classify(profile, voiceChoice().group)
 
         val topMatch = baselineMatches.firstOrNull()
         AppAnalytics.analysisCompleted(
@@ -141,6 +143,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             profile = profile,
             matches = baselineMatches,
             topFachKey = topMatch?.let { fachKeyOf(it.fach) },
+            voiceGroup = voiceChoice().group,
         )
 
         persistSession(profile, baselineMatches)
@@ -228,13 +231,14 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             return
         }
 
-        val retestMatches = FachClassifier.classify(profile)
+        val retestMatches = FachClassifier.classify(profile, voiceChoice().group)
         val retestTop = retestMatches.firstOrNull()
         AppAnalytics.analysisCompleted(
             flow = AppAnalytics.Flow.Retest,
             profile = profile,
             matches = retestMatches,
             topFachKey = retestTop?.let { fachKeyOf(it.fach) },
+            voiceGroup = voiceChoice().group,
         )
         persistSession(profile, retestMatches)
 
@@ -280,6 +284,13 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
+
+    /**
+     * The switch as last set on the Analyze screen (this flow is entered from there), read
+     * on each use. Unanswered counts as "Not sure".
+     */
+    private fun voiceChoice() =
+        VoiceGroupPreferences(getApplication()).choice ?: VoiceGroupChoice.UNSURE
 
     private fun analyzerStrings() = VoiceAnalyzerStrings(
         listeningMessage = str(R.string.analyze_status_listening_short),
@@ -341,6 +352,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                 topFachScore = topMatch?.score,
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,
+                voiceGroupChoice = voiceChoice(),
             )
             runCatching { repository.save(record) }
                 .onSuccess { AppLogger.i("$TAG Comparison session saved: ${record.topFachKey}") }

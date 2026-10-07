@@ -251,14 +251,11 @@
     <string name="compare_result_section_comfortable">Faixa confortável</string>
     <string name="compare_result_section_extremes">Extremos detectados</string>
     <string name="compare_result_section_passaggio">Passaggio estimado</string>
-    <string name="compare_result_section_voice_type">Correspondência do tipo de voz</string>
     <string name="compare_result_label_comfortable_low">Limite inferior (P20)</string>
     <string name="compare_result_label_comfortable_high">Limite superior (P80)</string>
     <string name="compare_result_label_detected_min">Nota mais grave detectada</string>
     <string name="compare_result_label_detected_max">Nota mais aguda detectada</string>
     <string name="compare_result_label_passaggio">Estimativa de passaggio</string>
-    <string name="compare_result_before_label">Antes do aquecimento</string>
-    <string name="compare_result_after_label">Depois do aquecimento</string>
     <string name="compare_result_disclaimer">Com base apenas nestas duas sessões. As mudanças entre as
 	sessões refletem a medição, não resultados fisiológicos ou de treino garantidos.</string>
     <string name="compare_result_btn_done">Concluído</string>
@@ -287,4 +284,24 @@
     <string name="compare_warmup_card5_title">Notas sustentadas suaves</string>
     <string name="compare_warmup_card5_body">Sustente 3–4 notas confortáveis por 3 segundos cada.
     São as mesmas notas sustentadas que o Diapason irá detectar.</string>
+
+    <!-- Voice group (male/female) and combined voice profile -->
+    <string name="voice_group_dialog_title">Voz masculina ou feminina?</string>
+    <string name="voice_group_dialog_body">Os tipos de voz são definidos separadamente para vozes masculinas e femininas, e a altura sozinha não permite distingui-las. Escolha a voz com que vai cantar — contratenores escolhem Masculina. Pode alterar isto mais tarde.</string>
+    <string name="voice_group_male">Masculina</string>
+    <string name="voice_group_female">Feminina</string>
+    <string name="voice_group_unsure">Não sei</string>
+    <string name="results_leaning_format">Tendência a %1$s</string>
+    <string name="results_leaning_close_format">Tendência a %1$s, próximo de %2$s</string>
+    <string name="results_profile_title">O seu perfil vocal</string>
+    <plurals name="results_profile_based_on">
+        <item quantity="one">Combinado a partir da sua última gravação (%1$d)</item>
+        <item quantity="other">Combinado a partir das suas últimas %1$d gravações</item>
+    </plurals>
+    <plurals name="results_profile_consistency">
+        <item quantity="one">%1$d de %2$d gravações concorda</item>
+        <item quantity="other">%1$d de %2$d gravações concordam</item>
+    </plurals>
+    <string name="results_profile_note">Usa até 5 gravações dos últimos 30 dias, para que uma gravação atípica não altere o seu resultado.</string>
+    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 </resources>

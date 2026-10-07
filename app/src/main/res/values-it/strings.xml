@@ -250,14 +250,11 @@
     <string name="compare_result_section_comfortable">Intervallo confortevole</string>
     <string name="compare_result_section_extremes">Estremi rilevati</string>
     <string name="compare_result_section_passaggio">Passaggio stimato</string>
-    <string name="compare_result_section_voice_type">Corrispondenza del tipo di voce</string>
     <string name="compare_result_label_comfortable_low">Estremo inferiore (P20)</string>
     <string name="compare_result_label_comfortable_high">Estremo superiore (P80)</string>
     <string name="compare_result_label_detected_min">Nota più bassa rilevata</string>
     <string name="compare_result_label_detected_max">Nota più alta rilevata</string>
     <string name="compare_result_label_passaggio">Stima del passaggio</string>
-    <string name="compare_result_before_label">Prima del riscaldamento</string>
-    <string name="compare_result_after_label">Dopo il riscaldamento</string>
     <string name="compare_result_disclaimer">Basato solo su queste due sessioni. I cambiamenti tra le
 	sessioni riflettono la misurazione, non esiti fisiologici o di allenamento garantiti.</string>
     <string name="compare_result_btn_done">Fatto</string>
@@ -286,4 +283,24 @@
     <string name="compare_warmup_card5_title">Note tenute leggere</string>
     <string name="compare_warmup_card5_body">Tieni 3–4 note comode per 3 secondi ciascuna.
     Sono le stesse note tenute che Diapason rileverà.</string>
+
+    <!-- Voice group (male/female) and combined voice profile -->
+    <string name="voice_group_dialog_title">Voce maschile o femminile?</string>
+    <string name="voice_group_dialog_body">I tipi di voce sono definiti separatamente per voci maschili e femminili, e l\'altezza da sola non basta a distinguerle. Scegli la voce con cui canterai — i controtenori scelgono Maschile. Potrai cambiarla in seguito.</string>
+    <string name="voice_group_male">Maschile</string>
+    <string name="voice_group_female">Femminile</string>
+    <string name="voice_group_unsure">Non so</string>
+    <string name="results_leaning_format">Tendente a %1$s</string>
+    <string name="results_leaning_close_format">Tendente a %1$s, vicino a %2$s</string>
+    <string name="results_profile_title">Il tuo profilo vocale</string>
+    <plurals name="results_profile_based_on">
+        <item quantity="one">Combinato dalla tua ultima registrazione (%1$d)</item>
+        <item quantity="other">Combinato dalle tue ultime %1$d registrazioni</item>
+    </plurals>
+    <plurals name="results_profile_consistency">
+        <item quantity="one">%1$d registrazione su %2$d concorda</item>
+        <item quantity="other">%1$d registrazioni su %2$d concordano</item>
+    </plurals>
+    <string name="results_profile_note">Usa fino a 5 registrazioni degli ultimi 30 giorni, così una singola esecuzione insolita non cambia il risultato.</string>
+    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 </resources>

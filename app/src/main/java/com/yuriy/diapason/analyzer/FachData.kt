@@ -6,6 +6,27 @@ import com.yuriy.diapason.R
 
 
 /**
+ * Which half of the Fach table a voice belongs to. Fach systems are defined separately
+ * for male and female voices, and pitch alone can't tell them apart where the ranges
+ * overlap (contralto vs. tenor, mezzo vs. countertenor) — so the user states it once
+ * and [FachClassifier.classify] ranks only that half. Countertenor is a male Fach
+ * despite its female-like range.
+ */
+enum class VoiceGroup { FEMALE, MALE }
+
+/**
+ * The user's answer to the Male · Female · Not sure switch, chosen per recording and saved
+ * with each session. [UNSURE] ranks the full table ([group] null). Kept separate from
+ * [VoiceGroup] because a saved session must tell "Not sure" apart from "recorded before
+ * the answer was saved at all" (a null choice).
+ */
+enum class VoiceGroupChoice(val group: VoiceGroup?) {
+    MALE(VoiceGroup.MALE),
+    FEMALE(VoiceGroup.FEMALE),
+    UNSURE(null),
+}
+
+/**
  * Complete Fach definition including acoustic parameters AND musical context
  * (famous roles, example singers). The latter powers the Voice Types screen.
  */
@@ -13,7 +34,8 @@ data class FachDefinition(
     @StringRes
     val nameRes: Int,
     @StringRes
-    val categoryRes: Int,           // broad grouping label
+    val categoryRes: Int,           // broad grouping label — the voice family shown as the result headline
+    val voiceGroup: VoiceGroup,
     val rangeMinHz: Float,
     val rangeMaxHz: Float,
     val tessituraMinHz: Float,
@@ -74,6 +96,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_coloratura_soprano,
         categoryRes = R.string.fach_category_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 262f, rangeMaxHz = 1568f,
         tessituraMinHz = 440f, tessituraMaxHz = 1319f,
         passaggioHz = 659f,
@@ -85,6 +108,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_lyric_coloratura_soprano,
         categoryRes = R.string.fach_category_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 262f, rangeMaxHz = 1397f,
         tessituraMinHz = 349f, tessituraMaxHz = 1047f,
         passaggioHz = 523f,
@@ -96,6 +120,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_lyric_soprano,
         categoryRes = R.string.fach_category_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 247f, rangeMaxHz = 1047f,
         tessituraMinHz = 294f, tessituraMaxHz = 880f,
         passaggioHz = 494f,
@@ -107,6 +132,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_spinto_soprano,
         categoryRes = R.string.fach_category_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 233f, rangeMaxHz = 988f,
         tessituraMinHz = 277f, tessituraMaxHz = 784f,
         passaggioHz = 466f,
@@ -118,6 +144,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_dramatic_soprano,
         categoryRes = R.string.fach_category_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 220f, rangeMaxHz = 880f,
         tessituraMinHz = 262f, tessituraMaxHz = 698f,
         passaggioHz = 440f,
@@ -129,6 +156,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_lyric_mezzo_soprano,
         categoryRes = R.string.fach_category_mezzo_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 196f, rangeMaxHz = 988f,
         tessituraMinHz = 247f, tessituraMaxHz = 740f,
         passaggioHz = 392f,
@@ -140,6 +168,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_dramatic_mezzo_soprano,
         categoryRes = R.string.fach_category_mezzo_soprano,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 175f, rangeMaxHz = 784f,
         tessituraMinHz = 220f, tessituraMaxHz = 622f,
         passaggioHz = 370f,
@@ -151,6 +180,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_contralto,
         categoryRes = R.string.fach_category_contralto,
+        voiceGroup = VoiceGroup.FEMALE,
         rangeMinHz = 165f, rangeMaxHz = 698f,
         tessituraMinHz = 196f, tessituraMaxHz = 523f,
         passaggioHz = 330f,
@@ -162,6 +192,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_countertenor,
         categoryRes = R.string.fach_category_countertenor,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 165f, rangeMaxHz = 880f,
         tessituraMinHz = 220f, tessituraMaxHz = 659f,
         passaggioHz = 330f,
@@ -173,6 +204,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_lyric_tenor,
         categoryRes = R.string.fach_category_tenor,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 130f, rangeMaxHz = 523f,
         tessituraMinHz = 196f, tessituraMaxHz = 440f,
         passaggioHz = 330f,
@@ -184,6 +216,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_spinto_tenor,
         categoryRes = R.string.fach_category_tenor,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 123f, rangeMaxHz = 494f,
         tessituraMinHz = 175f, tessituraMaxHz = 415f,
         passaggioHz = 311f,
@@ -195,6 +228,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_dramatic_tenor_heldentenor,
         categoryRes = R.string.fach_category_tenor,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 110f, rangeMaxHz = 466f,
         tessituraMinHz = 165f, tessituraMaxHz = 392f,
         passaggioHz = 294f,
@@ -206,6 +240,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_lyric_baritone,
         categoryRes = R.string.fach_category_baritone,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 110f, rangeMaxHz = 392f,
         tessituraMinHz = 147f, tessituraMaxHz = 330f,
         passaggioHz = 233f,
@@ -217,6 +252,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_kavalierbariton,
         categoryRes = R.string.fach_category_baritone,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 98f, rangeMaxHz = 370f,
         tessituraMinHz = 138f, tessituraMaxHz = 311f,
         passaggioHz = 220f,
@@ -228,6 +264,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_dramatic_baritone,
         categoryRes = R.string.fach_category_baritone,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 87f, rangeMaxHz = 349f,
         tessituraMinHz = 123f, tessituraMaxHz = 294f,
         passaggioHz = 207f,
@@ -239,6 +276,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_bass_baritone,
         categoryRes = R.string.fach_category_bass,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 82f, rangeMaxHz = 330f,
         tessituraMinHz = 110f, tessituraMaxHz = 277f,
         passaggioHz = 207f,
@@ -250,6 +288,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_basso_cantante,
         categoryRes = R.string.fach_category_bass,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 73f, rangeMaxHz = 330f,
         tessituraMinHz = 98f, tessituraMaxHz = 262f,
         // Literature gives F#3-G3 (185-196 Hz) as a range rather than a single note;
@@ -264,6 +303,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_basso_profundo,
         categoryRes = R.string.fach_category_bass,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 65f, rangeMaxHz = 294f,
         tessituraMinHz = 82f, tessituraMaxHz = 220f,
         passaggioHz = 155f,
@@ -275,6 +315,7 @@ val ALL_FACH: List<FachDefinition> = listOf(
     FachDefinition(
         nameRes = R.string.fach_name_contrabass_oktavist,
         categoryRes = R.string.fach_category_bass,
+        voiceGroup = VoiceGroup.MALE,
         rangeMinHz = 43f, rangeMaxHz = 220f,
         tessituraMinHz = 65f, tessituraMaxHz = 165f,
         passaggioHz = 130f,

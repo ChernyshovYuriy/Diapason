@@ -252,14 +252,11 @@
     <string name="compare_result_section_comfortable">Comfortable Range</string>
     <string name="compare_result_section_extremes">Detected Extremes</string>
     <string name="compare_result_section_passaggio">Estimated Passaggio</string>
-    <string name="compare_result_section_voice_type">Voice Type Match</string>
     <string name="compare_result_label_comfortable_low">Lower end (P20)</string>
     <string name="compare_result_label_comfortable_high">Upper end (P80)</string>
     <string name="compare_result_label_detected_min">Lowest detected</string>
     <string name="compare_result_label_detected_max">Highest detected</string>
     <string name="compare_result_label_passaggio">Passaggio estimate</string>
-    <string name="compare_result_before_label">Before warm-up</string>
-    <string name="compare_result_after_label">After warm-up</string>
     <string name="compare_result_disclaimer">Based on these two sessions only. Changes between
         sessions reflect measurement, not guaranteed physiological or training outcomes.</string>
     <string name="compare_result_btn_done">Done</string>
@@ -288,4 +285,24 @@
     <string name="compare_warmup_card5_title">Gentle sustained notes</string>
     <string name="compare_warmup_card5_body">Hold 3–4 comfortable notes for 3 seconds each.
         These are the same sustained notes Diapason will detect.</string>
+
+    <!-- Voice group (male/female) and combined voice profile -->
+    <string name="voice_group_dialog_title">Male or female voice?</string>
+    <string name="voice_group_dialog_body">Voice types are defined separately for male and female voices, and pitch alone can\'t tell them apart. Choose the voice you\'ll be singing with — countertenors choose Male. You can change this later.</string>
+    <string name="voice_group_male">Male</string>
+    <string name="voice_group_female">Female</string>
+    <string name="voice_group_unsure">Not sure</string>
+    <string name="results_leaning_format">Leaning %1$s</string>
+    <string name="results_leaning_close_format">Leaning %1$s, close to %2$s</string>
+    <string name="results_profile_title">Your voice profile</string>
+    <plurals name="results_profile_based_on">
+        <item quantity="one">Combined from your last %1$d recording</item>
+        <item quantity="other">Combined from your last %1$d recordings</item>
+    </plurals>
+    <plurals name="results_profile_consistency">
+        <item quantity="one">%1$d of %2$d recordings agrees</item>
+        <item quantity="other">%1$d of %2$d recordings agree</item>
+    </plurals>
+    <string name="results_profile_note">Uses up to 5 recordings from the last 30 days, so one unusual take doesn\'t change your result.</string>
+    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 </resources>

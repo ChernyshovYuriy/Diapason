@@ -64,6 +64,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -75,7 +76,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.CombinedVoiceProfile
 import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.ResultSummary
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.reminder.ReminderScheduler
 import java.text.DateFormat
@@ -107,6 +110,7 @@ private fun shareResult(
 fun ResultsScreen(
     profile: VoiceProfile,
     matches: List<FachMatch>,
+    combinedProfile: CombinedVoiceProfile? = null,
     onBack: () -> Unit,
     onAnalyzeAgain: () -> Unit
 ) {
@@ -115,6 +119,7 @@ fun ResultsScreen(
 
     val context = LocalContext.current
     val topMatch = matches.firstOrNull()
+    val summary = remember(matches) { FachClassifier.summarize(matches) }
     val topFachKey = remember(topMatch) {
         topMatch?.let {
             runCatching { context.resources.getResourceEntryName(it.fach.nameRes) }.getOrNull()
@@ -135,7 +140,13 @@ fun ResultsScreen(
 
     val shareText = stringResource(
         R.string.share_text,
-        stringResource(topMatch?.fach?.nameRes ?: R.string.share_unknown_voice_type),
+        summary?.let {
+            stringResource(
+                R.string.results_family_with_fach_format,
+                stringResource(it.familyRes),
+                stringResource(it.leaning.fach.nameRes),
+            )
+        } ?: stringResource(R.string.share_unknown_voice_type),
         FachClassifier.hzToNoteName(profile.detectedMinHz),
         FachClassifier.hzToNoteName(profile.detectedMaxHz),
         FachClassifier.hzToNoteName(profile.comfortableLowHz),
@@ -185,8 +196,12 @@ fun ResultsScreen(
             Spacer(Modifier.height(8.dp))
 
             // ── Top match (hero card) ──────────────────────────────────────
-            matches.firstOrNull()?.let { top ->
-                TopMatchCard(match = top)
+            summary?.let { TopMatchCard(summary = it) }
+
+            // ── Combined profile across recent sessions ───────────────────
+            combinedProfile?.let {
+                Spacer(Modifier.height(12.dp))
+                CombinedProfileCard(combined = it)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -293,8 +308,14 @@ private fun ShareButton(onClick: () -> Unit) {
     }
 }
 
+/**
+ * Leads with the voice family — the part of the answer pitch can support — and shows the
+ * Fach as a leaning, naming the runner-up too when it's within a point (see
+ * [FachClassifier.summarize]). Description and roles still describe the leaning Fach.
+ */
 @Composable
-private fun TopMatchCard(match: FachMatch) {
+private fun TopMatchCard(summary: ResultSummary) {
+    val match = summary.leaning
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -318,16 +339,17 @@ private fun TopMatchCard(match: FachMatch) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = stringResource(match.fach.nameRes),
+                text = stringResource(summary.familyRes),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = stringResource(match.fach.categoryRes),
+                text = leaningText(summary),
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -365,6 +387,72 @@ private fun TopMatchCard(match: FachMatch) {
                     )
                 }
             }
+        }
+    }
+}
+
+/** "Leaning Kavalierbariton" or "Leaning Kavalierbariton, close to Lyric Baritone". */
+@Composable
+private fun leaningText(summary: ResultSummary): String {
+    val leaning = stringResource(summary.leaning.fach.nameRes)
+    val runnerUp = summary.closeRunnerUp
+        ?: return stringResource(R.string.results_leaning_format, leaning)
+    return stringResource(R.string.results_leaning_close_format, leaning, stringResource(runnerUp.fach.nameRes))
+}
+
+@Composable
+private fun CombinedProfileCard(combined: CombinedVoiceProfile) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.results_profile_title),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+            )
+            Text(
+                text = stringResource(combined.summary.familyRes),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = leaningText(combined.summary),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = pluralStringResource(
+                    R.plurals.results_profile_based_on,
+                    combined.sessionCount,
+                    combined.sessionCount
+                ) + " · " + pluralStringResource(
+                    // Quantity follows the agreeing count — it's the verb's subject, and
+                    // it can be 0 or 1 even though the total is always at least 2.
+                    R.plurals.results_profile_consistency,
+                    combined.consistentCount,
+                    combined.consistentCount,
+                    combined.sessionCount
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(R.string.results_profile_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 4.dp)
+            )
         }
     }
 }

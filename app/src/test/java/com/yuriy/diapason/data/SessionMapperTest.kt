@@ -1,5 +1,6 @@
 package com.yuriy.diapason.data
 
+import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.data.db.SessionEntity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -237,5 +238,41 @@ class SessionMapperTest {
     fun `passaggioHz zero roundtrip entity to domain to entity is identity`() {
         val original = fullEntity().copy(passaggioHz = 0f)
         assertEquals(original, original.toDomain().toEntity())
+    }
+
+    // ── voice group choice (schema v2) ────────────────────────────────────────
+
+    @Test
+    fun `every voice group choice round-trips through the entity`() {
+        VoiceGroupChoice.entries.forEach { choice ->
+            val record = fullRecord().copy(voiceGroupChoice = choice)
+            assertEquals(choice.name, record.toEntity().voiceGroup)
+            assertEquals(choice, record.toEntity().toDomain().voiceGroupChoice)
+        }
+    }
+
+    @Test
+    fun `a pre-v2 row with no stored choice maps to null`() {
+        assertNull(fullEntity().copy(voiceGroup = null).toDomain().voiceGroupChoice)
+    }
+
+    @Test
+    fun `an unrecognised stored choice maps to null rather than crashing`() {
+        assertNull(fullEntity().copy(voiceGroup = "BARITONE").toDomain().voiceGroupChoice)
+    }
+
+    @Test
+    fun `recordedWith keeps only sessions recorded with the same choice`() {
+        val sessions = listOf(
+            fullRecord(id = "m").copy(voiceGroupChoice = VoiceGroupChoice.MALE),
+            fullRecord(id = "f").copy(voiceGroupChoice = VoiceGroupChoice.FEMALE),
+            fullRecord(id = "u").copy(voiceGroupChoice = VoiceGroupChoice.UNSURE),
+            fullRecord(id = "legacy").copy(voiceGroupChoice = null),
+        )
+        assertEquals(listOf("f"), sessions.recordedWith(VoiceGroupChoice.FEMALE).map { it.id })
+        assertEquals(
+            "pre-v2 sessions are never combined, even for Not sure",
+            listOf("u"), sessions.recordedWith(VoiceGroupChoice.UNSURE).map { it.id }
+        )
     }
 }

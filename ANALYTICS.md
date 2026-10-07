@@ -26,9 +26,15 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 | Event | Params | Fired from |
 |---|---|---|
 | `analysis_started` | `flow` | `AnalyzeViewModel` on record start |
-| `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `score`, `max_score`, `runner_up_gap`, `detected_min_midi`, `detected_max_midi`, `comfortable_low_midi`, `comfortable_high_midi`, `passaggio_midi` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` on successful classification. `runner_up_gap` = top score − second score; the `*_midi` params are MIDI note numbers (A4 = 69), omitted when a pitch has none |
+| `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `voice_group`, `score`, `max_score`, `runner_up_gap`, `detected_min_midi`, `detected_max_midi`, `comfortable_low_midi`, `comfortable_high_midi`, `passaggio_midi` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` on successful classification. `runner_up_gap` = top score − second score; the `*_midi` params are MIDI note numbers (A4 = 69), omitted when a pitch has none |
 | `analysis_insufficient` | `flow`, `sample_count`, `duration_seconds` | Too few samples to classify (< 40-sample gate, `MIN_ACCEPTED_SAMPLES`) |
 | `analysis_abandoned` | `flow`, `sample_count`, `duration_seconds` | A recording ends without the user pressing Stop: the Analyze screen or warm-up flow receives `ON_STOP` (navigated away, backgrounded, system back) — not on a configuration change — via `onScreenStopped()`; also the warm-up flow's Exit button, and `onCleared` as a fallback. All three flows |
+
+## Voice group
+
+| Event | Params | Fired from |
+|---|---|---|
+| `voice_group_selected` | `voice_group` (`male` / `female` / `unsure`), `source` (`first_run` / `change`) | `AnalyzeViewModel.setVoiceGroup` — the prompt before the first recording (`first_run`) or the Analyze screen's voice chip (`change`). `voice_group` on `analysis_completed` uses the same values; `unsure` means all 19 Fach competed |
 
 ## Result screen
 

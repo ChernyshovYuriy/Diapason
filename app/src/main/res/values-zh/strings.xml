@@ -245,14 +245,11 @@
     <string name="compare_result_section_comfortable">舒适音域</string>
     <string name="compare_result_section_extremes">检测到的音域极值</string>
     <string name="compare_result_section_passaggio">估计换声点</string>
-    <string name="compare_result_section_voice_type">声部类型匹配</string>
     <string name="compare_result_label_comfortable_low">下限（P20）</string>
     <string name="compare_result_label_comfortable_high">上限（P80）</string>
     <string name="compare_result_label_detected_min">检测到的最低音</string>
     <string name="compare_result_label_detected_max">检测到的最高音</string>
     <string name="compare_result_label_passaggio">换声点估计</string>
-    <string name="compare_result_before_label">热身前</string>
-    <string name="compare_result_after_label">热身后</string>
     <string name="compare_result_disclaimer">结果仅基于这两次分析。两次分析之间的
         变化反映的是测量数据，而非确定的生理或训练成果。</string>
     <string name="compare_result_btn_done">完成</string>
@@ -281,4 +278,22 @@
     <string name="compare_warmup_card5_title">轻柔的持续音</string>
     <string name="compare_warmup_card5_body">保持 3–4 个舒适的音符，每个持续 3 秒。
         这些正是 Diapason 将要检测的持续音。</string>
+
+    <!-- Voice group (male/female) and combined voice profile -->
+    <string name="voice_group_dialog_title">男声还是女声？</string>
+    <string name="voice_group_dialog_body">声部类型对男声和女声是分别定义的，仅凭音高无法区分两者。请选择你将用来演唱的声音——假声男高音请选择男声。之后可以更改。</string>
+    <string name="voice_group_male">男声</string>
+    <string name="voice_group_female">女声</string>
+    <string name="voice_group_unsure">不确定</string>
+    <string name="results_leaning_format">倾向于 %1$s</string>
+    <string name="results_leaning_close_format">倾向于 %1$s，接近 %2$s</string>
+    <string name="results_profile_title">你的声音档案</string>
+    <plurals name="results_profile_based_on">
+        <item quantity="other">综合了你最近的 %1$d 次录音</item>
+    </plurals>
+    <plurals name="results_profile_consistency">
+        <item quantity="other">%2$d 次录音中有 %1$d 次一致</item>
+    </plurals>
+    <string name="results_profile_note">使用最近 30 天内最多 5 次录音，因此单次异常的录音不会改变你的结果。</string>
+    <string name="results_family_with_fach_format">%1$s（%2$s）</string>
 </resources>

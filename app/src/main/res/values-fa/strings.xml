@@ -220,14 +220,11 @@
     <string name="compare_result_section_comfortable">گستره راحت</string>
     <string name="compare_result_section_extremes">نقاط حدی شناسایی‌شده</string>
     <string name="compare_result_section_passaggio">پاساجوی تخمینی</string>
-    <string name="compare_result_section_voice_type">تطابق نوع صدا</string>
     <string name="compare_result_label_comfortable_low">حد پایین (صدک 20)</string>
     <string name="compare_result_label_comfortable_high">حد بالا (صدک 80)</string>
     <string name="compare_result_label_detected_min">پایین‌ترین شناسایی‌شده</string>
     <string name="compare_result_label_detected_max">بالاترین شناسایی‌شده</string>
     <string name="compare_result_label_passaggio">تخمین پاساجو</string>
-    <string name="compare_result_before_label">پیش از گرم کردن</string>
-    <string name="compare_result_after_label">پس از گرم کردن</string>
     <string name="compare_result_disclaimer">فقط بر اساس این دو جلسه. تغییرات میان جلسات بازتاب‌دهنده اندازه‌گیری هستند، نه نتایج تضمین‌شده فیزیولوژیک یا آموزشی.</string>
     <string name="compare_result_btn_done">پایان</string>
     <string name="compare_result_btn_again">مقایسه دوباره</string>
@@ -250,4 +247,24 @@
     <string name="compare_warmup_card5_range">4 تا 5 دقیقه</string>
     <string name="compare_warmup_card5_title">نت‌های پایدار ملایم</string>
     <string name="compare_warmup_card5_body">3 تا 4 نت راحت را هر کدام 3 ثانیه نگه دارید. این‌ها همان نت‌های پایداری هستند که دیاپازون تشخیص می‌دهد.</string>
+
+    <!-- Voice group (male/female) and combined voice profile -->
+    <string name="voice_group_dialog_title">صدای مردانه یا زنانه؟</string>
+    <string name="voice_group_dialog_body">انواع صدا برای صداهای مردانه و زنانه جداگانه تعریف می‌شوند و زیر و بمی صدا به‌تنهایی نمی‌تواند آن‌ها را از هم تشخیص دهد. صدایی را که با آن می‌خوانید انتخاب کنید — کنترتنورها «مردانه» را انتخاب کنند. بعداً می‌توانید این را تغییر دهید.</string>
+    <string name="voice_group_male">مردانه</string>
+    <string name="voice_group_female">زنانه</string>
+    <string name="voice_group_unsure">مطمئن نیستم</string>
+    <string name="results_leaning_format">متمایل به %1$s</string>
+    <string name="results_leaning_close_format">متمایل به %1$s، نزدیک به %2$s</string>
+    <string name="results_profile_title">پروفایل صدای شما</string>
+    <plurals name="results_profile_based_on">
+        <item quantity="one">ترکیب‌شده از %1$d ضبط اخیر شما</item>
+        <item quantity="other">ترکیب‌شده از %1$d ضبط اخیر شما</item>
+    </plurals>
+    <plurals name="results_profile_consistency">
+        <item quantity="one">%1$d از %2$d ضبط هم‌خوانی دارد</item>
+        <item quantity="other">%1$d از %2$d ضبط هم‌خوانی دارند</item>
+    </plurals>
+    <string name="results_profile_note">از حداکثر ۵ ضبط در ۳۰ روز گذشته استفاده می‌کند، تا یک اجرای غیرعادی نتیجه شما را تغییر ندهد.</string>
+    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 </resources>

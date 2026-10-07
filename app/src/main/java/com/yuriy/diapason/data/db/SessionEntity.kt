@@ -84,4 +84,12 @@ data class SessionEntity(
      */
     @ColumnInfo(name = "is_partial", defaultValue = "0")
     val isPartial: Boolean = false,
+
+    /**
+     * The Male · Female · Not sure choice this session was recorded with, as a
+     * `VoiceGroupChoice` name. Null for sessions recorded before schema v2, when the
+     * choice wasn't saved — the combined voice profile skips those rather than guess.
+     */
+    @ColumnInfo(name = "voice_group")
+    val voiceGroup: String? = null,
 )

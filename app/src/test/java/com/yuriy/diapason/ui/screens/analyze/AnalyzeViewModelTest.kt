@@ -2,6 +2,12 @@ package com.yuriy.diapason.ui.screens.analyze
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import com.yuriy.diapason.analytics.AppAnalytics
+import com.yuriy.diapason.analyzer.ALL_FACH
+import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.VoiceGroup
+import com.yuriy.diapason.analyzer.VoiceGroupChoice
+import com.yuriy.diapason.analyzer.VoiceProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -155,6 +162,33 @@ class AnalyzeViewModelTest {
         assertEquals(insufficient, viewModel.uiState.value)
     }
 
+    // ── setVoiceChoice ────────────────────────────────────────────────────────
+
+    @Test
+    fun `setVoiceChoice records the choice and exposes it`() {
+        assertNull("unanswered until the first-run prompt", viewModel.voiceChoice.value)
+
+        viewModel.setVoiceChoice(VoiceGroupChoice.FEMALE, AppAnalytics.VoiceGroupSource.FirstRun)
+
+        assertEquals(VoiceGroupChoice.FEMALE, viewModel.voiceChoice.value)
+    }
+
+    @Test
+    fun `setVoiceChoice re-ranks the last result within the new group`() {
+        val tenor = ALL_FACH.first { it.rangeMinHz == 130f && it.rangeMaxHz == 523f }
+        val profile = VoiceProfile(
+            tenor.rangeMinHz, tenor.rangeMaxHz, tenor.tessituraMinHz, tenor.tessituraMaxHz,
+            tenor.passaggioHz, 60, 30f,
+        )
+        forceLastResult(AnalyzeUiState.ResultReady(profile, FachClassifier.classify(profile)))
+
+        viewModel.setVoiceChoice(VoiceGroupChoice.FEMALE, AppAnalytics.VoiceGroupSource.Change)
+
+        val reranked = viewModel.lastResult!!
+        assertEquals("the profile itself is kept", profile, reranked.profile)
+        assertTrue(reranked.matches.all { it.fach.voiceGroup == VoiceGroup.FEMALE })
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**
@@ -162,6 +196,14 @@ class AnalyzeViewModelTest {
      * pattern already established in `WarmUpComparisonViewModelTest` — needed here
      * to simulate mid-session state without feeding real audio through YIN.
      */
+    private fun forceLastResult(result: AnalyzeUiState.ResultReady) {
+        val field = AnalyzeViewModel::class.java.getDeclaredField("_lastResult")
+        field.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val flow = field.get(viewModel) as MutableStateFlow<AnalyzeUiState.ResultReady?>
+        flow.value = result
+    }
+
     private fun forceUiState(state: AnalyzeUiState) {
         val field = AnalyzeViewModel::class.java.getDeclaredField("_uiState")
         field.isAccessible = true

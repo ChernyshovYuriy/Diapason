@@ -45,6 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analyzer.RecordingGate
+import com.yuriy.diapason.ui.screens.analyze.RecordingGateProgress
 import java.util.Locale
 
 // internal, not private: lets a unit test call this directly rather than only
@@ -64,6 +66,8 @@ fun CompareRecordScreen(
     sampleCount: Int,
     statusMessage: String,
     isRecording: Boolean,
+    /** Stop was pressed below the sample gate; the button now reads "Stop anyway". */
+    earlyStopPrompted: Boolean = false,
     /** Called when the user taps Start (only shown when isRecording == false). */
     onStart: () -> Unit = {},
     onStop: () -> Unit,
@@ -129,6 +133,9 @@ fun CompareRecordScreen(
                         if (currentHz > 0f) formatHz(currentHz) else stringResource(R.string.no_pitch_placeholder),
                     )
                 }
+                if (!RecordingGate.isEnough(sampleCount)) {
+                    RecordingGateProgress(sampleCount, modifier = Modifier.padding(top = 12.dp))
+                }
             }
 
             Spacer(Modifier.weight(1f))
@@ -152,7 +159,9 @@ fun CompareRecordScreen(
                 }
             } else {
                 PulsingStopButton(
-                    label = stringResource(R.string.compare_record_btn_stop),
+                    label = stringResource(
+                        if (earlyStopPrompted) R.string.analyze_btn_stop_anyway else R.string.compare_record_btn_stop
+                    ),
                     onClick = onStop,
                 )
             }

@@ -9,15 +9,19 @@ import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
+import com.yuriy.diapason.insufficientMessage
+import com.yuriy.diapason.keepSingingMessage
 import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
+import com.yuriy.diapason.settings.AudioSourceExperiment
 import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -46,6 +50,8 @@ sealed interface ComparisonStage {
         val currentHz: Float = 0f,
         val sampleCount: Int = 0,
         val statusMessage: String = "",
+        /** Stop was pressed below the sample gate — see AnalyzeUiState.Recording. */
+        val earlyStopPrompted: Boolean = false,
     ) : ComparisonStage
 
     /** Baseline failed — not enough data. */
@@ -65,6 +71,8 @@ sealed interface ComparisonStage {
         val statusMessage: String = "",
         /** False until the user explicitly taps Start — prevents the UI showing "recording" prematurely. */
         val isRecording: Boolean = false,
+        /** Stop was pressed below the sample gate — see AnalyzeUiState.Recording. */
+        val earlyStopPrompted: Boolean = false,
     ) : ComparisonStage
 
     /** Retest failed — not enough data. */
@@ -93,7 +101,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     // ── Audio analyzer (shared across baseline and retest) ────────────────────
 
-    private val analyzer = VoiceAnalyzer(viewModelScope)
+    private val audioSourceArm = AudioSourceExperiment(application).arm
+    private val analyzer = VoiceAnalyzer(viewModelScope, audioSourceArm.audioSource)
 
     private var timerJob: Job? = null
 
@@ -109,15 +118,25 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             ComparisonStage.Baseline(statusMessage = str(R.string.analyze_status_listening))
         attachAnalyzerCallbacksForBaseline()
         analyzer.start(analyzerStrings())
+        reportAudioSource()
     }
 
     fun stopBaseline() {
         AppLogger.i("$TAG stopBaseline()")
         if (!analyzer.isRunning) return
 
-        val priorSampleCount =
-            (_stage.value as? ComparisonStage.Baseline)?.sampleCount ?: 0
+        val baseline = _stage.value as? ComparisonStage.Baseline
+        val priorSampleCount = baseline?.sampleCount ?: 0
         val elapsedSeconds = analyzer.elapsedSeconds
+
+        if (baseline != null && !baseline.earlyStopPrompted && !RecordingGate.isEnough(priorSampleCount)) {
+            AppAnalytics.analysisStopTooEarly(AppAnalytics.Flow.Baseline, priorSampleCount, elapsedSeconds)
+            _stage.value = baseline.copy(
+                earlyStopPrompted = true,
+                statusMessage = getApplication<Application>().keepSingingMessage(priorSampleCount, elapsedSeconds),
+            )
+            return
+        }
 
         _stage.update {
             if (it is ComparisonStage.Baseline)
@@ -129,7 +148,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         if (profile == null) {
             AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Baseline, priorSampleCount, elapsedSeconds)
             _stage.value = ComparisonStage.BaselineInsufficient(
-                str(R.string.analyze_error_insufficient)
+                getApplication<Application>().insufficientMessage(priorSampleCount)
             )
             return
         }
@@ -206,15 +225,25 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         )
         attachAnalyzerCallbacksForRetest()
         analyzer.start(analyzerStrings())
+        reportAudioSource()
     }
 
     fun stopRetest() {
         AppLogger.i("$TAG stopRetest()")
         if (!analyzer.isRunning) return
 
-        val priorSampleCount =
-            (_stage.value as? ComparisonStage.Retest)?.sampleCount ?: 0
+        val retest = _stage.value as? ComparisonStage.Retest
+        val priorSampleCount = retest?.sampleCount ?: 0
         val elapsedSeconds = analyzer.elapsedSeconds
+
+        if (retest != null && !retest.earlyStopPrompted && !RecordingGate.isEnough(priorSampleCount)) {
+            AppAnalytics.analysisStopTooEarly(AppAnalytics.Flow.Retest, priorSampleCount, elapsedSeconds)
+            _stage.value = retest.copy(
+                earlyStopPrompted = true,
+                statusMessage = getApplication<Application>().keepSingingMessage(priorSampleCount, elapsedSeconds),
+            )
+            return
+        }
 
         _stage.update {
             if (it is ComparisonStage.Retest)
@@ -226,7 +255,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         if (profile == null) {
             AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Retest, priorSampleCount, elapsedSeconds)
             _stage.value = ComparisonStage.RetestInsufficient(
-                str(R.string.analyze_error_insufficient)
+                getApplication<Application>().insufficientMessage(priorSampleCount)
             )
             return
         }
@@ -292,6 +321,10 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     private fun voiceChoice() =
         VoiceGroupPreferences(getApplication()).choice ?: VoiceGroupChoice.UNSURE
 
+    private fun reportAudioSource() = AppAnalytics.setAudioSource(
+        if (analyzer.usedFallbackSource) AudioSourceExperiment.FALLBACK_ANALYTICS_VALUE else audioSourceArm.analyticsValue
+    )
+
     private fun analyzerStrings() = VoiceAnalyzerStrings(
         listeningMessage = str(R.string.analyze_status_listening_short),
         micInitError = str(R.string.analyze_status_mic_error),
@@ -301,9 +334,15 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     private fun attachAnalyzerCallbacksForBaseline() {
         analyzer.onPitchDetected = { hz, note ->
             _stage.update {
-                if (it is ComparisonStage.Baseline)
-                    it.copy(currentNote = note, currentHz = hz, sampleCount = it.sampleCount + 1)
-                else it
+                if (it is ComparisonStage.Baseline) {
+                    val sampleCount = it.sampleCount + 1
+                    val gateJustReached = it.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
+                    it.copy(
+                        currentNote = note, currentHz = hz, sampleCount = sampleCount,
+                        earlyStopPrompted = it.earlyStopPrompted && !gateJustReached,
+                        statusMessage = if (gateJustReached) str(R.string.analyze_status_enough) else it.statusMessage,
+                    )
+                } else it
             }
         }
         analyzer.onStatusUpdate = { msg ->
@@ -316,14 +355,18 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     private fun attachAnalyzerCallbacksForRetest() {
         analyzer.onPitchDetected = { hz, note ->
             _stage.update {
-                if (it is ComparisonStage.Retest)
+                if (it is ComparisonStage.Retest) {
+                    val sampleCount = it.sampleCount + 1
+                    val gateJustReached = it.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
                     it.copy(
                         currentNote = note,
                         currentHz = hz,
-                        sampleCount = it.sampleCount + 1,
-                        isRecording = true
+                        sampleCount = sampleCount,
+                        isRecording = true,
+                        earlyStopPrompted = it.earlyStopPrompted && !gateJustReached,
+                        statusMessage = if (gateJustReached) str(R.string.analyze_status_enough) else it.statusMessage,
                     )
-                else it
+                } else it
             }
         }
         analyzer.onStatusUpdate = { msg ->

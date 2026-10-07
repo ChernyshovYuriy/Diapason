@@ -20,7 +20,8 @@ private const val YIN_THRESHOLD = 0.15
 internal const val MIN_PITCH_HZ = 60f
 private const val MAX_PITCH_HZ = 2200f
 private const val MIN_YIN_CONFIDENCE = 0.80f
-private const val MIN_ACCEPTED_SAMPLES = 40
+// internal: RecordingGate shows progress toward it and holds an early Stop below it.
+internal const val MIN_ACCEPTED_SAMPLES = 40
 
 /**
  * Localised strings required by [VoiceAnalyzer].
@@ -32,7 +33,16 @@ data class VoiceAnalyzerStrings(
     val tooFewSamples: String
 )
 
-class VoiceAnalyzer(private val scope: CoroutineScope) {
+/**
+ * @param audioSource the `MediaRecorder.AudioSource` to record from. Defaults to `MIC`;
+ *   the audio-source experiment passes `VOICE_RECOGNITION` for half of installs, because
+ *   OEM noise suppression on `MIC` is suspected of eating sustained sung notes on some
+ *   brands (completion ranged 47–78% by brand in production).
+ */
+class VoiceAnalyzer(
+    private val scope: CoroutineScope,
+    private val audioSource: Int = MediaRecorder.AudioSource.MIC,
+) {
 
     var onPitchDetected: ((hz: Float, noteName: String) -> Unit)? = null
     var onStatusUpdate: ((message: String) -> Unit)? = null
@@ -50,6 +60,13 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
     private var lastLoggedNote = ""
 
     val isRunning: Boolean get() = analyzerJob?.isActive == true
+
+    /**
+     * True when the last [start] couldn't initialise [audioSource] and fell back to `MIC`,
+     * so the caller can report it — a fallback install isn't really in the experiment arm.
+     */
+    var usedFallbackSource: Boolean = false
+        private set
 
     /**
      * Seconds since the current session started; 0 when nothing is running. Read it
@@ -73,13 +90,16 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
         )
         val bufferSize = minBuffer * 4
 
-        audioRecord = AudioRecord(
-            MediaRecorder.AudioSource.MIC,
-            SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-            bufferSize
-        )
+        usedFallbackSource = false
+        audioRecord = createAudioRecord(audioSource, bufferSize)
+        if (audioRecord?.state != AudioRecord.STATE_INITIALIZED &&
+            audioSource != MediaRecorder.AudioSource.MIC
+        ) {
+            AppLogger.w("AudioRecord source $audioSource failed to initialize — falling back to MIC")
+            audioRecord?.release()
+            audioRecord = createAudioRecord(MediaRecorder.AudioSource.MIC, bufferSize)
+            usedFallbackSource = true
+        }
 
         if (audioRecord?.state != AudioRecord.STATE_INITIALIZED) {
             AppLogger.e("AudioRecord failed to initialize")
@@ -137,6 +157,11 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
             }
         }
     }
+
+    @SuppressLint("MissingPermission")
+    private fun createAudioRecord(source: Int, bufferSize: Int): AudioRecord? = runCatching {
+        AudioRecord(source, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize)
+    }.onFailure { AppLogger.e("AudioRecord($source) threw", it) }.getOrNull()
 
     fun stop(tooFewSamplesMessage: String): VoiceProfile? {
         if (!isRunning) return null

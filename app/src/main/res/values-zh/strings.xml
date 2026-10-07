@@ -22,7 +22,6 @@
     <string name="analyze_status_analyzing">正在分析你的声音…</string>
     <string name="analyze_status_mic_error">麦克风初始化失败——请检查权限</string>
     <string name="analyze_status_too_few_samples">样本太少——请延长演唱时间</string>
-    <string name="analyze_error_insufficient">数据不足。请持续演唱至少 20–30 秒。</string>
     <string name="voice_types_title">声部类型</string>
     <string name="voice_types_subtitle">点击任意声部类型，了解其音域、代表曲目和著名歌唱家</string>
     <string name="voice_types_label_range">音域</string>
@@ -219,7 +218,7 @@
     <string name="compare_intro_btn_start">开始基线录制</string>
     <string name="compare_intro_btn_cancel">取消</string>
     <string name="compare_baseline_title">热身前</string>
-    <string name="compare_baseline_instruction">从最低音唱到最高音，然后再唱回来。</string>
+    <string name="compare_baseline_instruction">像主分析一样唱出你的完整音域：从最低音唱到最高音再回来，每个音保持 2–3 秒。大约 30 秒。</string>
     <string name="compare_retest_title">热身后</string>
     <string name="compare_retest_instruction">重复相同的模式——从最低音到最高音，然后再唱回来。</string>
     <string name="compare_record_btn_stop">停止录制</string>
@@ -296,4 +295,13 @@
     </plurals>
     <string name="results_profile_note">使用最近 30 天内最多 5 次录音，因此单次异常的录音不会改变你的结果。</string>
     <string name="results_family_with_fach_format">%1$s（%2$s）</string>
+
+    <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
+    <plurals name="analyze_status_keep_singing">
+        <item quantity="other">请继续唱——大约还需要 %d 秒。再次点击停止可直接结束。</item>
+    </plurals>
+    <string name="analyze_status_keep_singing_unknown">请继续唱——尚未检测到清晰的音符。再次点击停止可直接结束。</string>
+    <string name="analyze_status_enough">已足够得出结果——继续唱可让结果更准确，或点击停止。</string>
+    <string name="analyze_btn_stop_anyway">仍然停止</string>
+    <string name="analyze_error_insufficient_progress">已采集的声音样本：%1$d / %2$d。下次请唱得稍长一些，每个音保持 2–3 秒。</string>
 </resources>

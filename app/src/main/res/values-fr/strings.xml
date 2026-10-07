@@ -22,7 +22,6 @@
     <string name="analyze_status_analyzing">Analyse de votre voix…</string>
     <string name="analyze_status_mic_error">Échec d’initialisation du micro — vérifiez l’autorisation</string>
     <string name="analyze_status_too_few_samples">Trop peu d’échantillons — chantez plus longtemps</string>
-    <string name="analyze_error_insufficient">Données insuffisantes. Veuillez tenir des notes pendant au moins 20–30 secondes.</string>
     <string name="voice_types_title">Types de voix</string>
     <string name="voice_types_subtitle">Touchez un type de voix pour explorer son étendue, son répertoire et des chanteurs célèbres</string>
     <string name="voice_types_label_range">Étendue</string>
@@ -224,7 +223,7 @@
     <string name="compare_intro_btn_start">Commencer l’enregistrement de référence</string>
     <string name="compare_intro_btn_cancel">Annuler</string>
     <string name="compare_baseline_title">Avant l’échauffement</string>
-    <string name="compare_baseline_instruction">Chantez de votre note la plus basse à votre note la plus haute, puis redescendez.</string>
+    <string name="compare_baseline_instruction">Chantez toute votre étendue, comme pour l\'analyse principale : de votre note la plus grave à la plus aiguë puis retour, en tenant chaque note 2 à 3 secondes. Environ 30 secondes.</string>
     <string name="compare_retest_title">Après l’échauffement</string>
     <string name="compare_retest_instruction">Répétez le même schéma — de la note la plus basse à la plus haute, puis redescendez.</string>
     <string name="compare_record_btn_stop">Arrêter l’enregistrement</string>
@@ -296,11 +295,24 @@
     <plurals name="results_profile_based_on">
         <item quantity="one">Combiné à partir de votre dernier enregistrement (%1$d)</item>
         <item quantity="other">Combiné à partir de vos %1$d derniers enregistrements</item>
+        <item quantity="many">Combiné à partir de vos %1$d derniers enregistrements</item>
     </plurals>
     <plurals name="results_profile_consistency">
         <item quantity="one">%1$d enregistrement sur %2$d concorde</item>
         <item quantity="other">%1$d enregistrements sur %2$d concordent</item>
+        <item quantity="many">%1$d enregistrements sur %2$d concordent</item>
     </plurals>
     <string name="results_profile_note">Utilise jusqu\'à 5 enregistrements des 30 derniers jours : une prise inhabituelle ne change pas votre résultat.</string>
     <string name="results_family_with_fach_format">%1$s (%2$s)</string>
+
+    <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
+    <plurals name="analyze_status_keep_singing">
+        <item quantity="one">Continuez à chanter — encore environ %d seconde. Appuyez à nouveau sur Arrêter pour terminer quand même.</item>
+        <item quantity="other">Continuez à chanter — encore environ %d secondes. Appuyez à nouveau sur Arrêter pour terminer quand même.</item>
+        <item quantity="many">Continuez à chanter — encore environ %d secondes. Appuyez à nouveau sur Arrêter pour terminer quand même.</item>
+    </plurals>
+    <string name="analyze_status_keep_singing_unknown">Continuez à chanter — aucune note claire détectée pour l\'instant. Appuyez à nouveau sur Arrêter pour terminer quand même.</string>
+    <string name="analyze_status_enough">Assez pour un résultat — continuez pour un meilleur résultat, ou appuyez sur Arrêter.</string>
+    <string name="analyze_btn_stop_anyway">Arrêter quand même</string>
+    <string name="analyze_error_insufficient_progress">Échantillons vocaux captés : %1$d / %2$d. La prochaine fois, chantez un peu plus longtemps en tenant chaque note 2 à 3 secondes.</string>
 </resources>

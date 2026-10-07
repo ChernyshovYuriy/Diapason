@@ -22,7 +22,6 @@
     <string name="analyze_status_analyzing">Analisando sua voz…</string>
     <string name="analyze_status_mic_error">Falha ao iniciar o microfone — verifique a permissão</string>
     <string name="analyze_status_too_few_samples">Poucas amostras — cante por mais tempo</string>
-    <string name="analyze_error_insufficient">Dados insuficientes. Cante notas sustentadas por pelo menos 20–30 segundos.</string>
     <string name="voice_types_title">Tipos de Voz</string>
     <string name="voice_types_subtitle">Toque em qualquer tipo de voz para explorar sua extensão, repertório e cantores famosos</string>
     <string name="voice_types_label_range">Extensão</string>
@@ -225,7 +224,7 @@
     <string name="compare_intro_btn_start">Iniciar gravação de base</string>
     <string name="compare_intro_btn_cancel">Cancelar</string>
     <string name="compare_baseline_title">Antes do aquecimento</string>
-    <string name="compare_baseline_instruction">Cante da sua nota mais grave até a mais aguda e depois volte.</string>
+    <string name="compare_baseline_instruction">Cante toda a sua extensão, tal como na análise principal: da nota mais grave à mais aguda e de volta, sustentando cada nota 2–3 segundos. Cerca de 30 segundos.</string>
     <string name="compare_retest_title">Depois do aquecimento</string>
     <string name="compare_retest_instruction">Repita o mesmo padrão — da nota mais grave à mais aguda e depois volte.</string>
     <string name="compare_record_btn_stop">Parar gravação</string>
@@ -297,11 +296,24 @@
     <plurals name="results_profile_based_on">
         <item quantity="one">Combinado a partir da sua última gravação (%1$d)</item>
         <item quantity="other">Combinado a partir das suas últimas %1$d gravações</item>
+        <item quantity="many">Combinado a partir das suas últimas %1$d gravações</item>
     </plurals>
     <plurals name="results_profile_consistency">
         <item quantity="one">%1$d de %2$d gravações concorda</item>
         <item quantity="other">%1$d de %2$d gravações concordam</item>
+        <item quantity="many">%1$d de %2$d gravações concordam</item>
     </plurals>
     <string name="results_profile_note">Usa até 5 gravações dos últimos 30 dias, para que uma gravação atípica não altere o seu resultado.</string>
     <string name="results_family_with_fach_format">%1$s (%2$s)</string>
+
+    <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
+    <plurals name="analyze_status_keep_singing">
+        <item quantity="one">Continue a cantar — falta cerca de %d segundo. Toque em Parar de novo para terminar mesmo assim.</item>
+        <item quantity="other">Continue a cantar — faltam cerca de %d segundos. Toque em Parar de novo para terminar mesmo assim.</item>
+        <item quantity="many">Continue a cantar — faltam cerca de %d segundos. Toque em Parar de novo para terminar mesmo assim.</item>
+    </plurals>
+    <string name="analyze_status_keep_singing_unknown">Continue a cantar — ainda não foram detetadas notas claras. Toque em Parar de novo para terminar mesmo assim.</string>
+    <string name="analyze_status_enough">Suficiente para um resultado — continue para um melhor, ou toque em Parar.</string>
+    <string name="analyze_btn_stop_anyway">Parar mesmo assim</string>
+    <string name="analyze_error_insufficient_progress">Amostras de voz captadas: %1$d / %2$d. Da próxima vez cante um pouco mais, sustentando cada nota 2–3 segundos.</string>
 </resources>

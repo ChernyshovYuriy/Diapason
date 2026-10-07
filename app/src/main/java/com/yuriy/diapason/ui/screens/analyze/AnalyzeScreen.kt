@@ -66,6 +66,7 @@ import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.RecordingGate
 import java.util.Locale
 
 // internal, not private: lets a unit test call this directly rather than only
@@ -226,6 +227,14 @@ fun AnalyzeScreen(
             }
         }
 
+        // ── Progress toward the sample minimum (until reached) ───────────────
+        val gateSampleCount = (uiState as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+        AnimatedVisibility(
+            visible = uiState is AnalyzeUiState.Recording && !RecordingGate.isEnough(gateSampleCount)
+        ) {
+            RecordingGateProgress(gateSampleCount, modifier = Modifier.padding(top = 12.dp))
+        }
+
         Spacer(Modifier.weight(1f))
 
         // ── Voice switch (per recording; hidden while recording and until first answered) ──
@@ -242,6 +251,10 @@ fun AnalyzeScreen(
         val isRecording = uiState is AnalyzeUiState.Recording
         if (isRecording) {
             PulsingButton(
+                label = stringResource(
+                    if ((uiState as? AnalyzeUiState.Recording)?.earlyStopPrompted == true) R.string.analyze_btn_stop_anyway
+                    else R.string.analyze_btn_stop
+                ),
                 onClick = { viewModel.stopRecording() }
             )
         } else {
@@ -421,7 +434,7 @@ private fun PitchDisplay(uiState: AnalyzeUiState) {
 }
 
 @Composable
-private fun PulsingButton(onClick: () -> Unit) {
+private fun PulsingButton(label: String, onClick: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -448,12 +461,7 @@ private fun PulsingButton(onClick: () -> Unit) {
             contentDescription = null,
             modifier = Modifier.padding(end = 8.dp)
         )
-        Text(
-            stringResource(
-                R.string.analyze_btn_stop
-            ),
-            style = MaterialTheme.typography.titleMedium
-        )
+        Text(label, style = MaterialTheme.typography.titleMedium)
     }
 }
 

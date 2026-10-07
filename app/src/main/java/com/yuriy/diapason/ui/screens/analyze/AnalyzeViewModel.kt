@@ -11,6 +11,7 @@ import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.CombinedVoiceProfile
 import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
@@ -20,9 +21,12 @@ import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.data.recordedWith
 import com.yuriy.diapason.data.toTimedProfile
+import com.yuriy.diapason.insufficientMessage
+import com.yuriy.diapason.keepSingingMessage
 import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
+import com.yuriy.diapason.settings.AudioSourceExperiment
 import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,7 +52,12 @@ sealed interface AnalyzeUiState {
         val currentNote: String = "—",
         val currentHz: Float = 0f,
         val sampleCount: Int = 0,
-        val statusMessage: String = ""
+        val statusMessage: String = "",
+        /**
+         * Stop was pressed below the sample gate: recording continues with a "keep singing"
+         * prompt, and the next Stop finishes anyway. Cleared once the gate is reached.
+         */
+        val earlyStopPrompted: Boolean = false,
     ) : AnalyzeUiState
 
     /** Processing finished but resulted in insufficient data */
@@ -76,7 +85,8 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     private val _uiState = MutableStateFlow<AnalyzeUiState>(AnalyzeUiState.Idle)
     val uiState: StateFlow<AnalyzeUiState> = _uiState.asStateFlow()
-    private val analyzer = VoiceAnalyzer(viewModelScope)
+    private val audioSourceArm = AudioSourceExperiment(application).arm
+    private val analyzer = VoiceAnalyzer(viewModelScope, audioSourceArm.audioSource)
 
     /**
      * Holds the last result so ResultsScreen can retrieve it after navigation.
@@ -109,10 +119,15 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         analyzer.onPitchDetected = { hz, noteName ->
             _uiState.update { current ->
                 if (current is AnalyzeUiState.Recording) {
+                    val sampleCount = current.sampleCount + 1
+                    val gateJustReached = current.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
                     current.copy(
                         currentNote = noteName,
                         currentHz = hz,
-                        sampleCount = current.sampleCount + 1
+                        sampleCount = sampleCount,
+                        earlyStopPrompted = current.earlyStopPrompted && !gateJustReached,
+                        statusMessage = if (gateJustReached) getString(R.string.analyze_status_enough)
+                        else current.statusMessage,
                     )
                 } else current
             }
@@ -134,7 +149,6 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         // original session — desyncing the visible counter from the real buffer.
         if (analyzer.isRunning) return
         AppLogger.i("$TAG startRecording()")
-        AppAnalytics.analysisStarted(AppAnalytics.Flow.Single)
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_listening)
         )
@@ -145,14 +159,31 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 tooFewSamples = getString(R.string.analyze_status_too_few_samples)
             )
         )
+        // After start(), so a failed experiment source is reported as the fallback.
+        AppAnalytics.setAudioSource(
+            if (analyzer.usedFallbackSource) AudioSourceExperiment.FALLBACK_ANALYTICS_VALUE else audioSourceArm.analyticsValue
+        )
+        AppAnalytics.analysisStarted(AppAnalytics.Flow.Single)
     }
 
     fun stopRecording() {
         AppLogger.i("$TAG stopRecording()")
         if (!analyzer.isRunning) return
 
-        val priorSampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+        val recording = uiState.value as? AnalyzeUiState.Recording
+        val priorSampleCount = recording?.sampleCount ?: 0
         val elapsedSeconds = analyzer.elapsedSeconds
+
+        // First Stop below the gate: keep recording and say how much longer, instead of
+        // throwing the take away. The next Stop finishes regardless.
+        if (recording != null && !recording.earlyStopPrompted && !RecordingGate.isEnough(priorSampleCount)) {
+            AppAnalytics.analysisStopTooEarly(AppAnalytics.Flow.Single, priorSampleCount, elapsedSeconds)
+            _uiState.value = recording.copy(
+                earlyStopPrompted = true,
+                statusMessage = getApplication<Application>().keepSingingMessage(priorSampleCount, elapsedSeconds),
+            )
+            return
+        }
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_analyzing),
             sampleCount = priorSampleCount
@@ -165,7 +196,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         if (profile == null) {
             AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Single, priorSampleCount, elapsedSeconds)
             _uiState.value = AnalyzeUiState.InsufficientData(
-                getString(R.string.analyze_error_insufficient)
+                getApplication<Application>().insufficientMessage(priorSampleCount)
             )
             return
         }

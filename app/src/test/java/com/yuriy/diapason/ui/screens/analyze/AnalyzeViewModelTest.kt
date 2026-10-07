@@ -5,6 +5,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.ALL_FACH
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.RecordingGate
+import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceGroup
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -189,6 +192,62 @@ class AnalyzeViewModelTest {
         assertTrue(reranked.matches.all { it.fach.voiceGroup == VoiceGroup.FEMALE })
     }
 
+    // ── Early Stop below the sample gate ──────────────────────────────────────
+    //
+    // 40% of insufficient results in production were 20–39 samples: users pressed Stop
+    // seconds short. The first Stop below the gate now keeps recording with a prompt.
+
+    @Test
+    fun `first stop below the gate keeps recording and prompts`() {
+        viewModel.startRecording()
+        forceUiState(AnalyzeUiState.Recording(sampleCount = 12))
+
+        viewModel.stopRecording()
+
+        val state = viewModel.uiState.value
+        assertTrue("Expected Recording but got $state", state is AnalyzeUiState.Recording)
+        assertTrue((state as AnalyzeUiState.Recording).earlyStopPrompted)
+        assertEquals(12, state.sampleCount)
+    }
+
+    @Test
+    fun `second stop below the gate finishes as insufficient, showing the progress`() {
+        viewModel.startRecording()
+        forceUiState(AnalyzeUiState.Recording(sampleCount = 12))
+        viewModel.stopRecording()
+
+        viewModel.stopRecording()
+
+        val state = viewModel.uiState.value
+        assertTrue("Expected InsufficientData but got $state", state is AnalyzeUiState.InsufficientData)
+        assertTrue((state as AnalyzeUiState.InsufficientData).reason.contains("12"))
+    }
+
+    @Test
+    fun `stop at the gate does not prompt`() {
+        viewModel.startRecording()
+        forceUiState(AnalyzeUiState.Recording(sampleCount = RecordingGate.MIN_SAMPLES))
+
+        viewModel.stopRecording()
+
+        // The real analyzer heard nothing, so this ends insufficient — but without a prompt.
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.InsufficientData)
+    }
+
+    @Test
+    fun `reaching the gate after a prompt clears it`() {
+        viewModel.startRecording()
+        forceUiState(
+            AnalyzeUiState.Recording(sampleCount = RecordingGate.MIN_SAMPLES - 1, earlyStopPrompted = true)
+        )
+
+        analyzerPitchCallback().invoke(440f, "A4")
+
+        val state = viewModel.uiState.value as AnalyzeUiState.Recording
+        assertEquals(RecordingGate.MIN_SAMPLES, state.sampleCount)
+        assertFalse("the next Stop must finish normally", state.earlyStopPrompted)
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**
@@ -196,6 +255,13 @@ class AnalyzeViewModelTest {
      * pattern already established in `WarmUpComparisonViewModelTest` — needed here
      * to simulate mid-session state without feeding real audio through YIN.
      */
+    /** The ViewModel's pitch callback, as the real analyzer would call it per accepted frame. */
+    private fun analyzerPitchCallback(): (Float, String) -> Unit {
+        val field = AnalyzeViewModel::class.java.getDeclaredField("analyzer")
+        field.isAccessible = true
+        return (field.get(viewModel) as VoiceAnalyzer).onPitchDetected!!
+    }
+
     private fun forceLastResult(result: AnalyzeUiState.ResultReady) {
         val field = AnalyzeViewModel::class.java.getDeclaredField("_lastResult")
         field.isAccessible = true

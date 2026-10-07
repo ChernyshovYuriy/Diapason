@@ -22,7 +22,6 @@
     <string name="analyze_status_analyzing">در حال تحلیل صدای شما…</string>
     <string name="analyze_status_mic_error">راه‌اندازی میکروفون ناموفق بود — مجوز را بررسی کنید</string>
     <string name="analyze_status_too_few_samples">نمونه‌ها بسیار کم است — لطفاً مدت بیشتری بخوانید</string>
-    <string name="analyze_error_insufficient">داده کافی نیست. لطفاً حداقل 20 تا 30 ثانیه نت‌های پایدار بخوانید.</string>
     <string name="voice_types_title">انواع صدا</string>
     <string name="voice_types_subtitle">برای مشاهده گستره، رپرتوار و خوانندگان مشهور، روی هر نوع صدا ضربه بزنید</string>
     <string name="voice_types_label_range">گستره</string>
@@ -195,7 +194,7 @@
     <string name="compare_intro_btn_start">شروع ضبط پایه</string>
     <string name="compare_intro_btn_cancel">لغو</string>
     <string name="compare_baseline_title">پیش از گرم کردن</string>
-    <string name="compare_baseline_instruction">از بم‌ترین تا زیرترین نت خود بخوانید، سپس دوباره پایین بیایید.</string>
+    <string name="compare_baseline_instruction">مثل تحلیل اصلی، کل گستره صدایتان را بخوانید: از بم‌ترین تا زیرترین نت و برگشت، و هر نت را ۲ تا ۳ ثانیه نگه دارید. حدود ۳۰ ثانیه.</string>
     <string name="compare_retest_title">پس از گرم کردن</string>
     <string name="compare_retest_instruction">همان الگو را بخوانید — از بم‌ترین به زیرترین، سپس دوباره پایین بیایید.</string>
     <string name="compare_record_btn_stop">توقف ضبط</string>
@@ -267,4 +266,14 @@
     </plurals>
     <string name="results_profile_note">از حداکثر ۵ ضبط در ۳۰ روز گذشته استفاده می‌کند، تا یک اجرای غیرعادی نتیجه شما را تغییر ندهد.</string>
     <string name="results_family_with_fach_format">%1$s (%2$s)</string>
+
+    <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
+    <plurals name="analyze_status_keep_singing">
+        <item quantity="one">به خواندن ادامه دهید — حدود %d ثانیه دیگر لازم است. برای پایان دادن، دوباره توقف را بزنید.</item>
+        <item quantity="other">به خواندن ادامه دهید — حدود %d ثانیه دیگر لازم است. برای پایان دادن، دوباره توقف را بزنید.</item>
+    </plurals>
+    <string name="analyze_status_keep_singing_unknown">به خواندن ادامه دهید — هنوز نت واضحی شناسایی نشده است. برای پایان دادن، دوباره توقف را بزنید.</string>
+    <string name="analyze_status_enough">برای نتیجه کافی است — برای نتیجه بهتر ادامه دهید یا توقف را بزنید.</string>
+    <string name="analyze_btn_stop_anyway">به هر حال توقف</string>
+    <string name="analyze_error_insufficient_progress">نمونه‌های صوتی ضبط‌شده: %1$d / %2$d. دفعه بعد کمی طولانی‌تر بخوانید و هر نت را ۲ تا ۳ ثانیه نگه دارید.</string>
 </resources>

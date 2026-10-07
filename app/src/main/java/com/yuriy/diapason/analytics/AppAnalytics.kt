@@ -53,6 +53,15 @@ object AppAnalytics {
         analytics?.setUserProperty(USER_PROP_LANGUAGE, language)
     }
 
+    /**
+     * The audio-source experiment arm actually recording for this install ("mic",
+     * "voice_recognition", or "mic_fallback" when the arm's source failed to initialise).
+     * A user property so every event can be split by it in BigQuery.
+     */
+    fun setAudioSource(value: String) {
+        analytics?.setUserProperty(USER_PROP_AUDIO_SOURCE, value)
+    }
+
     // ── Screen tracking (Compose nav routes) ─────────────────────────────────
 
     fun trackScreen(route: String) {
@@ -107,6 +116,19 @@ object AppAnalytics {
 
     fun analysisInsufficient(flow: Flow, sampleCount: Int, durationSeconds: Float) {
         logEvent(EVENT_ANALYSIS_INSUFFICIENT) {
+            str(PARAM_FLOW, flow.value)
+            long(PARAM_SAMPLE_COUNT, sampleCount.toLong())
+            long(PARAM_DURATION_SECONDS, durationSeconds.toLong())
+        }
+    }
+
+    /**
+     * Stop was pressed below the sample gate, so recording continued with a "keep singing"
+     * prompt instead of failing. Compare with the outcome that follows to see how many
+     * would-be failures the prompt recovered.
+     */
+    fun analysisStopTooEarly(flow: Flow, sampleCount: Int, durationSeconds: Float) {
+        logEvent(EVENT_ANALYSIS_STOP_TOO_EARLY) {
             str(PARAM_FLOW, flow.value)
             long(PARAM_SAMPLE_COUNT, sampleCount.toLong())
             long(PARAM_DURATION_SECONDS, durationSeconds.toLong())
@@ -259,6 +281,7 @@ object AppAnalytics {
     private const val EVENT_ANALYSIS_COMPLETED = "analysis_completed"
     private const val EVENT_ANALYSIS_INSUFFICIENT = "analysis_insufficient"
     private const val EVENT_ANALYSIS_ABANDONED = "analysis_abandoned"
+    private const val EVENT_ANALYSIS_STOP_TOO_EARLY = "analysis_stop_too_early"
     private const val EVENT_RESULT_VIEWED = "result_viewed"
     private const val EVENT_RESULT_DISMISSED = "result_dismissed"
     private const val EVENT_RESULT_SHARED = "result_shared"
@@ -298,6 +321,7 @@ object AppAnalytics {
     private const val PARAM_PASSAGGIO_MIDI = "passaggio_midi"
 
     private const val USER_PROP_LANGUAGE = "app_language"
+    private const val USER_PROP_AUDIO_SOURCE = "audio_source"
 
     private const val VALUE_UNKNOWN = "unknown"
     private const val VALUE_UNSURE = "unsure"

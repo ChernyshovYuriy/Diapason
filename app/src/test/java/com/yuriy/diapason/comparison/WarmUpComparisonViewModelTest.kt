@@ -265,6 +265,43 @@ class WarmUpComparisonViewModelTest {
         assertEquals(warmUp, viewModel.stage.value)
     }
 
+    // ── Early Stop below the sample gate ──────────────────────────────────────
+
+    @Test
+    fun `first stopBaseline below the gate keeps recording and prompts`() = runTest {
+        viewModel.startBaseline()
+        forceStage(ComparisonStage.Baseline(sampleCount = 5))
+
+        viewModel.stopBaseline()
+
+        val stage = viewModel.stage.value
+        assertTrue("Expected Baseline but got $stage", stage is ComparisonStage.Baseline)
+        assertTrue((stage as ComparisonStage.Baseline).earlyStopPrompted)
+    }
+
+    @Test
+    fun `second stopBaseline below the gate finishes as insufficient`() = runTest {
+        viewModel.startBaseline()
+        forceStage(ComparisonStage.Baseline(sampleCount = 5))
+        viewModel.stopBaseline()
+
+        viewModel.stopBaseline()
+
+        assertTrue(viewModel.stage.value is ComparisonStage.BaselineInsufficient)
+    }
+
+    @Test
+    fun `first stopRetest below the gate keeps recording and prompts`() = runTest {
+        viewModel.startRetest()
+        forceStage(ComparisonStage.Retest(sampleCount = 5, isRecording = true))
+
+        viewModel.stopRetest()
+
+        val stage = viewModel.stage.value as ComparisonStage.Retest
+        assertTrue(stage.earlyStopPrompted)
+        assertTrue(stage.isRecording)
+    }
+
     // ── ComparisonStage.Done invariant ────────────────────────────────────────
 
     @Test

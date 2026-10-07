@@ -2,6 +2,8 @@ package com.yuriy.diapason
 
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 
@@ -21,12 +23,22 @@ import androidx.appcompat.app.AppCompatDelegate
  *
  * Route every ViewModel-side [Context.getString] call for user-facing text through this instead.
  */
-fun Context.localizedString(@StringRes resId: Int): String {
+fun Context.localizedString(@StringRes resId: Int): String = localizedResources().getString(resId)
+
+/** [localizedString] with format arguments. */
+fun Context.localizedString(@StringRes resId: Int, vararg formatArgs: Any): String =
+    localizedResources().getString(resId, *formatArgs)
+
+/** Quantity-aware sibling of [localizedString], for `<plurals>` resources. */
+fun Context.localizedQuantityString(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any): String =
+    localizedResources().getQuantityString(resId, quantity, *formatArgs)
+
+private fun Context.localizedResources(): Resources {
     val override = AppCompatDelegate.getApplicationLocales()
-    if (override.isEmpty) return getString(resId)
+    if (override.isEmpty) return resources
 
     val config = Configuration(resources.configuration).apply {
         setLocales(override.unwrap() as android.os.LocaleList)
     }
-    return createConfigurationContext(config).getString(resId)
+    return createConfigurationContext(config).resources
 }

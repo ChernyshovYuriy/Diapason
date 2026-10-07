@@ -13,6 +13,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 
 | Property | Set from | Notes |
 |---|---|---|
+| `audio_source` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` after each recording starts → `AppAnalytics.setAudioSource` | Audio-source A/B arm actually recording: `mic`, `voice_recognition`, or `mic_fallback` (the arm's source failed to initialise). Assigned 50/50 per install by `AudioSourceExperiment`; split completion/insufficient rates by it and by `device.mobile_brand_name` |
 | `app_language` | `MainApp.setCollectionEnabled(true)` → `AppAnalytics.setLanguage` | From `Locale.getDefault()`. Set only once collection is on (every launch for a consenting user, and right after Agree) — a property set while collection is off is dropped, which left it empty for ~80% of users before 2026-10 |
 
 ## Screen tracking
@@ -28,6 +29,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 | `analysis_started` | `flow` | `AnalyzeViewModel` on record start |
 | `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `voice_group`, `score`, `max_score`, `runner_up_gap`, `detected_min_midi`, `detected_max_midi`, `comfortable_low_midi`, `comfortable_high_midi`, `passaggio_midi` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` on successful classification. `runner_up_gap` = top score − second score; the `*_midi` params are MIDI note numbers (A4 = 69), omitted when a pitch has none |
 | `analysis_insufficient` | `flow`, `sample_count`, `duration_seconds` | Too few samples to classify (< 40-sample gate, `MIN_ACCEPTED_SAMPLES`) |
+| `analysis_stop_too_early` | `flow`, `sample_count`, `duration_seconds` | Stop pressed below the 40-sample gate: recording continues with a "keep singing" prompt and the button becomes "Stop anyway". Follow it to the next outcome event to count recovered takes |
 | `analysis_abandoned` | `flow`, `sample_count`, `duration_seconds` | A recording ends without the user pressing Stop: the Analyze screen or warm-up flow receives `ON_STOP` (navigated away, backgrounded, system back) — not on a configuration change — via `onScreenStopped()`; also the warm-up flow's Exit button, and `onCleared` as a fallback. All three flows |
 
 ## Voice group

@@ -22,7 +22,6 @@
     <string name="analyze_status_analyzing">Analyzing your voice…</string>
     <string name="analyze_status_mic_error">Microphone init failed — check permission</string>
     <string name="analyze_status_too_few_samples">Too few samples — please sing for longer</string>
-    <string name="analyze_error_insufficient">Not enough data. Please sing sustained notes for at least 20–30 seconds.</string>
     <string name="voice_types_title">Voice Types</string>
     <string name="voice_types_subtitle">Tap any voice type to explore its range, repertoire, and famous singers</string>
     <string name="voice_types_label_range">Range</string>
@@ -226,7 +225,7 @@
     <string name="compare_intro_btn_start">Start Baseline Recording</string>
     <string name="compare_intro_btn_cancel">Cancel</string>
     <string name="compare_baseline_title">Before Warm-up</string>
-    <string name="compare_baseline_instruction">Sing from your lowest to highest note, then back down.</string>
+    <string name="compare_baseline_instruction">Sing your full range, just like the main analysis: from your lowest to your highest note and back, holding each note 2–3 seconds. About 30 seconds.</string>
     <string name="compare_retest_title">After Warm-up</string>
     <string name="compare_retest_instruction">Sing the same pattern — lowest to highest, then back down.</string>
     <string name="compare_record_btn_stop">Stop Recording</string>
@@ -305,4 +304,14 @@
     </plurals>
     <string name="results_profile_note">Uses up to 5 recordings from the last 30 days, so one unusual take doesn\'t change your result.</string>
     <string name="results_family_with_fach_format">%1$s (%2$s)</string>
+
+    <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
+    <plurals name="analyze_status_keep_singing">
+        <item quantity="one">Keep singing — about %d more second needed. Tap Stop again to finish anyway.</item>
+        <item quantity="other">Keep singing — about %d more seconds needed. Tap Stop again to finish anyway.</item>
+    </plurals>
+    <string name="analyze_status_keep_singing_unknown">Keep singing — no clear notes detected yet. Tap Stop again to finish anyway.</string>
+    <string name="analyze_status_enough">Enough for a result — keep going for a better one, or tap Stop.</string>
+    <string name="analyze_btn_stop_anyway">Stop anyway</string>
+    <string name="analyze_error_insufficient_progress">Voice samples captured: %1$d / %2$d. Next time sing a little longer, holding each note for 2–3 seconds.</string>
 </resources>

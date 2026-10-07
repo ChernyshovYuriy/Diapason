@@ -115,6 +115,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         val priorSampleCount =
             (_stage.value as? ComparisonStage.Baseline)?.sampleCount ?: 0
+        val elapsedSeconds = analyzer.elapsedSeconds
 
         _stage.update {
             if (it is ComparisonStage.Baseline)
@@ -124,7 +125,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples))
         if (profile == null) {
-            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Baseline, priorSampleCount)
+            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Baseline, priorSampleCount, elapsedSeconds)
             _stage.value = ComparisonStage.BaselineInsufficient(
                 str(R.string.analyze_error_insufficient)
             )
@@ -137,11 +138,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         val topMatch = baselineMatches.firstOrNull()
         AppAnalytics.analysisCompleted(
             flow = AppAnalytics.Flow.Baseline,
-            durationSeconds = profile.durationSeconds,
-            sampleCount = profile.sampleCount,
+            profile = profile,
+            matches = baselineMatches,
             topFachKey = topMatch?.let { fachKeyOf(it.fach) },
-            score = topMatch?.score,
-            maxScore = topMatch?.maxScore,
         )
 
         persistSession(profile, baselineMatches)
@@ -212,6 +211,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         val priorSampleCount =
             (_stage.value as? ComparisonStage.Retest)?.sampleCount ?: 0
+        val elapsedSeconds = analyzer.elapsedSeconds
 
         _stage.update {
             if (it is ComparisonStage.Retest)
@@ -221,7 +221,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
         val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples))
         if (profile == null) {
-            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Retest, priorSampleCount)
+            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Retest, priorSampleCount, elapsedSeconds)
             _stage.value = ComparisonStage.RetestInsufficient(
                 str(R.string.analyze_error_insufficient)
             )
@@ -232,11 +232,9 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         val retestTop = retestMatches.firstOrNull()
         AppAnalytics.analysisCompleted(
             flow = AppAnalytics.Flow.Retest,
-            durationSeconds = profile.durationSeconds,
-            sampleCount = profile.sampleCount,
+            profile = profile,
+            matches = retestMatches,
             topFachKey = retestTop?.let { fachKeyOf(it.fach) },
-            score = retestTop?.score,
-            maxScore = retestTop?.maxScore,
         )
         persistSession(profile, retestMatches)
 
@@ -275,7 +273,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     fun resetToIntro() {
         timerJob?.cancel()
-        if (analyzer.isRunning) analyzer.stop(str(R.string.analyze_status_too_few_samples))
+        abandonIfRecording()
         baselineProfile = null
         baselineMatches = emptyList()
         _stage.value = ComparisonStage.Intro
@@ -354,9 +352,40 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         getApplication<Application>().resources.getResourceEntryName(fach.nameRes)
     }.getOrNull()
 
+    /**
+     * The flow stopped being visible (app backgrounded) while a recording may still be
+     * running. Ends it as abandoned: an interrupted baseline returns to Intro (there is
+     * no baseline to keep), an interrupted retest returns to its not-yet-recording state
+     * so the stored baseline survives and the user can simply record the retest again.
+     * The warm-up timer is deliberately left alone — it keeps counting in the background.
+     */
+    fun onScreenStopped() {
+        val stageBefore = _stage.value
+        if (!abandonIfRecording()) return
+        _stage.value = when (stageBefore) {
+            is ComparisonStage.Retest -> ComparisonStage.Retest(isRecording = false)
+            else -> ComparisonStage.Intro
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         timerJob?.cancel()
-        if (analyzer.isRunning) analyzer.stop(str(R.string.analyze_status_too_few_samples))
+        abandonIfRecording()
+    }
+
+    /** Logs `analysis_abandoned` and stops the analyzer; returns false if nothing was running. */
+    private fun abandonIfRecording(): Boolean {
+        if (!analyzer.isRunning) return false
+        val (flow, sampleCount) = when (val s = _stage.value) {
+            is ComparisonStage.Baseline -> AppAnalytics.Flow.Baseline to s.sampleCount
+            is ComparisonStage.Retest -> AppAnalytics.Flow.Retest to s.sampleCount
+            // The analyzer only runs during Baseline/Retest; attribute anything else to
+            // the baseline rather than dropping the event.
+            else -> AppAnalytics.Flow.Baseline to 0
+        }
+        AppAnalytics.analysisAbandoned(flow, sampleCount, analyzer.elapsedSeconds)
+        analyzer.stop(str(R.string.analyze_status_too_few_samples))
+        return true
     }
 }

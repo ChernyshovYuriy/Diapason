@@ -11,13 +11,22 @@ object FachClassifier {
 
     // ── Note name utility ──────────────────────────────────────────────────────
 
-    fun hzToNoteName(hz: Float): String {
+    /**
+     * Nearest MIDI note number (A4 = 69), or null for a non-positive or non-finite [hz].
+     * Shared by [hzToNoteName] and the analytics range params, which log pitches as
+     * note numbers rather than raw Hz.
+     */
+    fun hzToMidi(hz: Float): Int? {
         // hz <= 0f also rejects NaN/negative values (NaN fails every IEEE comparison);
         // !hz.isFinite() additionally catches NaN and +/-Infinity explicitly, since NaN
         // would otherwise reach roundToInt() below and throw IllegalArgumentException.
-        if (hz <= 0f || !hz.isFinite()) return "—"
+        if (hz <= 0f || !hz.isFinite()) return null
+        return (12 * ln(hz / 440.0) / ln(2.0) + 69).roundToInt()
+    }
+
+    fun hzToNoteName(hz: Float): String {
+        val midi = hzToMidi(hz) ?: return "—"
         val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-        val midi = (12 * ln(hz / 440.0) / ln(2.0) + 69).roundToInt()
         // Locale.ROOT: this is a number rendered into an otherwise Latin-script UI, not
         // localized prose — the device's default locale must not change its digit glyphs
         // (e.g. Persian renders Eastern Arabic-Indic digits and a different decimal mark

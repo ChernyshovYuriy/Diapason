@@ -36,10 +36,6 @@ class MainApp : Application() {
         AppLogger.setDebug(isDebug(applicationContext))
         FirebaseApp.initializeApp(applicationContext)
         AppAnalytics.init(applicationContext)
-        // The display language splits all engagement metrics by locale — the
-        // Firebase overview shows French/Portuguese/Italian dominate, so confirm
-        // that signal at user-property level rather than guessing from country.
-        AppAnalytics.setLanguage(Locale.getDefault().language)
         // Analytics/Crashlytics collection defaults to off via the manifest meta-data
         // (see AndroidManifest.xml) so nothing is collected before the user has agreed
         // to the privacy policy. A returning user who already agreed gets collection
@@ -67,6 +63,11 @@ class MainApp : Application() {
         fun setCollectionEnabled(enabled: Boolean) {
             AppAnalytics.setCollectionEnabled(enabled)
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
+            // The display language splits engagement metrics by locale. Set only once
+            // collection is on: a user property set while collection is off is dropped,
+            // which left app_language empty for ~80% of users when this ran earlier in
+            // onCreate, before the consent check.
+            if (enabled) AppAnalytics.setLanguage(Locale.getDefault().language)
         }
     }
 }

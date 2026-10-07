@@ -42,6 +42,11 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" />
+        <!-- Compose routes are tracked manually (DiapasonAppMainView → AppAnalytics.trackScreen);
+             the SDK's automatic Activity-level screen_view only adds unnamed noise rows. -->
+        <meta-data
+            android:name="google_analytics_automatic_screen_reporting_enabled"
+            android:value="false" />
 
         <activity
             android:name=".MainActivity"

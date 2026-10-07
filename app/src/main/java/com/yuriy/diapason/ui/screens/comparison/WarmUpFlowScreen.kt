@@ -1,8 +1,11 @@
 package com.yuriy.diapason.ui.screens.comparison
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yuriy.diapason.R
 import com.yuriy.diapason.comparison.ComparisonStage
@@ -20,6 +23,14 @@ fun WarmUpFlowScreen(
     onExit: () -> Unit,
 ) {
     val stage by viewModel.stage.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
+
+    // Same rule as AnalyzeScreen: abandon a running recording when the flow stops being
+    // visible (backgrounded, or popped via system back), but not on a configuration
+    // change, which the nav-entry-scoped ViewModel survives.
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        if (activity?.isChangingConfigurations != true) viewModel.onScreenStopped()
+    }
 
     when (val s = stage) {
         is ComparisonStage.Intro -> CompareIntroScreen(

@@ -37,6 +37,7 @@ import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.data.SessionRecord
+import kotlinx.coroutines.flow.first
 import java.text.DateFormat
 import java.util.Date
 
@@ -45,14 +46,15 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Fire once per visit, after the first non-loading emission, so item_count
-    // reflects the actual history size rather than a placeholder 0.
+    // reflects the actual history size rather than a placeholder 0. Suspends on the
+    // flow itself: reading `uiState` once at launch caught Loading on nearly every
+    // visit and logged 0 for every user in production.
     LaunchedEffect(Unit) {
-        val firstSettled = when (val s = uiState) {
+        val itemCount = when (val s = viewModel.uiState.first { it !is HistoryUiState.Loading }) {
             is HistoryUiState.Sessions -> s.items.size
-            is HistoryUiState.Empty -> 0
-            HistoryUiState.Loading -> null
+            else -> 0
         }
-        AppAnalytics.historyOpened(firstSettled ?: 0)
+        AppAnalytics.historyOpened(itemCount)
     }
 
     Column(

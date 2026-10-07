@@ -230,6 +230,41 @@ class WarmUpComparisonViewModelTest {
             )
         }
 
+    // ── onScreenStopped — abandon a recording when the flow leaves the screen ──
+
+    @Test
+    fun `onScreenStopped during baseline recording returns to Intro`() = runTest {
+        viewModel.startBaseline()
+
+        viewModel.onScreenStopped()
+
+        assertEquals(ComparisonStage.Intro, viewModel.stage.value)
+    }
+
+    @Test
+    fun `onScreenStopped during retest recording keeps the retest stage, not recording`() =
+        runTest {
+            viewModel.startRetest()
+            forceStage(ComparisonStage.Retest(sampleCount = 12, isRecording = true))
+
+            viewModel.onScreenStopped()
+
+            assertEquals(ComparisonStage.Retest(isRecording = false), viewModel.stage.value)
+            // The analyzer really stopped: a new retest can start from scratch.
+            viewModel.startRetest()
+            assertEquals(0, (viewModel.stage.value as ComparisonStage.Retest).sampleCount)
+        }
+
+    @Test
+    fun `onScreenStopped during the warm-up timer leaves the timer stage alone`() = runTest {
+        val warmUp = ComparisonStage.WarmUp(remainingSeconds = 120, isRunning = true)
+        forceStage(warmUp)
+
+        viewModel.onScreenStopped()
+
+        assertEquals(warmUp, viewModel.stage.value)
+    }
+
     // ── ComparisonStage.Done invariant ────────────────────────────────────────
 
     @Test

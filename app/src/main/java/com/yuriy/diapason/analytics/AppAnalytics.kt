@@ -3,6 +3,9 @@ package com.yuriy.diapason.analytics
 import android.content.Context
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.logging.AppLogger
 
 private const val TAG = "AppAnalytics"
@@ -68,35 +71,50 @@ object AppAnalytics {
         logEvent(EVENT_ANALYSIS_STARTED) { str(PARAM_FLOW, flow.value) }
     }
 
+    /**
+     * Besides the headline result, logs the profile's range as MIDI note numbers and
+     * the gap between the top two scores, so result stability can be analysed later
+     * ("one voice, borderline" vs "a different voice") without guessing from Fach keys.
+     */
     fun analysisCompleted(
         flow: Flow,
-        durationSeconds: Float,
-        sampleCount: Int,
+        profile: VoiceProfile,
+        matches: List<FachMatch>,
         topFachKey: String?,
-        score: Int?,
-        maxScore: Int?,
     ) {
+        val top = matches.getOrNull(0)
+        val runnerUp = matches.getOrNull(1)
         logEvent(EVENT_ANALYSIS_COMPLETED) {
             str(PARAM_FLOW, flow.value)
-            long(PARAM_DURATION_SECONDS, durationSeconds.toLong())
-            long(PARAM_SAMPLE_COUNT, sampleCount.toLong())
+            long(PARAM_DURATION_SECONDS, profile.durationSeconds.toLong())
+            long(PARAM_SAMPLE_COUNT, profile.sampleCount.toLong())
             str(PARAM_TOP_FACH_KEY, topFachKey ?: VALUE_UNKNOWN)
-            long(PARAM_SCORE, (score ?: 0).toLong())
-            long(PARAM_MAX_SCORE, (maxScore ?: 0).toLong())
+            long(PARAM_SCORE, (top?.score ?: 0).toLong())
+            long(PARAM_MAX_SCORE, (top?.maxScore ?: 0).toLong())
+            if (top != null && runnerUp != null) {
+                long(PARAM_RUNNER_UP_GAP, (top.score - runnerUp.score).toLong())
+            }
+            midi(PARAM_DETECTED_MIN_MIDI, profile.detectedMinHz)
+            midi(PARAM_DETECTED_MAX_MIDI, profile.detectedMaxHz)
+            midi(PARAM_COMFORTABLE_LOW_MIDI, profile.comfortableLowHz)
+            midi(PARAM_COMFORTABLE_HIGH_MIDI, profile.comfortableHighHz)
+            midi(PARAM_PASSAGGIO_MIDI, profile.estimatedPassaggioHz)
         }
     }
 
-    fun analysisInsufficient(flow: Flow, sampleCount: Int) {
+    fun analysisInsufficient(flow: Flow, sampleCount: Int, durationSeconds: Float) {
         logEvent(EVENT_ANALYSIS_INSUFFICIENT) {
             str(PARAM_FLOW, flow.value)
             long(PARAM_SAMPLE_COUNT, sampleCount.toLong())
+            long(PARAM_DURATION_SECONDS, durationSeconds.toLong())
         }
     }
 
-    fun analysisAbandoned(flow: Flow, sampleCount: Int) {
+    fun analysisAbandoned(flow: Flow, sampleCount: Int, durationSeconds: Float) {
         logEvent(EVENT_ANALYSIS_ABANDONED) {
             str(PARAM_FLOW, flow.value)
             long(PARAM_SAMPLE_COUNT, sampleCount.toLong())
+            long(PARAM_DURATION_SECONDS, durationSeconds.toLong())
         }
     }
 
@@ -190,6 +208,8 @@ object AppAnalytics {
         val bundle = Bundle()
         fun str(key: String, value: String) { bundle.putString(key, value) }
         fun long(key: String, value: Long) { bundle.putLong(key, value) }
+        /** Omitted (not logged as 0) when [hz] has no note number, so it can't skew averages. */
+        fun midi(key: String, hz: Float) { FachClassifier.hzToMidi(hz)?.let { long(key, it.toLong()) } }
     }
 
     private fun params(build: ParamBuilder.() -> Unit): Bundle =
@@ -244,6 +264,12 @@ object AppAnalytics {
     private const val PARAM_COMFORTABLE_WIDENED = "comfortable_widened"
     private const val PARAM_DETECTED_WIDENED = "detected_widened"
     private const val PARAM_ITEM_COUNT = "item_count"
+    private const val PARAM_RUNNER_UP_GAP = "runner_up_gap"
+    private const val PARAM_DETECTED_MIN_MIDI = "detected_min_midi"
+    private const val PARAM_DETECTED_MAX_MIDI = "detected_max_midi"
+    private const val PARAM_COMFORTABLE_LOW_MIDI = "comfortable_low_midi"
+    private const val PARAM_COMFORTABLE_HIGH_MIDI = "comfortable_high_midi"
+    private const val PARAM_PASSAGGIO_MIDI = "passaggio_midi"
 
     private const val USER_PROP_LANGUAGE = "app_language"
 

@@ -128,4 +128,22 @@ class VoiceAnalyzerTest {
             analyzer.isRunning
         )
     }
+
+    // ── elapsedSeconds — logged on the insufficient and abandoned paths ──────
+
+    @Test
+    fun `elapsedSeconds is zero when nothing is running`() {
+        val analyzer = newAnalyzer()
+        assertEquals(0f, analyzer.elapsedSeconds, 0f)
+        analyzer.start(strings)
+        analyzer.stop(strings.tooFewSamples)
+        assertEquals("must reset to 0 once stopped", 0f, analyzer.elapsedSeconds, 0f)
+    }
+
+    @Test
+    fun `elapsedSeconds is non-negative while running`() {
+        val analyzer = newAnalyzer()
+        analyzer.start(strings)
+        assertTrue(analyzer.elapsedSeconds >= 0f)
+    }
 }

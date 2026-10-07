@@ -130,6 +130,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         if (!analyzer.isRunning) return
 
         val priorSampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+        val elapsedSeconds = analyzer.elapsedSeconds
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_analyzing),
             sampleCount = priorSampleCount
@@ -140,7 +141,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         )
 
         if (profile == null) {
-            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Single, priorSampleCount)
+            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Single, priorSampleCount, elapsedSeconds)
             _uiState.value = AnalyzeUiState.InsufficientData(
                 getString(R.string.analyze_error_insufficient)
             )
@@ -152,11 +153,9 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         val topFachKey = topMatch?.let { fachKeyOf(it.fach) }
         AppAnalytics.analysisCompleted(
             flow = AppAnalytics.Flow.Single,
-            durationSeconds = profile.durationSeconds,
-            sampleCount = profile.sampleCount,
+            profile = profile,
+            matches = matches,
             topFachKey = topFachKey,
-            score = topMatch?.score,
-            maxScore = topMatch?.maxScore,
         )
 
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
@@ -203,19 +202,41 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         // still tap "View Last Result" before they start a fresh recording.
     }
 
+    /**
+     * The Analyze screen stopped being visible — navigated away from, or the app went to
+     * the background — while a recording may still be running. Ends it as abandoned and
+     * returns to Idle rather than leaving the mic open off-screen (Android silences
+     * background capture anyway, so the session couldn't have continued usefully).
+     *
+     * This, not [onCleared], is the real abandon path: this ViewModel is activity-scoped,
+     * so onCleared only runs when the activity finishes, and a swipe-away kills the
+     * process without calling it at all — which is why `analysis_abandoned` never fired
+     * in production before this existed.
+     */
+    fun onScreenStopped() {
+        if (abandonIfRecording()) _uiState.value = AnalyzeUiState.Idle
+    }
+
     override fun onCleared() {
         super.onCleared()
         // Deliberately discards the profile here even if enough samples had already
         // accumulated to classify — the user never chose to stop and save this
-        // session, so nothing is persisted on their behalf. analyzer.stop()'s return
-        // value is intentionally unused; this is purely to release AudioRecord.
-        // Confirmed with the author, 2026-09-01, rather than left as an open question.
-        if (analyzer.isRunning) {
-            val abandonedSampleCount =
-                (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
-            AppAnalytics.analysisAbandoned(AppAnalytics.Flow.Single, abandonedSampleCount)
-            analyzer.stop(getString(R.string.analyze_status_too_few_samples))
-        }
+        // session, so nothing is persisted on their behalf. Confirmed with the author,
+        // 2026-09-01, rather than left as an open question. Kept as a fallback for the
+        // rare case the screen-stopped path didn't run first.
+        abandonIfRecording()
+    }
+
+    /** Logs `analysis_abandoned` and stops the analyzer; returns false if nothing was running. */
+    private fun abandonIfRecording(): Boolean {
+        if (!analyzer.isRunning) return false
+        val abandonedSampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+        AppAnalytics.analysisAbandoned(
+            AppAnalytics.Flow.Single, abandonedSampleCount, analyzer.elapsedSeconds
+        )
+        // stop()'s return value is intentionally unused; this is purely to release AudioRecord.
+        analyzer.stop(getString(R.string.analyze_status_too_few_samples))
+        return true
     }
 
     private fun fachKeyOf(fach: FachDefinition): String? = runCatching {

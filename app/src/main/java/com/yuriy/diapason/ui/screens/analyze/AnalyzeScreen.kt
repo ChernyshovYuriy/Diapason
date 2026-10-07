@@ -51,6 +51,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -87,6 +89,14 @@ fun AnalyzeScreen(
     }
 
     val activity = LocalActivity.current
+
+    // ON_STOP covers both navigating away from this route and the app going to the
+    // background. A configuration change (dark mode, locale, font scale — orientation
+    // is locked) also stops the entry, but the activity-scoped ViewModel survives it,
+    // so that case must not abandon the recording.
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        if (activity?.isChangingConfigurations != true) viewModel.onScreenStopped()
+    }
     LaunchedEffect(Unit) {
         viewModel.reviewTrigger.collect {
             activity ?: return@collect

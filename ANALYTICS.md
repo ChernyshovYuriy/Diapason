@@ -13,22 +13,22 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 
 | Property | Set from | Notes |
 |---|---|---|
-| `app_language` | `MainApp.onCreate` → `AppAnalytics.setLanguage` | From `Locale.getDefault()` |
+| `app_language` | `MainApp.setCollectionEnabled(true)` → `AppAnalytics.setLanguage` | From `Locale.getDefault()`. Set only once collection is on (every launch for a consenting user, and right after Agree) — a property set while collection is off is dropped, which left it empty for ~80% of users before 2026-10 |
 
 ## Screen tracking
 
 | Event | Params | Fired from |
 |---|---|---|
-| `screen_view` | `screen_name`, `screen_class` (both = nav route) | `DiapasonAppMainView` `LaunchedEffect(currentRoute)` — manual, because Firebase auto-tracks Activities, not Compose routes |
+| `screen_view` | `screen_name`, `screen_class` (both = nav route) | `DiapasonAppMainView` `LaunchedEffect(currentRoute)` — manual, because Firebase auto-tracks Activities, not Compose routes. Automatic Activity screen reporting is disabled in the manifest (`google_analytics_automatic_screen_reporting_enabled=false`). In the BigQuery export the params appear as `firebase_screen` / `firebase_screen_class` |
 
 ## Analyze funnel
 
 | Event | Params | Fired from |
 |---|---|---|
 | `analysis_started` | `flow` | `AnalyzeViewModel` on record start |
-| `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `score`, `max_score` | `AnalyzeViewModel` on successful classification |
-| `analysis_insufficient` | `flow`, `sample_count` | Too few samples to classify (< 20-frame gate) |
-| `analysis_abandoned` | `flow`, `sample_count` | User leaves before completing |
+| `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `score`, `max_score`, `runner_up_gap`, `detected_min_midi`, `detected_max_midi`, `comfortable_low_midi`, `comfortable_high_midi`, `passaggio_midi` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` on successful classification. `runner_up_gap` = top score − second score; the `*_midi` params are MIDI note numbers (A4 = 69), omitted when a pitch has none |
+| `analysis_insufficient` | `flow`, `sample_count`, `duration_seconds` | Too few samples to classify (< 40-sample gate, `MIN_ACCEPTED_SAMPLES`) |
+| `analysis_abandoned` | `flow`, `sample_count`, `duration_seconds` | A recording ends without the user pressing Stop: the Analyze screen or warm-up flow receives `ON_STOP` (navigated away, backgrounded, system back) — not on a configuration change — via `onScreenStopped()`; also the warm-up flow's Exit button, and `onCleared` as a fallback. All three flows |
 
 ## Result screen
 
@@ -51,7 +51,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 
 | Event | Params | Fired from |
 |---|---|---|
-| `history_opened` | `item_count` | `HistoryScreen` opened |
+| `history_opened` | `item_count` | `HistoryScreen` opened; logged after the first non-Loading state, so `item_count` is the real size (before 2026-10 it read the state once at launch and logged 0 for nearly every visit) |
 
 ## Privacy consent
 

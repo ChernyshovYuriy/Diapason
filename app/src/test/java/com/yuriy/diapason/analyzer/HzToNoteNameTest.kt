@@ -2,6 +2,7 @@ package com.yuriy.diapason.analyzer
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
@@ -342,6 +343,30 @@ class HzToNoteNameTest {
                     name == "—"
                 )
             }
+        }
+    }
+
+    // ── hzToMidi — shared by hzToNoteName and the analytics range params ─────
+
+    @Test
+    fun `hzToMidi maps A4 to 69 and C4 to 60`() {
+        assertEquals(69, FachClassifier.hzToMidi(440f))
+        assertEquals(60, FachClassifier.hzToMidi(261.63f))
+    }
+
+    @Test
+    fun `hzToMidi returns null for zero, negative and non-finite input`() {
+        listOf(0f, -440f, Float.NaN, Float.POSITIVE_INFINITY).forEach { hz ->
+            assertNull("hzToMidi($hz) must be null", FachClassifier.hzToMidi(hz))
+        }
+    }
+
+    @Test
+    fun `hzToNoteName agrees with hzToMidi across the whole Fach table`() {
+        val noteNames = listOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+        ALL_FACH.flatMap { listOf(it.rangeMinHz, it.rangeMaxHz, it.passaggioHz) }.forEach { hz ->
+            val midi = FachClassifier.hzToMidi(hz)!!
+            assertEquals("${noteNames[midi % 12]}${midi / 12 - 1}", note(hz))
         }
     }
 }

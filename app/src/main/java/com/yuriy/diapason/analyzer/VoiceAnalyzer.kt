@@ -51,6 +51,14 @@ class VoiceAnalyzer(private val scope: CoroutineScope) {
 
     val isRunning: Boolean get() = analyzerJob?.isActive == true
 
+    /**
+     * Seconds since the current session started; 0 when nothing is running. Read it
+     * before [stop] — the insufficient and abandoned paths get no [VoiceProfile] to
+     * carry a duration, so callers log this instead.
+     */
+    val elapsedSeconds: Float
+        get() = if (isRunning) (System.currentTimeMillis() - sessionStartMs) / 1000f else 0f
+
     @SuppressLint("MissingPermission")
     fun start(strings: VoiceAnalyzerStrings) {
         if (isRunning) return

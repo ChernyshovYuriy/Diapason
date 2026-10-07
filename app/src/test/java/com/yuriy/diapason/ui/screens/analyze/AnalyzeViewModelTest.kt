@@ -122,6 +122,39 @@ class AnalyzeViewModelTest {
         assertEquals(440f, state.currentHz, 0.01f)
     }
 
+    // ── onScreenStopped — the real abandon path ──────────────────────────────
+    //
+    // analysis_abandoned used to fire only from onCleared(), which an activity-scoped
+    // ViewModel almost never reaches (a swipe-away kills the process without it), so
+    // the event never fired in production. onScreenStopped() is driven by the screen's
+    // ON_STOP instead.
+
+    @Test
+    fun `onScreenStopped while recording returns to Idle and stops the analyzer`() {
+        viewModel.startRecording()
+        forceUiState(AnalyzeUiState.Recording(currentNote = "A4", currentHz = 440f, sampleCount = 12))
+
+        viewModel.onScreenStopped()
+
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.Idle)
+        // If the analyzer were still running, startRecording()'s isRunning guard would
+        // no-op and leave the state at Idle — reaching a fresh Recording proves it stopped.
+        viewModel.startRecording()
+        val state = viewModel.uiState.value
+        assertTrue("Expected Recording but got $state", state is AnalyzeUiState.Recording)
+        assertEquals(0, (state as AnalyzeUiState.Recording).sampleCount)
+    }
+
+    @Test
+    fun `onScreenStopped when not recording leaves the state untouched`() {
+        val insufficient = AnalyzeUiState.InsufficientData("too few")
+        forceUiState(insufficient)
+
+        viewModel.onScreenStopped()
+
+        assertEquals(insufficient, viewModel.uiState.value)
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**

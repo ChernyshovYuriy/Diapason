@@ -46,7 +46,7 @@ Single-module Android app (`:app`), MVVM, Jetpack Compose + Navigation Compose.
 
 **`comparison/`** — warm-up comparison flow (`WarmUpComparisonViewModel`, `ComparisonResult`)
 
-**`analytics/AppAnalytics`** — type-safe Firebase Analytics wrapper, called directly as a singleton from ViewModels and Composables (no DI; matches the existing `AppLogger` pattern). Builds bundles via a small `params { str(...); long(...) }` DSL to avoid the deprecated `bundleOf`. Custom events instrument the analyze funnel (`analysis_started/completed/insufficient/abandoned`), result screen (`result_viewed/dismissed/shared` with dwell-seconds), warm-up flow (`warmup_started/skipped/completed`, `comparison_completed`), history, privacy consent (`privacy_consent_accepted`), and re-test reminder funnel (`reminder_opt_in_shown/accepted/dismissed`, `reminder_cancelled`, `reminder_notification_posted`). Standard `screen_view` is fired manually from `DiapasonAppMainView` because Firebase auto-tracks only Activities, not Compose nav routes. User property `app_language` is set in `MainApp.onCreate` from `Locale.getDefault()`. The full event catalogue (params + fire sites) is in `ANALYTICS.md` — keep it in sync when adding or renaming events.
+**`analytics/AppAnalytics`** — type-safe Firebase Analytics wrapper, called directly as a singleton from ViewModels and Composables (no DI; matches the existing `AppLogger` pattern). Builds bundles via a small `params { str(...); long(...) }` DSL to avoid the deprecated `bundleOf`. Custom events instrument the analyze funnel (`analysis_started/completed/insufficient/abandoned`), result screen (`result_viewed/dismissed/shared` with dwell-seconds), warm-up flow (`warmup_started/skipped/completed`, `comparison_completed`), history, privacy consent (`privacy_consent_accepted`), and re-test reminder funnel (`reminder_opt_in_shown/accepted/dismissed`, `reminder_cancelled`, `reminder_notification_posted`). Standard `screen_view` is fired manually from `DiapasonAppMainView` because Firebase auto-tracks only Activities, not Compose nav routes. User property `app_language` is set from `Locale.getDefault()` inside `MainApp.setCollectionEnabled(true)`. `analysis_abandoned` fires from each recording screen's `ON_STOP` (`onScreenStopped()`), not just `onCleared` — the activity-scoped `AnalyzeViewModel` almost never reaches `onCleared`. The full event catalogue (params + fire sites) is in `ANALYTICS.md` — keep it in sync when adding or renaming events.
 
 **`consent/`** — first-launch privacy consent gate (Huawei AppGallery Review Guidelines rule 7.5 / PIPL: no personal-info-collecting SDK may run before the user has agreed):
 - `PrivacyConsentPreferences` — `SharedPreferences` wrapper (`granted`), same shape as `ReminderPreferences`.
@@ -59,7 +59,7 @@ Single-module Android app (`:app`), MVVM, Jetpack Compose + Navigation Compose.
 - `ReminderScheduler` — wraps `WorkManager.enqueueUniqueWork` with `ExistingWorkPolicy.REPLACE`. `REMINDER_DELAY_DAYS = 7L`. `bumpIfOptedIn()` is called from `AnalyzeViewModel.stopRecording` and `WarmUpComparisonViewModel.stopRetest` after every successful analysis, so the reminder is always anchored to the user's most recent session — never stale.
 - UI lives on `ResultsScreen` (`ReTestReminderCard`); permission requested via Accompanist on Android 13+, granted implicitly on older versions.
 
-**`MainApp`** — `onCreate` initialises `AppLogger.setDebug`, `FirebaseApp.initializeApp`, `AppAnalytics.init`, `AppAnalytics.setLanguage`, and `ReminderWorker.Channel.ensureRegistered` (idempotent — safe on every launch). Holds `sessionRepository` as an application-scoped lazy singleton. Tests inject a fake repository via ViewModel constructor parameters.
+**`MainApp`** — `onCreate` initialises `AppLogger.setDebug`, `FirebaseApp.initializeApp`, `AppAnalytics.init`, and `ReminderWorker.Channel.ensureRegistered` (idempotent — safe on every launch). `MainApp.setCollectionEnabled(true)` also sets the `app_language` user property — it must run after collection is on, or Firebase drops it. Holds `sessionRepository` as an application-scoped lazy singleton. Tests inject a fake repository via ViewModel constructor parameters.
 
 **Navigation** (`DiapasonAppMainView`): `AnalyzeViewModel` is activity-scoped so `ResultsScreen` can read `lastResult` from the same instance. The bottom bar is hidden for `Results` and `WarmUpComparison` routes. A `LaunchedEffect(currentRoute)` fires `AppAnalytics.trackScreen` on every nav change.
 
@@ -71,7 +71,7 @@ Single-module Android app (`:app`), MVVM, Jetpack Compose + Navigation Compose.
 
 ## Localisation
 
-Strings live in `res/values-xx/strings.xml` for `en`, `fr`, `it`, `es`, `pt`. When adding a new string, add it to all five files. Active locales are declared in `build.gradle.kts` via `localeFilters`.
+Strings live in `res/values-xx/strings.xml` for `en`, `fr`, `it`, `es`, `pt`, `zh`, `fa`. When adding a new string, add it to all seven files. Active locales are declared in `build.gradle.kts` via `localeFilters`.
 
 ## Testing
 

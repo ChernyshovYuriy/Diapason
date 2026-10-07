@@ -51,7 +51,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 
 | Event | Params | Fired from |
 |---|---|---|
-| `warmup_started` | `duration_seconds` | Warm-up timer started |
+| `warmup_started` | `duration_seconds` | Guided warm-up started (120 s total since 2.7 — `WarmUpPlan`; 300 s before) |
 | `warmup_skipped` | `remaining_seconds` | Warm-up skipped early |
 | `warmup_completed` | — | Warm-up timer finished |
 | `comparison_completed` | `before_fach`, `after_fach`, `comfortable_widened` (0/1), `detected_widened` (0/1) | `WarmUpComparisonViewModel` after retest |

@@ -36,7 +36,7 @@ import java.util.UUID
 private const val TAG = "WarmUpComparisonVM"
 
 /** Warm-up duration shown on the timer screen. */
-const val WARM_UP_DURATION_SECONDS = 300 // 5 minutes
+const val WARM_UP_DURATION_SECONDS = 120 // WarmUpPlan.TOTAL_SECONDS, spelled out so it stays a compile-time constant
 
 // ── Stage model ───────────────────────────────────────────────────────────────
 
@@ -61,6 +61,11 @@ sealed interface ComparisonStage {
     data class WarmUp(
         val remainingSeconds: Int = WARM_UP_DURATION_SECONDS,
         val isRunning: Boolean = true,
+        /**
+         * The baseline's estimated passaggio as a note name, for the slides step's personal
+         * hint; null when the baseline was too short for the windowed estimate to be real.
+         */
+        val passaggioNote: String? = null,
     ) : ComparisonStage
 
     /** User is recording the retest (after warm-up) session. */
@@ -170,7 +175,10 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         // Automatically transition to warm-up stage
         _stage.value = ComparisonStage.WarmUp(
             remainingSeconds = WARM_UP_DURATION_SECONDS,
-            isRunning = false // user must explicitly start timer
+            isRunning = false, // user must explicitly start timer
+            passaggioNote = profile.estimatedPassaggioHz
+                .takeIf { profile.sampleCount >= FachClassifier.PASSAGGIO_MIN_SAMPLES }
+                ?.let { FachClassifier.hzToNoteName(it) },
         )
     }
 

@@ -60,6 +60,7 @@ fun WarmUpFlowScreen(
         is ComparisonStage.WarmUp -> WarmUpTimerScreen(
             remainingSeconds = s.remainingSeconds,
             isRunning = s.isRunning,
+            passaggioNote = s.passaggioNote,
             onStartTimer = { viewModel.startWarmUpTimer() },
             onSkip = { viewModel.skipWarmUpTimer() },
             onExit = { viewModel.resetToIntro(); onExit() },

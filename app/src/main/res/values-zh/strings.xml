@@ -207,7 +207,7 @@
     <string name="compare_intro_body">此流程会录制你的声音两次——一次在热身前，
         一次在热身后——以便你比较两次分析结果。</string>
     <string name="compare_intro_step1">基线录制——唱出你的全部音域</string>
-    <string name="compare_intro_step2">热身计时——5 分钟引导式练习</string>
+    <string name="compare_intro_step2">引导式热身——2 分钟练习</string>
     <string name="compare_intro_step3">复测录制——重复相同的模式</string>
     <string name="compare_intro_step4">并排对比两次分析结果</string>
     <string name="compare_intro_disclaimer">结果仅基于本次分析，反映的是测量数据，
@@ -227,10 +227,10 @@
     <string name="compare_warmup_prompt">现在请热身，然后再次录制。</string>
     <string name="compare_warmup_timer_hint">准备好后点击开始以启动计时器。</string>
     <string name="compare_warmup_timer_running">计时中…</string>
-    <string name="compare_warmup_exercises_heading">建议的热身练习</string>
+    <string name="compare_warmup_exercises_heading">引导式热身</string>
     <string name="compare_warmup_disclaimer">这些仅为一般性建议。如果你有自己的
         热身流程，请照常进行。</string>
-    <string name="compare_warmup_btn_start_timer">开始 5 分钟计时</string>
+    <string name="compare_warmup_btn_start_timer">开始引导式热身</string>
     <string name="compare_warmup_btn_skip_running">跳过计时并开始复测</string>
     <string name="compare_warmup_btn_skip_idle">跳过计时</string>
     <string name="compare_warmup_btn_exit">退出对比</string>
@@ -254,23 +254,18 @@
     <string name="cd_exit">退出</string>
     <string name="compare_record_btn_start">开始录制</string>
     <string name="compare_record_listening">正在聆听…</string>
-    <string name="compare_warmup_card1_range">0–1 分钟</string>
     <string name="compare_warmup_card1_title">唇颤音</string>
     <string name="compare_warmup_card1_body">让气息轻轻吹动微闭的双唇使其振动。
         在你的音域内轻柔地上下滑动。</string>
-    <string name="compare_warmup_card2_range">1–2 分钟</string>
     <string name="compare_warmup_card2_title">哼鸣</string>
     <string name="compare_warmup_card2_body">闭口在舒适的音高上哼鸣。
         缓慢地在五度音程内上下移动。</string>
-    <string name="compare_warmup_card3_range">2–3 分钟</string>
     <string name="compare_warmup_card3_title">五音音阶</string>
     <string name="compare_warmup_card3_body">在五音上行音阶中演唱 \'mah-may-mee-mo-moo\'。
         从中音区开始，每次重复上移半音。</string>
-    <string name="compare_warmup_card4_range">3–4 分钟</string>
     <string name="compare_warmup_card4_title">八度滑音</string>
     <string name="compare_warmup_card4_body">选择一个舒适的元音，从舒适的低音滑到
         舒适的高音，再滑回来。保持轻松——不要用力过猛。</string>
-    <string name="compare_warmup_card5_range">4–5 分钟</string>
     <string name="compare_warmup_card5_title">轻柔的持续音</string>
     <string name="compare_warmup_card5_body">保持 3–4 个舒适的音符，每个持续 3 秒。
         这些正是 Diapason 将要检测的持续音。</string>
@@ -307,4 +302,12 @@
     <string name="results_next_about_format">了解 %1$s</string>
     <string name="results_next_history">与之前的结果比较</string>
     <string name="results_next_warmup">看看热身如何改变你的音域</string>
+
+    <!-- Guided warm-up -->
+    <string name="compare_warmup_now_format">现在：%1$s · 剩余 %2$s</string>
+    <string name="compare_warmup_passaggio_hint_format">你估计的换声点在 %1$s 附近——轻柔地滑过它，不要用力。</string>
+
+    <!-- History: range progress chart -->
+    <string name="history_progress_title">你的音域变化</string>
+    <string name="history_progress_cd_format">音域图。录音次数：%1$d。第一次的舒适音区：%2$s–%3$s；最近一次：%4$s–%5$s。</string>
 </resources>

@@ -187,7 +187,7 @@
     <string name="compare_intro_headline">مقایسه دو جلسه</string>
     <string name="compare_intro_body">این فرایند صدای شما را دو بار ضبط می‌کند — یک بار پیش از گرم کردن و یک بار پس از آن — تا بتوانید ببینید این دو جلسه چگونه با هم مقایسه می‌شوند.</string>
     <string name="compare_intro_step1">ضبط پایه — در تمام گستره صدای خود بخوانید</string>
-    <string name="compare_intro_step2">تایمر گرم کردن — 5 دقیقه تمرین هدایت‌شده</string>
+    <string name="compare_intro_step2">گرم کردن هدایت‌شده — 2 دقیقه تمرین</string>
     <string name="compare_intro_step3">ضبط آزمایش دوباره — همان الگو را تکرار کنید</string>
     <string name="compare_intro_step4">دو جلسه را در کنار هم مقایسه کنید</string>
     <string name="compare_intro_disclaimer">فقط بر اساس این جلسات. نتایج بازتاب‌دهنده اندازه‌گیری هستند، نه نتیجه‌گیری پزشکی یا آموزشی.</string>
@@ -206,9 +206,9 @@
     <string name="compare_warmup_prompt">حالا صدای خود را گرم کنید، سپس دوباره ضبط کنید.</string>
     <string name="compare_warmup_timer_hint">وقتی آماده شروع تایمر بودید، دکمه شروع را بزنید.</string>
     <string name="compare_warmup_timer_running">تایمر در حال اجراست…</string>
-    <string name="compare_warmup_exercises_heading">تمرین‌های پیشنهادی گرم کردن</string>
+    <string name="compare_warmup_exercises_heading">گرم کردن هدایت‌شده</string>
     <string name="compare_warmup_disclaimer">این‌ها فقط پیشنهادهای کلی هستند. اگر برنامه گرم‌کردنی خاص خود را دارید، از همان پیروی کنید.</string>
-    <string name="compare_warmup_btn_start_timer">شروع تایمر 5 دقیقه‌ای</string>
+    <string name="compare_warmup_btn_start_timer">شروع گرم کردن هدایت‌شده</string>
     <string name="compare_warmup_btn_skip_running">رد کردن تایمر و شروع آزمایش دوباره</string>
     <string name="compare_warmup_btn_skip_idle">رد کردن تایمر</string>
     <string name="compare_warmup_btn_exit">خروج از مقایسه</string>
@@ -231,19 +231,14 @@
     <string name="cd_exit">خروج</string>
     <string name="compare_record_btn_start">شروع ضبط</string>
     <string name="compare_record_listening">در حال شنیدن…</string>
-    <string name="compare_warmup_card1_range">0 تا 1 دقیقه</string>
     <string name="compare_warmup_card1_title">لرزش لب</string>
     <string name="compare_warmup_card1_body">هوا را از میان لب‌های شل‌بسته عبور دهید تا بلرزند. به‌آرامی در گستره صدای خود بالا و پایین بروید.</string>
-    <string name="compare_warmup_card2_range">1 تا 2 دقیقه</string>
     <string name="compare_warmup_card2_title">زمزمه کردن</string>
     <string name="compare_warmup_card2_body">با دهان بسته روی یک نت راحت زمزمه کنید. به‌آرامی یک فاصله پنجم بالا و پایین بروید.</string>
-    <string name="compare_warmup_card3_range">2 تا 3 دقیقه</string>
     <string name="compare_warmup_card3_title">گام‌های پنج‌نتی</string>
     <string name="compare_warmup_card3_body">«ما-مه-می-مو-مو» را روی یک گام صعودی پنج‌نتی بخوانید. از میان‌گستره شروع کنید و در هر تکرار نیم‌پرده بالا بروید.</string>
-    <string name="compare_warmup_card4_range">3 تا 4 دقیقه</string>
     <string name="compare_warmup_card4_title">لغزش اکتاو</string>
     <string name="compare_warmup_card4_body">روی یک مصوت راحت، از یک نت بم راحت به یک نت زیر راحت بلغزید و برگردید. آسان نگهش دارید — بدون فشار.</string>
-    <string name="compare_warmup_card5_range">4 تا 5 دقیقه</string>
     <string name="compare_warmup_card5_title">نت‌های پایدار ملایم</string>
     <string name="compare_warmup_card5_body">3 تا 4 نت راحت را هر کدام 3 ثانیه نگه دارید. این‌ها همان نت‌های پایداری هستند که دیاپازون تشخیص می‌دهد.</string>
 
@@ -282,4 +277,12 @@
     <string name="results_next_about_format">درباره %1$s بیشتر بدانید</string>
     <string name="results_next_history">مقایسه با نتایج قبلی شما</string>
     <string name="results_next_warmup">ببینید گرم کردن صدا چگونه گستره شما را تغییر می‌دهد</string>
+
+    <!-- Guided warm-up -->
+    <string name="compare_warmup_now_format">اکنون: %1$s · %2$s باقی مانده</string>
+    <string name="compare_warmup_passaggio_hint_format">پاساجوی تخمینی شما حدود %1$s است — به‌آرامی و بدون فشار از آن عبور کنید.</string>
+
+    <!-- History: range progress chart -->
+    <string name="history_progress_title">گستره صدای شما در طول زمان</string>
+    <string name="history_progress_cd_format">نمودار گستره. تعداد ضبط‌ها: %1$d. محدوده راحت در اولین ضبط: %2$s–%3$s؛ در آخرین ضبط: %4$s–%5$s.</string>
 </resources>

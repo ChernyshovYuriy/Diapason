@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,7 +37,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.data.SessionRecord
+import com.yuriy.diapason.data.recordedWith
+import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.flow.first
 import java.text.DateFormat
 import java.util.Date
@@ -132,7 +136,17 @@ private fun EmptyContent() {
 
 @Composable
 private fun SessionList(items: List<SessionRecord>) {
+    // Same rule as the combined voice profile: chart only sessions recorded with the
+    // current Male · Female · Not sure choice, so two singers sharing a phone aren't
+    // drawn as one voice. Read on each composition, i.e. each visit to this tab.
+    val context = LocalContext.current
+    val choice = remember { VoiceGroupPreferences(context).choice ?: VoiceGroupChoice.UNSURE }
+    val progress = remember(items, choice) { buildRangeProgress(items.recordedWith(choice)) }
+
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        progress?.let {
+            item(key = "range_progress") { RangeProgressChart(it) }
+        }
         items(items, key = { it.id }) { session ->
             SessionCard(session = session)
         }

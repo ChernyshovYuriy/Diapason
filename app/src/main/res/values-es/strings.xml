@@ -212,7 +212,7 @@
     <string name="compare_intro_body">Este flujo graba tu voz dos veces — una antes del calentamiento
 	y otra después — para que puedas comparar ambas sesiones.</string>
     <string name="compare_intro_step1">Grabación base — canta a lo largo de todo tu rango</string>
-    <string name="compare_intro_step2">Temporizador de calentamiento — 5 minutos de ejercicios guiados</string>
+    <string name="compare_intro_step2">Calentamiento guiado — 2 minutos de ejercicios</string>
     <string name="compare_intro_step3">Nueva grabación — repite el mismo patrón</string>
     <string name="compare_intro_step4">Compara las dos sesiones lado a lado</string>
     <string name="compare_intro_disclaimer">Basado solo en estas sesiones. Los resultados reflejan
@@ -232,10 +232,10 @@
     <string name="compare_warmup_prompt">Ahora calienta tu voz y luego vuelve a grabar.</string>
     <string name="compare_warmup_timer_hint">Pulsa Iniciar cuando estés listo para comenzar el temporizador.</string>
     <string name="compare_warmup_timer_running">Temporizador en marcha…</string>
-    <string name="compare_warmup_exercises_heading">Ejercicios de calentamiento sugeridos</string>
+    <string name="compare_warmup_exercises_heading">Calentamiento guiado</string>
     <string name="compare_warmup_disclaimer">Estas son solo sugerencias generales. Sigue tu propia rutina
 	de calentamiento si ya tienes una.</string>
-    <string name="compare_warmup_btn_start_timer">Iniciar temporizador de 5 minutos</string>
+    <string name="compare_warmup_btn_start_timer">Iniciar calentamiento guiado</string>
     <string name="compare_warmup_btn_skip_running">Omitir temporizador e iniciar nueva prueba</string>
     <string name="compare_warmup_btn_skip_idle">Omitir temporizador</string>
     <string name="compare_warmup_btn_exit">Salir de la comparación</string>
@@ -259,23 +259,18 @@
     <string name="cd_exit">Salir</string>
     <string name="compare_record_btn_start">Iniciar grabación</string>
     <string name="compare_record_listening">Escuchando…</string>
-    <string name="compare_warmup_card1_range">0–1 min</string>
     <string name="compare_warmup_card1_title">Trinos de labios</string>
     <string name="compare_warmup_card1_body">Sopla aire a través de los labios ligeramente cerrados para hacerlos vibrar.
     Deslízate suavemente hacia arriba y hacia abajo por tu rango.</string>
-    <string name="compare_warmup_card2_range">1–2 min</string>
     <string name="compare_warmup_card2_title">Zumbido</string>
     <string name="compare_warmup_card2_body">Tararea en una nota cómoda con la boca cerrada.
     Sube y baja lentamente una quinta.</string>
-    <string name="compare_warmup_card3_range">2–3 min</string>
     <string name="compare_warmup_card3_title">Escalas de cinco notas</string>
     <string name="compare_warmup_card3_body">Canta \"mah-may-mee-mo-moo\" en una escala ascendente de cinco notas.
     Empieza en el registro medio y sube medio tono en cada repetición.</string>
-    <string name="compare_warmup_card4_range">3–4 min</string>
     <string name="compare_warmup_card4_title">Deslizamientos de octava</string>
     <string name="compare_warmup_card4_body">Con una vocal cómoda, deslízate desde una nota grave cómoda
     hasta una nota aguda cómoda y vuelve. Hazlo con suavidad, sin forzar.</string>
-    <string name="compare_warmup_card5_range">4–5 min</string>
     <string name="compare_warmup_card5_title">Notas sostenidas suaves</string>
     <string name="compare_warmup_card5_body">Mantén 3 o 4 notas cómodas durante 3 segundos cada una.
     Son las mismas notas sostenidas que Diapason detectará.</string>
@@ -318,4 +313,12 @@
     <string name="results_next_about_format">Más sobre %1$s</string>
     <string name="results_next_history">Compara con tus resultados anteriores</string>
     <string name="results_next_warmup">Mira cómo el calentamiento cambia tu tesitura</string>
+
+    <!-- Guided warm-up -->
+    <string name="compare_warmup_now_format">Ahora: %1$s · quedan %2$s</string>
+    <string name="compare_warmup_passaggio_hint_format">Tu pasaje estimado está alrededor de %1$s — atraviésalo con suavidad, sin forzar.</string>
+
+    <!-- History: range progress chart -->
+    <string name="history_progress_title">Tu tesitura a lo largo del tiempo</string>
+    <string name="history_progress_cd_format">Gráfico de tesitura. Grabaciones: %1$d. Rango cómodo en la primera: %2$s–%3$s; en la última: %4$s–%5$s.</string>
 </resources>

@@ -369,4 +369,17 @@ class HzToNoteNameTest {
             assertEquals("${noteNames[midi % 12]}${midi / 12 - 1}", note(hz))
         }
     }
+
+    @Test
+    fun `midiToNoteName names notes across the MIDI range`() {
+        assertEquals("C4", FachClassifier.midiToNoteName(60))
+        assertEquals("A4", FachClassifier.midiToNoteName(69))
+        assertEquals("C-1", FachClassifier.midiToNoteName(0))
+        assertEquals("G9", FachClassifier.midiToNoteName(127))
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `midiToNoteName rejects out-of-range numbers`() {
+        FachClassifier.midiToNoteName(128)
+    }
 }

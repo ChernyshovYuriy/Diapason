@@ -213,7 +213,7 @@
     <string name="compare_intro_body">Ce parcours enregistre votre voix deux fois — une fois avant un échauffement
 	et une fois après — pour vous permettre de comparer les deux sessions.</string>
     <string name="compare_intro_step1">Enregistrement de référence — chantez sur toute votre étendue</string>
-    <string name="compare_intro_step2">Minuteur d’échauffement — 5 minutes d’exercices guidés</string>
+    <string name="compare_intro_step2">Échauffement guidé — 2 minutes d\'exercices</string>
     <string name="compare_intro_step3">Nouvel enregistrement — répétez le même schéma</string>
     <string name="compare_intro_step4">Comparez les deux sessions côte à côte</string>
     <string name="compare_intro_disclaimer">Basé uniquement sur ces sessions. Les résultats reflètent
@@ -233,10 +233,10 @@
     <string name="compare_warmup_prompt">Échauffez maintenant votre voix, puis enregistrez à nouveau.</string>
     <string name="compare_warmup_timer_hint">Appuyez sur Démarrer lorsque vous êtes prêt à lancer le minuteur.</string>
     <string name="compare_warmup_timer_running">Minuteur en cours…</string>
-    <string name="compare_warmup_exercises_heading">Exercices d’échauffement suggérés</string>
+    <string name="compare_warmup_exercises_heading">Échauffement guidé</string>
     <string name="compare_warmup_disclaimer">Il s’agit seulement de suggestions générales. Suivez votre propre
 	routine d’échauffement si vous en avez une.</string>
-    <string name="compare_warmup_btn_start_timer">Démarrer le minuteur de 5 minutes</string>
+    <string name="compare_warmup_btn_start_timer">Démarrer l\'échauffement guidé</string>
     <string name="compare_warmup_btn_skip_running">Ignorer le minuteur &amp; lancer le nouvel essai</string>
     <string name="compare_warmup_btn_skip_idle">Ignorer le minuteur</string>
     <string name="compare_warmup_btn_exit">Quitter la comparaison</string>
@@ -260,23 +260,18 @@
     <string name="cd_exit">Quitter</string>
     <string name="compare_record_btn_start">Commencer l’enregistrement</string>
     <string name="compare_record_listening">Écoute…</string>
-    <string name="compare_warmup_card1_range">0–1 min</string>
     <string name="compare_warmup_card1_title">Trilles des lèvres</string>
     <string name="compare_warmup_card1_body">Soufflez de l’air à travers des lèvres légèrement fermées pour les faire vibrer.
     Glissez doucement vers le haut et le bas de votre tessiture.</string>
-    <string name="compare_warmup_card2_range">1–2 min</string>
     <string name="compare_warmup_card2_title">Bourdonnement</string>
     <string name="compare_warmup_card2_body">Fredonnez sur une hauteur confortable, bouche fermée.
     Montez et descendez lentement d’une quinte.</string>
-    <string name="compare_warmup_card3_range">2–3 min</string>
     <string name="compare_warmup_card3_title">Gammes de cinq notes</string>
     <string name="compare_warmup_card3_body">Chantez \"mah-may-mee-mo-moo\" sur une gamme ascendante de cinq notes.
     Commencez dans le médium et montez d’un demi-ton à chaque répétition.</string>
-    <string name="compare_warmup_card4_range">3–4 min</string>
     <string name="compare_warmup_card4_title">Glissandos d’octave</string>
     <string name="compare_warmup_card4_body">Sur une voyelle confortable, glissez d’une note grave confortable
     vers une note aiguë confortable, puis revenez. Gardez cela facile, sans forcer.</string>
-    <string name="compare_warmup_card5_range">4–5 min</string>
     <string name="compare_warmup_card5_title">Notes tenues en douceur</string>
     <string name="compare_warmup_card5_body">Tenez 3 à 4 notes confortables pendant 3 secondes chacune.
     Ce sont les mêmes notes tenues que Diapason détectera.</string>
@@ -319,4 +314,12 @@
     <string name="results_next_about_format">En savoir plus sur %1$s</string>
     <string name="results_next_history">Comparer avec vos résultats précédents</string>
     <string name="results_next_warmup">Voir comment l\'échauffement modifie votre étendue</string>
+
+    <!-- Guided warm-up -->
+    <string name="compare_warmup_now_format">En cours : %1$s · encore %2$s</string>
+    <string name="compare_warmup_passaggio_hint_format">Votre passaggio estimé se situe vers %1$s — traversez-le en douceur, sans forcer.</string>
+
+    <!-- History: range progress chart -->
+    <string name="history_progress_title">Votre étendue au fil du temps</string>
+    <string name="history_progress_cd_format">Graphique d\'étendue. Enregistrements : %1$d. Tessiture au premier : %2$s–%3$s ; au plus récent : %4$s–%5$s.</string>
 </resources>

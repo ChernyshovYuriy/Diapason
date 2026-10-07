@@ -44,10 +44,10 @@ Single-module Android app (`:app`), MVVM, Jetpack Compose + Navigation Compose.
 - `List<SessionRecord>.recordedWith(choice)` — sessions eligible for the combined profile: same voice choice only; pre-v2 rows (null choice) never
 
 **`ui/screens/`** — one Composable per screen:
-- Bottom-nav screens: `analyze`, `guide`, `voice_types`, `history`, `about`
+- Bottom-nav screens: `analyze`, `guide`, `voice_types`, `history`, `about`. History opens with "Your range over time" (`RangeProgressChart`, data from the pure `buildRangeProgress`: semitone axis snapped to Cs, newest 20 sessions, current voice choice only)
 - Full-screen (no bottom bar): `results`, `warm_up_comparison`
 
-**`comparison/`** — warm-up comparison flow (`WarmUpComparisonViewModel`, `ComparisonResult`). The result screen deliberately shows no before/after Fach — a warm-up changes comfort and access, not voice type.
+**`comparison/`** — warm-up comparison flow (`WarmUpComparisonViewModel`, `ComparisonResult`, `WarmUpPlan`). The warm-up is a 2-minute guided sequence of five timed steps (`WarmUpPlan.STEP_SECONDS`; `WARM_UP_DURATION_SECONDS` must equal its total — tested); the running step is highlighted, and the octave-slides step shows the baseline's passaggio note when the baseline had ≥ `PASSAGGIO_MIN_SAMPLES`. The result screen deliberately shows no before/after Fach — a warm-up changes comfort and access, not voice type.
 
 **`settings/AudioSourceExperiment`** — per-install 50/50 A/B of `MIC` vs `VOICE_RECOGNITION` (suspected OEM noise suppression on `MIC`); reported as the `audio_source` user property.
 

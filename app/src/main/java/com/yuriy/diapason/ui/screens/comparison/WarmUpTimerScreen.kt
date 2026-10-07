@@ -1,5 +1,6 @@
 package com.yuriy.diapason.ui.screens.comparison
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yuriy.diapason.comparison.WarmUpPlan
 import com.yuriy.diapason.R
 import java.util.Locale
 
@@ -41,6 +43,8 @@ import java.util.Locale
 fun WarmUpTimerScreen(
     remainingSeconds: Int,
     isRunning: Boolean,
+    /** The baseline's passaggio note for the slides step's hint; null hides the hint. */
+    passaggioNote: String? = null,
     onStartTimer: () -> Unit,
     onSkip: () -> Unit,
     onExit: () -> Unit,
@@ -131,31 +135,19 @@ fun WarmUpTimerScreen(
             )
             Spacer(Modifier.height(12.dp))
 
-            WarmUpCard(
-                minuteRange = stringResource(R.string.compare_warmup_card1_range),
-                title = stringResource(R.string.compare_warmup_card1_title),
-                body = stringResource(R.string.compare_warmup_card1_body),
-            )
-            WarmUpCard(
-                minuteRange = stringResource(R.string.compare_warmup_card2_range),
-                title = stringResource(R.string.compare_warmup_card2_title),
-                body = stringResource(R.string.compare_warmup_card2_body),
-            )
-            WarmUpCard(
-                minuteRange = stringResource(R.string.compare_warmup_card3_range),
-                title = stringResource(R.string.compare_warmup_card3_title),
-                body = stringResource(R.string.compare_warmup_card3_body),
-            )
-            WarmUpCard(
-                minuteRange = stringResource(R.string.compare_warmup_card4_range),
-                title = stringResource(R.string.compare_warmup_card4_title),
-                body = stringResource(R.string.compare_warmup_card4_body),
-            )
-            WarmUpCard(
-                minuteRange = stringResource(R.string.compare_warmup_card5_range),
-                title = stringResource(R.string.compare_warmup_card5_title),
-                body = stringResource(R.string.compare_warmup_card5_body),
-            )
+            val elapsedSeconds = WarmUpPlan.TOTAL_SECONDS - remainingSeconds
+            val currentStep = if (isRunning) WarmUpPlan.stepIndexAt(elapsedSeconds) else null
+            WARM_UP_STEPS.forEachIndexed { index, (titleRes, bodyRes) ->
+                WarmUpCard(
+                    timeRange = formatStepRange(index),
+                    title = stringResource(titleRes),
+                    body = stringResource(bodyRes),
+                    hint = passaggioNote
+                        ?.takeIf { index == WarmUpPlan.PASSAGGIO_STEP }
+                        ?.let { stringResource(R.string.compare_warmup_passaggio_hint_format, it) },
+                    nowSecondsLeft = if (index == currentStep) WarmUpPlan.secondsLeftInStep(elapsedSeconds) else null,
+                )
+            }
 
             Spacer(Modifier.height(8.dp))
             Text(
@@ -205,17 +197,45 @@ fun WarmUpTimerScreen(
     }
 }
 
+/** Title and body of each [WarmUpPlan] step, in order. */
+private val WARM_UP_STEPS = listOf(
+    R.string.compare_warmup_card1_title to R.string.compare_warmup_card1_body,
+    R.string.compare_warmup_card2_title to R.string.compare_warmup_card2_body,
+    R.string.compare_warmup_card3_title to R.string.compare_warmup_card3_body,
+    R.string.compare_warmup_card4_title to R.string.compare_warmup_card4_body,
+    R.string.compare_warmup_card5_title to R.string.compare_warmup_card5_body,
+)
+
+/**
+ * One exercise. The running step is highlighted with its own countdown ([nowSecondsLeft]
+ * non-null), so the user follows along instead of watching a bare timer.
+ */
 @Composable
-private fun WarmUpCard(minuteRange: String, title: String, body: String) {
+private fun WarmUpCard(
+    timeRange: String,
+    title: String,
+    body: String,
+    hint: String?,
+    nowSecondsLeft: Int?,
+) {
+    val isNow = nowSecondsLeft != null
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isNow) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surfaceVariant
+        ),
+        border = if (isNow) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "$minuteRange  ·  $title",
+                text = if (isNow) {
+                    stringResource(R.string.compare_warmup_now_format, title, formatTime(nowSecondsLeft ?: 0))
+                } else {
+                    "$timeRange  ·  $title"
+                },
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -224,11 +244,25 @@ private fun WarmUpCard(minuteRange: String, title: String, body: String) {
             Text(
                 text = body,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (isNow) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            hint?.let {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+            }
         }
     }
 }
+
+// internal for a unit test, like formatTime: "0:30–0:50" for a step, Locale.ROOT digits.
+internal fun formatStepRange(index: Int): String =
+    "${formatTime(WarmUpPlan.stepStartSeconds(index))}–${formatTime(WarmUpPlan.stepEndSeconds(index))}"
 
 // internal, not private: lets a unit test call this directly rather than only
 // reasoning about it — this is also the fix for KNOWN_ISSUES.md's Locale finding

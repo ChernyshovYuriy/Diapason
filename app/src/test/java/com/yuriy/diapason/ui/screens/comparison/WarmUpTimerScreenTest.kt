@@ -34,4 +34,10 @@ class WarmUpTimerScreenTest {
             Locale.setDefault(original)
         }
     }
+
+    @Test
+    fun `formatStepRange renders each step's start and end`() {
+        assertEquals("0:00–0:30", formatStepRange(0))
+        assertEquals("1:45–2:00", formatStepRange(4))
+    }
 }

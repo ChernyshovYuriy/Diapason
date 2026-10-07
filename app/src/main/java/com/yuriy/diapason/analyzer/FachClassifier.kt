@@ -26,12 +26,18 @@ object FachClassifier {
 
     fun hzToNoteName(hz: Float): String {
         val midi = hzToMidi(hz) ?: return "—"
-        val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         // Locale.ROOT: this is a number rendered into an otherwise Latin-script UI, not
         // localized prose — the device's default locale must not change its digit glyphs
         // (e.g. Persian renders Eastern Arabic-Indic digits and a different decimal mark
         // for an unqualified .format() call).
         if (midi !in 0..127) return "%.0f Hz".format(Locale.ROOT, hz)
+        return midiToNoteName(midi)
+    }
+
+    /** Scientific pitch name for a MIDI note number in 0..127 (60 → "C4"). */
+    fun midiToNoteName(midi: Int): String {
+        require(midi in 0..127) { "MIDI note out of range: $midi" }
+        val noteNames = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         return "${noteNames[midi % 12]}${(midi / 12) - 1}"
     }
 

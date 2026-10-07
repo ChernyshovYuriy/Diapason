@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MusicNote
@@ -26,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,8 +56,45 @@ private val CATEGORY_ORDER = listOf(
     R.string.fach_category_bass
 )
 
+/**
+ * LazyColumn position of the card for the Fach with [fachNameRes], or null if there's no
+ * such Fach. Mirrors the item layout below: one title item, then per non-empty category
+ * a header, its Fach cards, and a spacer. internal for a unit test.
+ */
+internal fun voiceTypesItemIndex(fachNameRes: Int): Int? {
+    var index = 1 // the title item
+    CATEGORY_ORDER.forEach { categoryRes ->
+        val fachs = ALL_FACH.filter { it.categoryRes == categoryRes }
+        if (fachs.isEmpty()) return@forEach
+        index++ // header
+        fachs.forEach { fach ->
+            if (fach.nameRes == fachNameRes) return index
+            index++
+        }
+        index++ // spacer
+    }
+    return null
+}
+
+/**
+ * @param focusFachNameRes when non-null (e.g. "Learn about…" on the results screen), that
+ *   Fach is scrolled into view and expanded once, then [onFocusConsumed] is called so it
+ *   doesn't re-apply when the user later returns to this tab.
+ */
 @Composable
-fun VoiceTypesScreen() {
+fun VoiceTypesScreen(
+    focusFachNameRes: Int? = null,
+    onFocusConsumed: () -> Unit = {},
+) {
+    val listState = rememberLazyListState()
+    var expandedFachRes by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(focusFachNameRes) {
+        val focus = focusFachNameRes ?: return@LaunchedEffect
+        expandedFachRes = focus
+        voiceTypesItemIndex(focus)?.let { listState.animateScrollToItem(it) }
+        onFocusConsumed()
+    }
 
     val grouped = remember {
         CATEGORY_ORDER.associateWith { categoryRes ->
@@ -64,6 +103,7 @@ fun VoiceTypesScreen() {
     }
 
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
@@ -93,7 +133,10 @@ fun VoiceTypesScreen() {
             }
 
             items(fachwList.size, key = { fachwList[it].nameRes }) { index ->
-                FachCard(fach = fachwList[index])
+                FachCard(
+                    fach = fachwList[index],
+                    forceExpanded = fachwList[index].nameRes == expandedFachRes,
+                )
                 Spacer(Modifier.height(8.dp))
             }
 
@@ -122,8 +165,9 @@ private fun CategoryHeader(categoryRes: Int) {
 }
 
 @Composable
-private fun FachCard(fach: FachDefinition) {
+private fun FachCard(fach: FachDefinition, forceExpanded: Boolean = false) {
     var expanded by remember { mutableStateOf(false) }
+    LaunchedEffect(forceExpanded) { if (forceExpanded) expanded = true }
     val arrowRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         label = "arrow"

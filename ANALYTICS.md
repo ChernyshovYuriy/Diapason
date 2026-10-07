@@ -45,6 +45,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 | `result_viewed` | `top_fach_key` | `ResultsScreen` shown |
 | `result_dismissed` | `top_fach_key`, `dwell_seconds` | Leaving the result screen |
 | `result_shared` | `top_fach_key` | Share action |
+| `result_next_step` | `target` (`voice_type` / `history` / `warmup`), `top_fach_key` | A "What's next" link on `ResultsScreen` |
 
 ## Warm-up comparison
 
@@ -71,7 +72,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 
 | Event | Params | Fired from |
 |---|---|---|
-| `reminder_opt_in_shown` | — | `ReTestReminderCard` shown on `ResultsScreen` |
+| `reminder_opt_in_shown` | — | `ReTestReminderCard` offered on `ResultsScreen`. Since 2.7 the offer appears once per install, from the second saved session (`ReminderOffer`); not fired when an opted-in user sees their scheduled reminder |
 | `reminder_opt_in_accepted` | — | User opts in |
 | `reminder_opt_in_dismissed` | — | User dismisses the card |
 | `reminder_cancelled` | — | Opt-out after previously opting in |

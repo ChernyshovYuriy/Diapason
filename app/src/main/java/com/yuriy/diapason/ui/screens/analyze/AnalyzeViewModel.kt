@@ -115,6 +115,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     private val _combinedProfile = MutableStateFlow<CombinedVoiceProfile?>(null)
     val combinedProfile: StateFlow<CombinedVoiceProfile?> = _combinedProfile.asStateFlow()
 
+    /** Saved sessions of any voice choice, refreshed with [combinedProfile]. */
+    private val _savedSessionCount = MutableStateFlow(0)
+    val savedSessionCount: StateFlow<Int> = _savedSessionCount.asStateFlow()
+
     init {
         analyzer.onPitchDetected = { hz, noteName ->
             _uiState.update { current ->
@@ -276,10 +280,12 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     private suspend fun refreshCombinedProfile() {
         val choice = effectiveChoice
         runCatching {
+            val all = repository.getAll()
+            _savedSessionCount.value = all.size
             VoiceProfileAggregator.combine(
                 // Same choice only: with a per-recording switch, a session recorded as the
                 // other voice group is most likely a different singer on the same phone.
-                sessions = repository.getAll().recordedWith(choice).map { it.toTimedProfile() },
+                sessions = all.recordedWith(choice).map { it.toTimedProfile() },
                 nowMs = System.currentTimeMillis(),
                 group = choice.group,
             )

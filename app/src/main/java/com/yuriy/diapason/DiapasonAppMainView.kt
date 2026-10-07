@@ -36,6 +36,9 @@ import com.yuriy.diapason.ui.screens.history.HistoryViewModel
 import com.yuriy.diapason.ui.screens.results.ResultsScreen
 import com.yuriy.diapason.ui.screens.voicetypes.VoiceTypesScreen
 
+/** savedStateHandle key carrying a Fach name resource for Voice Types to focus. */
+private const val VOICE_TYPES_FOCUS_KEY = "voice_types_focus_fach"
+
 @Composable
 fun DiapasonAppMainView() {
 
@@ -130,8 +133,14 @@ fun DiapasonAppMainView() {
             }
 
             // ── Voice Types ──────────────────────────────────────────────────
-            composable(Screen.VoiceTypes.route) {
-                VoiceTypesScreen()
+            composable(Screen.VoiceTypes.route) { entry ->
+                val focus by entry.savedStateHandle
+                    .getStateFlow<Int?>(VOICE_TYPES_FOCUS_KEY, null)
+                    .collectAsStateWithLifecycle()
+                VoiceTypesScreen(
+                    focusFachNameRes = focus,
+                    onFocusConsumed = { entry.savedStateHandle[VOICE_TYPES_FOCUS_KEY] = null },
+                )
             }
 
             // ── History ──────────────────────────────────────────────────────
@@ -165,11 +174,37 @@ fun DiapasonAppMainView() {
                 }
 
                 val combinedProfile by analyzeViewModel.combinedProfile.collectAsStateWithLifecycle()
+                val savedSessionCount by analyzeViewModel.savedSessionCount.collectAsStateWithLifecycle()
+
+                // Leaving Results for another tab: reset first so AnalyzeScreen doesn't see
+                // ResultReady and bounce straight back here, then navigate like the bottom bar.
+                fun leaveResultsForTab(route: String) {
+                    analyzeViewModel.resetToIdle()
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
 
                 ResultsScreen(
                     profile = result.profile,
                     matches = result.matches,
                     combinedProfile = combinedProfile,
+                    savedSessionCount = savedSessionCount,
+                    onOpenVoiceType = { fachNameRes ->
+                        leaveResultsForTab(Screen.VoiceTypes.route)
+                        // After navigate(): the Voice Types entry (new or restored) is current.
+                        navController.currentBackStackEntry?.savedStateHandle?.set(VOICE_TYPES_FOCUS_KEY, fachNameRes)
+                    },
+                    onOpenHistory = { leaveResultsForTab(Screen.History.route) },
+                    onOpenWarmUp = {
+                        analyzeViewModel.resetToIdle()
+                        // Over Analyze, so exiting the warm-up flow lands there, not on Results.
+                        navController.navigate(Screen.WarmUpComparison.route) {
+                            popUpTo(Screen.Analyze.route)
+                        }
+                    },
                     onBack = {
                         // Reset state BEFORE popping so AnalyzeScreen's LaunchedEffect
                         // does not see ResultReady and immediately re-navigate to Results.

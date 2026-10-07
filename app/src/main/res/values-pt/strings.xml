@@ -316,4 +316,10 @@
     <string name="analyze_status_enough">Suficiente para um resultado — continue para um melhor, ou toque em Parar.</string>
     <string name="analyze_btn_stop_anyway">Parar mesmo assim</string>
     <string name="analyze_error_insufficient_progress">Amostras de voz captadas: %1$d / %2$d. Da próxima vez cante um pouco mais, sustentando cada nota 2–3 segundos.</string>
+
+    <!-- Results: next-step links -->
+    <string name="results_section_next_steps">E agora</string>
+    <string name="results_next_about_format">Saiba mais sobre %1$s</string>
+    <string name="results_next_history">Compare com os seus resultados anteriores</string>
+    <string name="results_next_warmup">Veja como o aquecimento muda a sua extensão</string>
 </resources>

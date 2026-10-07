@@ -315,4 +315,10 @@
     <string name="analyze_status_enough">Abbastanza per un risultato — continua per uno migliore, oppure tocca Stop.</string>
     <string name="analyze_btn_stop_anyway">Ferma comunque</string>
     <string name="analyze_error_insufficient_progress">Campioni vocali acquisiti: %1$d / %2$d. La prossima volta canta un po\' più a lungo, tenendo ogni nota per 2–3 secondi.</string>
+
+    <!-- Results: next-step links -->
+    <string name="results_section_next_steps">E adesso</string>
+    <string name="results_next_about_format">Scopri di più su %1$s</string>
+    <string name="results_next_history">Confronta con i risultati precedenti</string>
+    <string name="results_next_warmup">Scopri come il riscaldamento cambia la tua estensione</string>
 </resources>

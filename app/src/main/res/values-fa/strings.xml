@@ -276,4 +276,10 @@
     <string name="analyze_status_enough">برای نتیجه کافی است — برای نتیجه بهتر ادامه دهید یا توقف را بزنید.</string>
     <string name="analyze_btn_stop_anyway">به هر حال توقف</string>
     <string name="analyze_error_insufficient_progress">نمونه‌های صوتی ضبط‌شده: %1$d / %2$d. دفعه بعد کمی طولانی‌تر بخوانید و هر نت را ۲ تا ۳ ثانیه نگه دارید.</string>
+
+    <!-- Results: next-step links -->
+    <string name="results_section_next_steps">قدم بعدی</string>
+    <string name="results_next_about_format">درباره %1$s بیشتر بدانید</string>
+    <string name="results_next_history">مقایسه با نتایج قبلی شما</string>
+    <string name="results_next_warmup">ببینید گرم کردن صدا چگونه گستره شما را تغییر می‌دهد</string>
 </resources>

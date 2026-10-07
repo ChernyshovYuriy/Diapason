@@ -20,6 +20,15 @@ class ReminderPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_OPTED_IN, false)
         set(value) = prefs.edit().putBoolean(KEY_OPTED_IN, value).apply()
 
+    /**
+     * The opt-in card has been offered once. It's shown a single time — from the second
+     * saved session, to someone who has already come back once — instead of on every
+     * result: in production it was shown ~7 times per user and 88% ignored it.
+     */
+    var offerShown: Boolean
+        get() = prefs.getBoolean(KEY_OFFER_SHOWN, false)
+        set(value) = prefs.edit().putBoolean(KEY_OFFER_SHOWN, value).apply()
+
     /** Epoch millis when the next reminder fires, or 0 if none scheduled. */
     var scheduledAtMs: Long
         get() = prefs.getLong(KEY_SCHEDULED_AT_MS, 0L)
@@ -33,5 +42,6 @@ class ReminderPreferences(context: Context) {
         private const val PREFS_NAME = "diapason_reminder"
         private const val KEY_OPTED_IN = "opted_in"
         private const val KEY_SCHEDULED_AT_MS = "scheduled_at_ms"
+        private const val KEY_OFFER_SHOWN = "offer_shown"
     }
 }

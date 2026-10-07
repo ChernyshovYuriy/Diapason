@@ -32,10 +32,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -64,6 +66,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,6 +83,8 @@ import com.yuriy.diapason.analyzer.CombinedVoiceProfile
 import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.ResultSummary
 import com.yuriy.diapason.analyzer.VoiceProfile
+import com.yuriy.diapason.reminder.ReminderOffer
+import com.yuriy.diapason.reminder.ReminderPreferences
 import com.yuriy.diapason.reminder.ReminderScheduler
 import java.text.DateFormat
 import java.util.Date
@@ -111,8 +116,13 @@ fun ResultsScreen(
     profile: VoiceProfile,
     matches: List<FachMatch>,
     combinedProfile: CombinedVoiceProfile? = null,
+    savedSessionCount: Int = 0,
     onBack: () -> Unit,
-    onAnalyzeAgain: () -> Unit
+    onAnalyzeAgain: () -> Unit,
+    /** Opens Voice Types focused on the Fach with this name resource. */
+    onOpenVoiceType: (fachNameRes: Int) -> Unit = {},
+    onOpenHistory: () -> Unit = {},
+    onOpenWarmUp: () -> Unit = {},
 ) {
 
     BackHandler(onBack = onBack)
@@ -225,16 +235,49 @@ fun ResultsScreen(
 
             Spacer(Modifier.height(16.dp))
 
+            // ── What's next ───────────────────────────────────────────────
+            // Results used to be a dead end: ~6,000 views led anywhere but "back" only
+            // 5 times. These are the three places users already went on their own.
+            summary?.let { s ->
+                SectionLabel(stringResource(R.string.results_section_next_steps))
+                NextStepButton(
+                    text = stringResource(R.string.results_next_about_format, stringResource(s.leaning.fach.nameRes)),
+                    icon = Icons.Filled.Info,
+                    onClick = {
+                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.VoiceType, topFachKey)
+                        onOpenVoiceType(s.leaning.fach.nameRes)
+                    },
+                )
+                NextStepButton(
+                    text = stringResource(R.string.results_next_history),
+                    icon = Icons.Filled.History,
+                    onClick = {
+                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.History, topFachKey)
+                        onOpenHistory()
+                    },
+                )
+                NextStepButton(
+                    text = stringResource(R.string.results_next_warmup),
+                    icon = Icons.Filled.Whatshot,
+                    onClick = {
+                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.WarmUp, topFachKey)
+                        onOpenWarmUp()
+                    },
+                )
+                Spacer(Modifier.height(16.dp))
+            }
+
             // ── Disclaimer ────────────────────────────────────────────────
             DisclaimerCard()
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Re-test reminder opt-in ───────────────────────────────────
-            // This is the single retention lever: 55% of users uninstall after
-            // reaching this screen because their goal feels complete. The card
-            // gives them a reason to come back next week.
-            ReTestReminderCard()
+            // ── Re-test reminder opt-in (offered once — see ReminderOffer) ─
+            val reminderPrefs = remember(context) { ReminderPreferences(context) }
+            val showReminder = remember(savedSessionCount) {
+                ReminderOffer.shouldShow(reminderPrefs.optedIn, reminderPrefs.offerShown, savedSessionCount)
+            }
+            if (showReminder) ReTestReminderCard()
 
             Spacer(Modifier.height(20.dp))
 
@@ -398,6 +441,19 @@ private fun leaningText(summary: ResultSummary): String {
     val runnerUp = summary.closeRunnerUp
         ?: return stringResource(R.string.results_leaning_format, leaning)
     return stringResource(R.string.results_leaning_close_format, leaning, stringResource(runnerUp.fach.nameRes))
+}
+
+@Composable
+private fun NextStepButton(text: String, icon: ImageVector, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+    ) {
+        Icon(icon, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+        Text(text, modifier = Modifier.weight(1f), textAlign = TextAlign.Start)
+    }
 }
 
 @Composable
@@ -724,7 +780,12 @@ private fun ReTestReminderCard() {
     }
 
     LaunchedEffect(Unit) {
-        AppAnalytics.reminderOptInShown()
+        // Only an actual offer counts — and uses up the one-time offer. An opted-in user
+        // seeing their scheduled reminder isn't being offered anything.
+        if (!optedIn) {
+            ReminderPreferences(context).offerShown = true
+            AppAnalytics.reminderOptInShown()
+        }
     }
 
     if (dismissedThisView) return

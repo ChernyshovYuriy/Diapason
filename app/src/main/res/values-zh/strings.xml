@@ -304,4 +304,10 @@
     <string name="analyze_status_enough">已足够得出结果——继续唱可让结果更准确，或点击停止。</string>
     <string name="analyze_btn_stop_anyway">仍然停止</string>
     <string name="analyze_error_insufficient_progress">已采集的声音样本：%1$d / %2$d。下次请唱得稍长一些，每个音保持 2–3 秒。</string>
+
+    <!-- Results: next-step links -->
+    <string name="results_section_next_steps">下一步</string>
+    <string name="results_next_about_format">了解 %1$s</string>
+    <string name="results_next_history">与之前的结果比较</string>
+    <string name="results_next_warmup">看看热身如何改变你的音域</string>
 </resources>

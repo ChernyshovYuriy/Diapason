@@ -315,4 +315,10 @@
     <string name="analyze_status_enough">Assez pour un résultat — continuez pour un meilleur résultat, ou appuyez sur Arrêter.</string>
     <string name="analyze_btn_stop_anyway">Arrêter quand même</string>
     <string name="analyze_error_insufficient_progress">Échantillons vocaux captés : %1$d / %2$d. La prochaine fois, chantez un peu plus longtemps en tenant chaque note 2 à 3 secondes.</string>
+
+    <!-- Results: next-step links -->
+    <string name="results_section_next_steps">Et ensuite</string>
+    <string name="results_next_about_format">En savoir plus sur %1$s</string>
+    <string name="results_next_history">Comparer avec vos résultats précédents</string>
+    <string name="results_next_warmup">Voir comment l\'échauffement modifie votre étendue</string>
 </resources>

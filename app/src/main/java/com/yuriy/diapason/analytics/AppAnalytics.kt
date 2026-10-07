@@ -176,6 +176,20 @@ object AppAnalytics {
         }
     }
 
+    enum class NextStep(val value: String) {
+        VoiceType("voice_type"),
+        History("history"),
+        WarmUp("warmup"),
+    }
+
+    /** A "What's next" link on the results screen was tapped. */
+    fun resultNextStep(target: NextStep, topFachKey: String?) {
+        logEvent(EVENT_RESULT_NEXT_STEP) {
+            str(PARAM_TARGET, target.value)
+            str(PARAM_TOP_FACH_KEY, topFachKey ?: VALUE_UNKNOWN)
+        }
+    }
+
     fun resultShared(topFachKey: String?) {
         logEvent(EVENT_RESULT_SHARED) { str(PARAM_TOP_FACH_KEY, topFachKey ?: VALUE_UNKNOWN) }
     }
@@ -285,6 +299,7 @@ object AppAnalytics {
     private const val EVENT_RESULT_VIEWED = "result_viewed"
     private const val EVENT_RESULT_DISMISSED = "result_dismissed"
     private const val EVENT_RESULT_SHARED = "result_shared"
+    private const val EVENT_RESULT_NEXT_STEP = "result_next_step"
     private const val EVENT_WARMUP_STARTED = "warmup_started"
     private const val EVENT_WARMUP_SKIPPED = "warmup_skipped"
     private const val EVENT_WARMUP_COMPLETED = "warmup_completed"
@@ -314,6 +329,7 @@ object AppAnalytics {
     private const val PARAM_RUNNER_UP_GAP = "runner_up_gap"
     private const val PARAM_VOICE_GROUP = "voice_group"
     private const val PARAM_SOURCE = "source"
+    private const val PARAM_TARGET = "target"
     private const val PARAM_DETECTED_MIN_MIDI = "detected_min_midi"
     private const val PARAM_DETECTED_MAX_MIDI = "detected_max_midi"
     private const val PARAM_COMFORTABLE_LOW_MIDI = "comfortable_low_midi"

@@ -30,9 +30,10 @@ Single-module Android app (`:app`), MVVM, Jetpack Compose + Navigation Compose.
 
 **`analyzer/`** — core DSP, no Android context dependency:
 - `YinPitchDetector` — implements YIN algorithm (44 100 Hz, threshold 0.15, min confidence 0.80). Step 3 uses a `while` loop with a mutable `var tau` so the inner local-minimum advance loop correctly slides tau before recording `tauEstimate`. A Kotlin `for` loop would create an immutable `val` and silently skip the advance.
-- `FachClassifier` — pure functions: `hzToNoteName` (uses `roundToInt()`, not `toInt()`), `estimateDetectedExtremes` (neighbor-validated within 2 semitones, binary search O(log n)), `estimateComfortableRange` (P20–P80 of sorted pitch list), `estimatePassaggio` (max-variance 15-sample sliding window — **variance is in Hz, not semitones**; see `KNOWN_ISSUES.md`), `classify` (scores 14 pts across 5 dimensions: ceiling 0–3, floor 0–2, tessHigh 0–3, tessLow 0–3, passaggio 0–3)
-- `VoiceAnalyzer` — drives `AudioRecord` on `Dispatchers.IO`; stays context-free by receiving `VoiceAnalyzerStrings` from the ViewModel. Uses `CopyOnWriteArrayList` for the pitch sample buffer (IO writes, main-thread read after `cancel()`). Takes a snapshot before classifier calls to avoid `ConcurrentModificationException` from `subList`.
-- `FachData` — static definitions for all 19 Fach types. Female voice values are standard. Male passaggio values are ~1 semitone below the literature median; see `KNOWN_ISSUES.md`.
+- `FachClassifier` — pure functions: `hzToNoteName` (uses `roundToInt()`, not `toInt()`), `estimateDetectedExtremes` (neighbor-validated within 2 semitones, binary search O(log n)), `estimateComfortableRange` (P20–P80 of sorted pitch list), `estimatePassaggio` (15-sample sliding window in **semitone space**, scored by direction reversals (weighted 2^n) × median frame-to-frame move — not plain variance, which can't tell a wobble from one clean jump; falls back to a plain average below `PASSAGGIO_MIN_SAMPLES = 30`), `classify` (scores 14 pts across 5 dimensions: floor 0–3, ceiling 0–2, tessHigh 0–3, tessLow 0–3, passaggio 0–3 — floor gets the finer tiers because a ceiling is easier to fake)
+- `VoiceAnalyzer` — drives `AudioRecord` on `Dispatchers.IO`; stays context-free by receiving `VoiceAnalyzerStrings` from the ViewModel. Uses `CopyOnWriteArrayList` for the pitch sample buffer (IO writes, main-thread read after `cancel()`). Takes a snapshot before classifier calls to avoid `ConcurrentModificationException` from `subList`. Accepts frames ≥ `MIN_PITCH_HZ = 60` Hz; `stop()` requires `MIN_ACCEPTED_SAMPLES = 40`. Callers guard with `if (analyzer.isRunning) return` before `start()` (double-tap fix). The test-only `SessionReplay` in `AnalyzerTestFixtures.kt` mirrors these constants and the `stop()` profile-building logic — change both together.
+- `FachData` — static definitions for all 19 Fach types (female and male passaggio values both aligned to the literature median).
+- Numeric UI readouts and `hzToNoteName` format with `Locale.ROOT` (default-locale formatting renders non-Latin digits under e.g. Persian).
 
 **`data/`** — Room database (`diapason.db`, version 1):
 - `SessionEntity` / `SessionDao` / `DiapasonDatabase` (singleton via `getInstance`)
@@ -74,7 +75,7 @@ Strings live in `res/values-xx/strings.xml` for `en`, `fr`, `it`, `es`, `pt`. Wh
 
 ## Testing
 
-All tests are pure JVM (no Robolectric, no emulator). `android.util.Log` is stubbed via `testOptions { unitTests { isReturnDefaultValues = true } }` in `build.gradle.kts`.
+All tests run on the JVM (no emulator). Most are plain JUnit; ViewModel, `VoiceAnalyzer`, and Room DAO tests use `@RunWith(RobolectricTestRunner::class)` (Robolectric's `AudioRecord` shadow lets `VoiceAnalyzer.start()` genuinely run). `android.util.Log` is stubbed via `testOptions { unitTests { isReturnDefaultValues = true } }` in `build.gradle.kts`.
 
 **Two fixture styles** (both run in the same suite):
 - **Kotlin DSL** (`AnalyzerTestFixtures.kt` / `buildSession { … }`) — precise edge-case engineering with controlled Hz values and a fluent builder (`sustainedNote`, `stepUp`, `noisyGlide`, `silenceGap`, `isolatedSpike`, `fadingConfidence`)
@@ -82,29 +83,10 @@ All tests are pure JVM (no Robolectric, no emulator). `android.util.Log` is stub
 
 To add a JSON fixture: export `VoiceAnalyzer`-tagged Logcat lines, strip everything except `hz` and `confidence`, write the fixture JSON, then register the filename stem in `FixtureRegressionTest.fixtureNames()`. Full workflow is in `app/src/test/CAPTURING.md`.
 
-**Passaggio fixtures** require a specific session structure: stable block below the break → rapid oscillation straddling the break → stable block above. Scale or arpeggio fixtures must set `passaggioNote: null` because Hz variance grows with pitch so the top of any ascending run dominates the window.
+**Passaggio fixtures** require a specific session structure: stable block below the break → rapid oscillation straddling the break → stable block above. Scale or arpeggio fixtures must set `passaggioNote: null` — an ascending run has no oscillation, so no reliable passaggio can be estimated from it (see `CAPTURING.md`).
 
-**Test files:**
-
-| File | What it covers |
-|---|---|
-| `YinPitchDetectorTest` | YIN accuracy (≤20 cents), confidence, silence, noise, fallback path, Step 3 regression |
-| `FachClassifierTest` | `hzToNoteName`, `estimateComfortableRange`, `estimateDetectedExtremes`, `estimatePassaggio` |
-| `HzToNoteNameTest` | Note name correctness across all octaves, ALL_FACH passaggio/range values |
-| `FachClassifierClassifyTest` | `classify()` scoring — perfect-match profiles, cross-category separation, result invariants |
-| `AdjacentFachDiscriminationTest` | Hardest adjacent-pair boundaries; documents the 2 known indistinguishable ties |
-| `FachDataIntegrityTest` | ALL_FACH table constraints: ordering, containment, unique IDs, positive values |
-| `PassaggioEdgeCaseTest` | Passaggio and comfortable-range edge cases: bimodal, uniform, confidence fades |
-| `EstimateDetectedExtremesStressTest` | Stress/property tests for neighbor-validated extremes |
-| `AnalyzerScenarioTest` | End-to-end vocal scenarios using DSL fixtures |
-| `AnalyzerInvariantTest` | Properties that must hold for all inputs (comfortable ⊆ detected) |
-| `FixtureRegressionTest` | Parameterised regression against five JSON fixtures (10 tests × 5 fixtures = 50 cases) |
-| `FixtureLoaderTest` | JSON loader, assertion helper, `toPitchSamples` bridge |
+Test classes are named after what they cover (`*ClassifyTest`, `*StressTest`, `*ViewModelTest`, …). `AdversarialBreakageTest` holds constructed counterexamples that each `KNOWN_ISSUES.md` fix was built against. When fixing a bug, the established practice is to confirm the new test fails against the pre-fix code (e.g. `git stash` the fix) before trusting it.
 
 ## Known limitations
 
-See `KNOWN_ISSUES.md` for prioritised findings from architectural and musical review:
-- Passaggio estimation is in Hz space (biased toward high registers)
-- Male voice passaggio values in FachData are ~1 semitone below literature median
-- Minimum sample gate of 20 frames is low for reliable P20/P80
-- "Confidence" label on results screen is a score ratio, not a statistical confidence
+Every numbered issue in `KNOWN_ISSUES.md` (#1–13) is fixed, mitigated, or documented as inherent; read an issue's entry before touching the code it names, since several record rejected alternative fixes and why. The "Inherent architectural limitations" section lists deliberate trade-offs (timbre can't be measured, adjacent-Fach acoustic overlaps, 60 Hz detection floor vs. Contrabass Oktavist, single-frame extremes not counted, vibrato indistinguishable from a register break) — don't "fix" these without reading the rationale.

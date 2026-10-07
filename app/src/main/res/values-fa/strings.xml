@@ -33,7 +33,7 @@
     <string name="voice_types_cd_expand">باز کردن</string>
     <string name="results_title">نتایج شما</string>
     <string name="results_best_match_label">بهترین تطابق</string>
-    <string name="results_confidence_label">میزان اطمینان طبقه‌بندی</string>
+    <string name="results_confidence_label">امتیاز تطابق</string>
     <string name="results_famous_roles_subheading">نقش‌های مشهور برای این صدا</string>
     <string name="results_section_range">گستره صدا — این جلسه</string>
     <string name="results_section_other_matches">دیگر تطابق‌های ممکن</string>
@@ -50,7 +50,7 @@
     <string name="results_runner_up_rank_format">#%1$d</string>
     <string name="results_score_format">%1$d/%2$d</string>
     <string name="results_btn_analyze_again">تحلیل دوباره</string>
-    <string name="results_disclaimer">طبقه‌بندی فاخ همچنین به تیمبر (رنگ صدا) و وزن آوایی بستگی دارد که نیازمند گوشی ورزیده است. از این نتیجه به‌عنوان یک نقطه شروع آگاهانه استفاده کنید — نه یک تشخیص قطعی. یک مربی آواز همیشه دقیق‌ترین ارزیابی را ارائه می‌دهد.</string>
+    <string name="results_disclaimer">طبقه‌بندی فاخ همچنین به تیمبر (رنگ صدا) و وزن آوایی بستگی دارد که نیازمند گوش ورزیده است. از این نتیجه به‌عنوان یک نقطه شروع آگاهانه استفاده کنید — نه یک تشخیص قطعی. یک مربی آواز همیشه دقیق‌ترین ارزیابی را ارائه می‌دهد.</string>
 
     <!-- Re-test reminder (Results screen card + notification) -->
     <string name="reminder_card_title">آزمایش دوباره در 7 روز دیگر؟</string>
@@ -73,9 +73,9 @@
     <string name="guide_step3_title">نت‌های پایدار بخوانید</string>
     <string name="guide_step3_body">هر نت را حداقل 2 تا 3 ثانیه نگه دارید. دیاپازون برای تشخیص قابل‌اعتماد نت به یک صدای پایدار و کشیده نیاز دارد — گفتار و لغزش میان نت‌ها فیلتر می‌شوند.</string>
     <string name="guide_step4_title">تمام گستره صدای خود را بپوشانید</string>
-    <string name="guide_step4_body">از بم‌ترین نت راحت خود شروع کنید و به‌صورت کروماتیک یا با گام به سمت زیرترین نت خود بالا بروید. سپس دوباره پایین بیایید. این کار به تشخیص هم گستره مطلق و هم پاساجو (شکست ثباتی) شما کمک می‌کند. حداقل 30 تا 45 ثانیه آواز بخوانید.</string>
+    <string name="guide_step4_body">از بم‌ترین نت راحت خود شروع کنید و به‌صورت کروماتیک یا با گام به سمت زیرترین نت خود بالا بروید. سپس دوباره پایین بیایید. این کار به تشخیص هم گستره مطلق و هم پاساجو (شکست ثباتی) شما کمک می‌کند. حداقل 30 تا 45 ثانیه آواز بخوانید. با صدای صاف (بدون ویبراتو) بخوانید — ویبراتو می‌تواند شبیه ناپایداری رجیستر به نظر برسد و تخمین پاساجو را کم‌اعتبارتر کند.</string>
     <string name="guide_step5_title">دکمه توقف را بزنید و نتیجه را بررسی کنید</string>
-    <string name="guide_step5_body">دیاپازون بهترین تطابق نوع صدای شما را همراه با امتیاز اطمینان، گستره اندازه‌گیری‌شده، تسیتورا و پاساجوی تخمینی نمایش می‌دهد. جزئیات کامل امتیازدهی در Logcat موجود است.</string>
+    <string name="guide_step5_body">دیاپازون بهترین تطابق نوع صدای شما را همراه با امتیاز تطابق، گستره اندازه‌گیری‌شده، تسیتورا و پاساجوی تخمینی نمایش می‌دهد.</string>
     <string name="guide_fach_section_title">فاخ چیست؟</string>
     <string name="guide_fach_body1">«فاخ» (تلفظ: /fax/، در آلمانی به معنای «بخش») سیستم کلاسیکی است که در تئاترهای اپرا برای دسته‌بندی خوانندگان بر اساس نوع صدا به کار می‌رود. دانستن فاخ خود به شما کمک می‌کند رپرتوار مناسب را بشناسید، از صدای خود محافظت کنید و با کارگردانان بازیگرگزینی و مربیان آواز ارتباط برقرار کنید.</string>
     <string name="guide_fach_body2">فراتر از صرفاً «سوپرانو» یا «باس»، سیستم فاخ بیش از 19 زیرنوع را بر اساس گستره، تسیتورا (جایی که صدا راحت‌تر می‌نشیند)، پاساجو (شکست میان صدای سینه و صدای سر) و تیمبر (رنگ صدا) از هم متمایز می‌کند.</string>
@@ -99,8 +99,8 @@
     <string name="about_creator_pitch_detection_label">تشخیص نت</string>
     <string name="about_creator_voice_taxonomy_label">طبقه‌بندی انواع صدا</string>
     <string name="about_section_localization">زبان‌ها و بومی‌سازی</string>
-    <string name="about_localization_current_language">در 7 زبان در دسترس است</string>
-    <string name="about_localization_available_languages">انگلیسی، فرانسوی، ایتالیایی، اسپانیایی، پرتغالی، چینی و فارسی در دسترس هستند.</string>
+    <string name="about_localization_current_language">در 8 زبان در دسترس است</string>
+    <string name="about_localization_available_languages">انگلیسی، فرانسوی، ایتالیایی، اسپانیایی، پرتغالی، چینی، فارسی و عربی در دسترس هستند.</string>
     <string name="about_localization_choose_language">انتخاب زبان برنامه</string>
     <string name="about_section_references">منابع</string>
     <string name="about_reference_yin_label">مقاله YIN</string>

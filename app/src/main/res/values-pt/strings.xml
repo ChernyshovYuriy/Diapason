@@ -83,9 +83,7 @@
         de canto. Cante com um som reto (sem vibrato) — o vibrato pode parecer instabilidade de
         registro e tornar a estimativa do passaggio menos confiável.</string>
     <string name="guide_step5_title">Pressione Parar e revise</string>
-    <string name="guide_step5_body">O Diapason mostrará a melhor correspondência do seu tipo de voz com uma pontuação de
-        correspondência, sua extensão medida, tessitura e passaggio estimado. O detalhe completo da pontuação está no
-        Logcat.</string>
+    <string name="guide_step5_body">O Diapason mostrará a melhor correspondência do seu tipo de voz com uma pontuação de correspondência, sua extensão medida, tessitura e passaggio estimado.</string>
     <string name="guide_fach_section_title">O que é Fach?</string>
     <string name="guide_fach_body1">"Fach" (pronunciado /fax/, alemão para "compartimento") é o
         sistema clássico usado em casas de ópera para categorizar cantores por tipo de voz. Conhecer o seu
@@ -122,8 +120,8 @@
     <string name="about_creator_pitch_detection_label">Detecção de altura</string>
     <string name="about_creator_voice_taxonomy_label">Taxonomia vocal</string>
     <string name="about_section_localization">Idiomas &amp; Localização</string>
-    <string name="about_localization_current_language">Disponível em 7 idiomas</string>
-    <string name="about_localization_available_languages">Inglês, francês, italiano, espanhol, português, chinês e persa estão disponíveis.</string>
+    <string name="about_localization_current_language">Disponível em 8 idiomas</string>
+    <string name="about_localization_available_languages">Inglês, francês, italiano, espanhol, português, chinês, persa e árabe estão disponíveis.</string>
     <string name="about_localization_choose_language">Escolha o idioma do aplicativo</string>
     <string name="about_section_references">Referências</string>
     <string name="about_reference_yin_label">Artigo do YIN</string>

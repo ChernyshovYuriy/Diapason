@@ -242,5 +242,6 @@
     <string name="about_language_portuguese" translatable="false">Português</string>
     <string name="about_language_chinese" translatable="false">中文</string>
     <string name="about_language_persian" translatable="false">فارسی</string>
+    <string name="about_language_arabic" translatable="false">العربية</string>
     <string name="no_pitch_placeholder" translatable="false">—</string>
 </resources>

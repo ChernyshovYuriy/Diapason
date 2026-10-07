@@ -80,7 +80,7 @@ Single-module Android app (`:app`), MVVM, Jetpack Compose + Navigation Compose.
 
 ## Localisation
 
-Strings live in `res/values-xx/strings.xml` for `en`, `fr`, `it`, `es`, `pt`, `zh`, `fa`. When adding a new string, add it to all seven files. Active locales are declared in `build.gradle.kts` via `localeFilters`.
+Strings live in `res/values-xx/strings.xml` for `en`, `fr`, `it`, `es`, `pt`, `zh`, `fa`, `ar`. When adding a new string, add it to all eight files — `LocalizationParityTest` fails on a missing/extra key, a placeholder mismatch, or a `localeFilters` entry it doesn't cover. Plurals need every CLDR quantity for the locale (`many` for fr/it/es/pt; `zero`/`one`/`two`/`few`/`many`/`other` for ar). Roles and singer names in `strings_non_translatable.xml` are deliberately untranslated; language names there are in their own script. Active locales are declared in `build.gradle.kts` via `localeFilters`.
 
 ## Testing
 

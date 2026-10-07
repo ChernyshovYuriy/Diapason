@@ -216,6 +216,11 @@ fun AboutScreen() {
                             tag = "fa",
                             labelRes = R.string.about_language_persian,
                             flagEmoji = "🇮🇷"
+                        ),
+                        LanguageOption(
+                            tag = "ar",
+                            labelRes = R.string.about_language_arabic,
+                            flagEmoji = "🇸🇦"
                         )
                     )
                 }

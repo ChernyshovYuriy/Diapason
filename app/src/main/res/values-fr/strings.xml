@@ -83,9 +83,7 @@
         de chant. Chantez avec un son droit (sans vibrato) — le vibrato peut ressembler à une
         instabilité de registre et rendre l’estimation du passaggio moins fiable.</string>
     <string name="guide_step5_title">Appuyez sur Arrêter puis consultez</string>
-    <string name="guide_step5_body">Diapason affichera le type de voix le plus probable avec un score de
-        correspondance, votre étendue mesurée, votre tessiture et votre passaggio estimé. Les détails complets du
-        score sont dans Logcat.</string>
+    <string name="guide_step5_body">Diapason affichera le type de voix le plus probable avec un score de correspondance, votre étendue mesurée, votre tessiture et votre passaggio estimé.</string>
     <string name="guide_fach_section_title">Qu’est-ce que le Fach ?</string>
     <string name="guide_fach_body1">"Fach" (prononcé /fax/, mot allemand signifiant "compartiment") est le
         système classique utilisé dans les maisons d’opéra pour catégoriser les chanteurs par type de voix.
@@ -121,8 +119,8 @@
     <string name="about_creator_pitch_detection_label">Détection de hauteur</string>
     <string name="about_creator_voice_taxonomy_label">Taxonomie vocale</string>
     <string name="about_section_localization">Langues et localisation</string>
-    <string name="about_localization_current_language">Disponible en 7 langues</string>
-    <string name="about_localization_available_languages">L’anglais, le français, l’italien, l’espagnol, le portugais, le chinois et le persan sont disponibles.</string>
+    <string name="about_localization_current_language">Disponible en 8 langues</string>
+    <string name="about_localization_available_languages">L’anglais, le français, l’italien, l’espagnol, le portugais, le chinois, le persan et l’arabe sont disponibles.</string>
     <string name="about_localization_choose_language">Choisir la langue de l’application</string>
     <string name="about_section_references">Références</string>
     <string name="about_reference_yin_label">Article YIN</string>

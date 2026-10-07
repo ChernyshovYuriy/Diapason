@@ -83,9 +83,7 @@
         di canto. Canta con un suono dritto (senza vibrato) — il vibrato può assomigliare a
         un’instabilità di registro e rendere la stima del passaggio meno affidabile.</string>
     <string name="guide_step5_title">Premi Ferma e rivedi</string>
-    <string name="guide_step5_body">Diapason mostrerà il tipo di voce più compatibile con un punteggio di
-        corrispondenza, la tua estensione misurata, la tessitura e il passaggio stimato. Il dettaglio completo
-        del punteggio è in Logcat.</string>
+    <string name="guide_step5_body">Diapason mostrerà il tipo di voce più compatibile con un punteggio di corrispondenza, la tua estensione misurata, la tessitura e il passaggio stimato.</string>
     <string name="guide_fach_section_title">Che cos’è il Fach?</string>
     <string name="guide_fach_body1">"Fach" (pronunciato /fax/, parola tedesca per "compartimento") è il
         sistema classico usato nei teatri d’opera per categorizzare i cantanti per tipo di voce.
@@ -121,8 +119,8 @@
     <string name="about_creator_pitch_detection_label">Rilevamento dell’intonazione</string>
     <string name="about_creator_voice_taxonomy_label">Tassonomia vocale</string>
     <string name="about_section_localization">Lingue e localizzazione</string>
-    <string name="about_localization_current_language">Disponibile in 7 lingue</string>
-    <string name="about_localization_available_languages">Sono disponibili inglese, francese, italiano, spagnolo, portoghese, cinese e persiano.</string>
+    <string name="about_localization_current_language">Disponibile in 8 lingue</string>
+    <string name="about_localization_available_languages">Sono disponibili inglese, francese, italiano, spagnolo, portoghese, cinese, persiano e arabo.</string>
     <string name="about_localization_choose_language">Scegli la lingua dell’app</string>
     <string name="about_section_references">Riferimenti</string>
     <string name="about_reference_yin_label">Articolo YIN</string>

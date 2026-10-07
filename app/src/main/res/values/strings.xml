@@ -88,9 +88,7 @@
         of singing. Sing with a straight tone (no vibrato) — vibrato can look like register
         instability and make the passaggio estimate less reliable.</string>
     <string name="guide_step5_title">Press Stop and review</string>
-    <string name="guide_step5_body">Diapason will show your top voice type match with a match
-        score, your measured range, tessitura, and estimated passaggio. Full scoring detail is in
-        Logcat.</string>
+    <string name="guide_step5_body">Diapason will show your top voice type match with a match score, your measured range, tessitura, and estimated passaggio.</string>
     <string name="guide_fach_section_title">What is Fach?</string>
     <string name="guide_fach_body1">\"Fach\" (pronounced /fax/, German for \"compartment\") is the
         classical system used in opera houses to categorise singers by voice type. Knowing your
@@ -128,8 +126,8 @@
     <string name="about_creator_pitch_detection_label">Pitch detection</string>
     <string name="about_creator_voice_taxonomy_label">Voice taxonomy</string>
     <string name="about_section_localization">Languages &amp; Localisation</string>
-    <string name="about_localization_current_language">Available in 7 languages</string>
-    <string name="about_localization_available_languages">English, French, Italian, Spanish, Portuguese, Chinese, and Persian are available.</string>
+    <string name="about_localization_current_language">Available in 8 languages</string>
+    <string name="about_localization_available_languages">English, French, Italian, Spanish, Portuguese, Chinese, Persian, and Arabic are available.</string>
     <string name="about_localization_choose_language">Choose app language</string>
     <string name="about_section_references">References</string>
     <string name="about_reference_yin_label">YIN paper</string>

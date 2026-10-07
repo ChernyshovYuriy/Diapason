@@ -33,7 +33,7 @@
     <string name="voice_types_cd_expand">展开</string>
     <string name="results_title">你的结果</string>
     <string name="results_best_match_label">最佳匹配</string>
-    <string name="results_confidence_label">分类置信度</string>
+    <string name="results_confidence_label">匹配得分</string>
     <string name="results_famous_roles_subheading">该声部的著名角色</string>
     <string name="results_section_range">音域——本次分析</string>
     <string name="results_section_other_matches">其他可能匹配</string>
@@ -81,12 +81,9 @@
     <string name="guide_step3_body">每个音至少保持 2–3 秒。Diapason 需要稳定、
         持续的音才能可靠地检测音高——说话声和音符间的滑音会被过滤掉。</string>
     <string name="guide_step4_title">覆盖你的全部音域</string>
-    <string name="guide_step4_body">从你舒适的最低音开始，按半音阶或音阶逐渐
-        上行到最高音，然后再唱回来。这有助于同时检测你的绝对音域和换声点
-        （声区转换处）。演唱时长请争取达到 30–45 秒以上。</string>
+    <string name="guide_step4_body">从你舒适的最低音开始，按半音阶或音阶逐渐上行到最高音，然后再唱回来。这有助于同时检测你的绝对音域和换声点（声区转换处）。演唱时长请争取达到 30–45 秒以上。请用直音（不加颤音）演唱——颤音可能被误判为声区不稳定，使换声点的估计不够可靠。</string>
     <string name="guide_step5_title">点击停止并查看结果</string>
-    <string name="guide_step5_body">Diapason 会显示最匹配的声部类型及置信度分数、
-        测得的音域、常用音区和估计的换声点。完整的评分细节可在 Logcat 中查看。</string>
+    <string name="guide_step5_body">Diapason 会显示最匹配的声部类型及匹配得分、测得的音域、常用音区和估计的换声点。</string>
     <string name="guide_fach_section_title">什么是 Fach？</string>
     <string name="guide_fach_body1">"Fach"（德语意为"分类/隔间"）是歌剧院用来
         按声部类型对歌唱家进行分类的传统体系。了解自己的 Fach 有助于选择
@@ -121,8 +118,8 @@
     <string name="about_creator_pitch_detection_label">音高检测</string>
     <string name="about_creator_voice_taxonomy_label">声部分类体系</string>
     <string name="about_section_localization">语言与本地化</string>
-    <string name="about_localization_current_language">支持 7 种语言</string>
-    <string name="about_localization_available_languages">已支持英语、法语、意大利语、西班牙语、葡萄牙语、中文和波斯语。</string>
+    <string name="about_localization_current_language">支持 8 种语言</string>
+    <string name="about_localization_available_languages">已支持英语、法语、意大利语、西班牙语、葡萄牙语、中文、波斯语和阿拉伯语。</string>
     <string name="about_localization_choose_language">选择应用语言</string>
     <string name="about_section_references">参考资料</string>
     <string name="about_reference_yin_label">YIN 论文</string>

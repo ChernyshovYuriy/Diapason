@@ -317,9 +317,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">Ora: %1$s · mancano %2$s</string>
-    <string name="compare_warmup_passaggio_hint_format">Il tuo passaggio stimato è intorno a %1$s — attraversalo dolcemente, senza spingere.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">La tua estensione nel tempo</string>
     <string name="history_progress_cd_format">Grafico dell\'estensione. Registrazioni: %1$d. Estensione comoda nella prima: %2$s–%3$s; nell\'ultima: %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">Il microfono ha smesso di rispondere — forse lo sta usando un\'altra app o una chiamata. Riprova.</string>
 </resources>

@@ -264,9 +264,8 @@
     <string name="compare_warmup_card1_title">Trilos labiais</string>
     <string name="compare_warmup_card1_body">Solte o ar através dos lábios levemente fechados para fazê-los vibrar.
     Deslize suavemente para cima e para baixo pela sua extensão.</string>
-    <string name="compare_warmup_card2_title">Humming</string>
-    <string name="compare_warmup_card2_body">Hum com uma nota confortável e a boca fechada.
-    Suba e desça lentamente uma quinta.</string>
+    <string name="compare_warmup_card2_title">Boca fechada</string>
+    <string name="compare_warmup_card2_body">Cantarole numa nota confortável com a boca fechada. Suba e desça lentamente uma quinta.</string>
     <string name="compare_warmup_card3_title">Escalas de cinco notas</string>
     <string name="compare_warmup_card3_body">Cante \"mah-may-mee-mo-moo\" em uma escala ascendente de cinco notas.
     Comece no registro médio e suba meio tom a cada repetição.</string>
@@ -318,9 +317,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">Agora: %1$s · faltam %2$s</string>
-    <string name="compare_warmup_passaggio_hint_format">O seu passaggio estimado está por volta de %1$s — atravesse-o com suavidade, sem forçar.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">A sua extensão ao longo do tempo</string>
     <string name="history_progress_cd_format">Gráfico de extensão. Gravações: %1$d. Extensão confortável na primeira: %2$s–%3$s; na mais recente: %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">O microfone deixou de responder — outra app ou uma chamada pode estar a usá-lo. Tente novamente.</string>
 </resources>

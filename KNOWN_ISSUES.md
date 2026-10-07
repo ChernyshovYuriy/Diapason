@@ -367,6 +367,37 @@ mutation, then restored.
 
 ---
 
+## 14 · A microphone failure left the recording screen stuck [FIXED 2026-10-07]
+
+**File:** `VoiceAnalyzer.start()` / read loop; `AnalyzeViewModel`, `WarmUpComparisonViewModel`
+
+If `AudioRecord` failed to initialise, `start()` posted an error and returned, but the screen was
+already in its recording state: Stop did nothing (`!isRunning`) and leaving the screen didn't reset
+it. `analysis_started` was logged anyway. Separately, the read loop's `if (read <= 0) continue`
+spun at full CPU forever on persistent read errors (e.g. a phone call taking the mic), and
+`startRecording()` could throw uncaught. `stop()` also released the recorder while the IO
+coroutine could still be inside `read()`.
+
+**Fix:** `start()` returns whether recording began; callers show the mic error with Try Again. Read
+errors are retried briefly, then end the session via `onRecordingError` (new
+`analysis_mic_error` event, `phase` = start/recording). The reader coroutine now owns release.
+Tests: `VoiceAnalyzerTest` (factory returning null; Robolectric `ShadowAudioRecord.setSource`
+returning `ERROR_DEAD_OBJECT`), `AnalyzeViewModelTest`; both verified to fail against the old code.
+
+---
+
+## 15 · The in-app language picker could show English, and forgot the choice [FIXED 2026-10-07]
+
+**File:** `app/build.gradle.kts` (`bundle.language`), `AndroidManifest.xml`
+
+Play's per-language bundle splits install only the device's languages, so picking e.g. فارسی or
+العربية in About on an English phone rendered English. On Android 12 and below the pick was also
+lost on every restart (no `AppLocalesMetadataHolderService` with `autostore_locales`). **Fix:**
+language splits disabled; the service declared; `generateLocaleConfig` (with
+`res/resources.properties`) lists the 8 languages in Android 13+'s per-app language settings.
+
+---
+
 ## Planned · Singer profiles ("Who's singing?") [TODO — next release after 2.7]
 
 **Why:** the Male/Female voice switch (2.7) is per recording, so a teacher or a shared phone no

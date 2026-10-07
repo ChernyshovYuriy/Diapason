@@ -204,7 +204,7 @@
     <string name="history_empty_body">Completa un análisis de voz para ver tu historial</string>
     <string name="history_label_comfortable_range">Rango cómodo</string>
     <string name="history_label_detected_extremes">Extremos detectados</string>
-    <string name="history_label_passaggio">Passaggio</string>
+    <string name="history_label_passaggio">Pasaje</string>
     <string name="history_range_format">%1$s – %2$s</string>
     <string name="compare_btn_start">Comparar antes / después del calentamiento</string>
     <string name="compare_intro_title">Antes / después del calentamiento</string>
@@ -245,12 +245,12 @@
     <string name="compare_result_after_range">Rango cómodo después del calentamiento: %1$s</string>
     <string name="compare_result_section_comfortable">Rango cómodo</string>
     <string name="compare_result_section_extremes">Extremos detectados</string>
-    <string name="compare_result_section_passaggio">Passaggio estimado</string>
+    <string name="compare_result_section_passaggio">Pasaje estimado</string>
     <string name="compare_result_label_comfortable_low">Límite inferior (P20)</string>
     <string name="compare_result_label_comfortable_high">Límite superior (P80)</string>
     <string name="compare_result_label_detected_min">Nota más grave detectada</string>
     <string name="compare_result_label_detected_max">Nota más aguda detectada</string>
-    <string name="compare_result_label_passaggio">Estimación del passaggio</string>
+    <string name="compare_result_label_passaggio">Estimación del pasaje</string>
     <string name="compare_result_disclaimer">Basado solo en estas dos sesiones. Los cambios entre
 	sesiones reflejan la medición, no resultados fisiológicos o de entrenamiento garantizados.</string>
     <string name="compare_result_btn_done">Hecho</string>
@@ -262,7 +262,7 @@
     <string name="compare_warmup_card1_title">Trinos de labios</string>
     <string name="compare_warmup_card1_body">Sopla aire a través de los labios ligeramente cerrados para hacerlos vibrar.
     Deslízate suavemente hacia arriba y hacia abajo por tu rango.</string>
-    <string name="compare_warmup_card2_title">Zumbido</string>
+    <string name="compare_warmup_card2_title">Boca cerrada</string>
     <string name="compare_warmup_card2_body">Tararea en una nota cómoda con la boca cerrada.
     Sube y baja lentamente una quinta.</string>
     <string name="compare_warmup_card3_title">Escalas de cinco notas</string>
@@ -316,9 +316,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">Ahora: %1$s · quedan %2$s</string>
-    <string name="compare_warmup_passaggio_hint_format">Tu pasaje estimado está alrededor de %1$s — atraviésalo con suavidad, sin forzar.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">Tu tesitura a lo largo del tiempo</string>
     <string name="history_progress_cd_format">Gráfico de tesitura. Grabaciones: %1$d. Rango cómodo en la primera: %2$s–%3$s; en la última: %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">El micrófono dejó de responder — puede que otra app o una llamada lo esté usando. Inténtalo de nuevo.</string>
 </resources>

@@ -41,10 +41,4 @@ class WarmUpPlanTest {
         assertEquals(1, WarmUpPlan.secondsLeftInStep(29))
         assertEquals(20, WarmUpPlan.secondsLeftInStep(30))
     }
-
-    @Test
-    fun `the passaggio hint goes on the octave slides step`() {
-        // Step order: lip trills, humming, scales, octave slides, sustained notes.
-        assertEquals(3, WarmUpPlan.PASSAGGIO_STEP)
-    }
 }

@@ -316,9 +316,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">Now: %1$s · %2$s left</string>
-    <string name="compare_warmup_passaggio_hint_format">Your estimated passaggio is around %1$s — glide through it gently, without pushing.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">Your range over time</string>
     <string name="history_progress_cd_format">Range chart. Recordings: %1$d. Comfortable range in the first: %2$s–%3$s; in the latest: %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">The microphone stopped responding — another app or a call may be using it. Please try again.</string>
 </resources>

@@ -280,9 +280,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">اکنون: %1$s · %2$s باقی مانده</string>
-    <string name="compare_warmup_passaggio_hint_format">پاساجوی تخمینی شما حدود %1$s است — به‌آرامی و بدون فشار از آن عبور کنید.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">گستره صدای شما در طول زمان</string>
     <string name="history_progress_cd_format">نمودار گستره. تعداد ضبط‌ها: %1$d. محدوده راحت در اولین ضبط: %2$s–%3$s؛ در آخرین ضبط: %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">میکروفون دیگر پاسخ نمی‌دهد — ممکن است برنامه دیگری یا یک تماس از آن استفاده کند. لطفاً دوباره تلاش کنید.</string>
 </resources>

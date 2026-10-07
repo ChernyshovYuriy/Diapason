@@ -13,6 +13,7 @@ import com.yuriy.diapason.analyzer.VoiceProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -177,7 +178,7 @@ class AnalyzeViewModelTest {
     }
 
     @Test
-    fun `setVoiceChoice re-ranks the last result within the new group`() {
+    fun `setVoiceChoice leaves the previous result as it was recorded`() {
         val tenor = ALL_FACH.first { it.rangeMinHz == 130f && it.rangeMaxHz == 523f }
         val profile = VoiceProfile(
             tenor.rangeMinHz, tenor.rangeMaxHz, tenor.tessituraMinHz, tenor.tessituraMaxHz,
@@ -187,9 +188,12 @@ class AnalyzeViewModelTest {
 
         viewModel.setVoiceChoice(VoiceGroupChoice.FEMALE, AppAnalytics.VoiceGroupSource.Change)
 
-        val reranked = viewModel.lastResult!!
-        assertEquals("the profile itself is kept", profile, reranked.profile)
-        assertTrue(reranked.matches.all { it.fach.voiceGroup == VoiceGroup.FEMALE })
+        // The switch is per recording: flipping it for the next singer must not move the
+        // previous singer's result into the other half of the table.
+        val last = viewModel.lastResult!!
+        assertEquals(profile, last.profile)
+        assertTrue(last.matches.any { it.fach.voiceGroup == VoiceGroup.MALE })
+        assertEquals(FachClassifier.classify(profile), last.matches)
     }
 
     // ── Early Stop below the sample gate ──────────────────────────────────────
@@ -248,6 +252,19 @@ class AnalyzeViewModelTest {
         assertFalse("the next Stop must finish normally", state.earlyStopPrompted)
     }
 
+    // ── Microphone failure ────────────────────────────────────────────────────
+
+    @Test
+    fun `a microphone that fails to start leaves Recording for the error state`() {
+        // Before the fix the state stayed Recording with a Stop button that did nothing.
+        replaceAnalyzer(VoiceAnalyzer(TestScope(UnconfinedTestDispatcher()), createRecorder = { _, _ -> null }))
+
+        viewModel.startRecording()
+
+        val state = viewModel.uiState.value
+        assertTrue("Expected InsufficientData but got $state", state is AnalyzeUiState.InsufficientData)
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**
@@ -260,6 +277,12 @@ class AnalyzeViewModelTest {
         val field = AnalyzeViewModel::class.java.getDeclaredField("analyzer")
         field.isAccessible = true
         return (field.get(viewModel) as VoiceAnalyzer).onPitchDetected!!
+    }
+
+    private fun replaceAnalyzer(analyzer: VoiceAnalyzer) {
+        val field = AnalyzeViewModel::class.java.getDeclaredField("analyzer")
+        field.isAccessible = true
+        field.set(viewModel, analyzer)
     }
 
     private fun forceLastResult(result: AnalyzeUiState.ResultReady) {

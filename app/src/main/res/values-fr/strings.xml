@@ -317,9 +317,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">En cours : %1$s · encore %2$s</string>
-    <string name="compare_warmup_passaggio_hint_format">Votre passaggio estimé se situe vers %1$s — traversez-le en douceur, sans forcer.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">Votre étendue au fil du temps</string>
     <string name="history_progress_cd_format">Graphique d\'étendue. Enregistrements : %1$d. Tessiture au premier : %2$s–%3$s ; au plus récent : %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">Le microphone ne répond plus — une autre application ou un appel l\'utilise peut-être. Veuillez réessayer.</string>
 </resources>

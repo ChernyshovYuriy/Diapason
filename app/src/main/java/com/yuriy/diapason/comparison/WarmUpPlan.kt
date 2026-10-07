@@ -16,8 +16,9 @@ object WarmUpPlan {
 
     val TOTAL_SECONDS: Int = STEP_SECONDS.sum()
 
-    /** Index of the step whose slides cross the passaggio — where the personal hint goes. */
-    const val PASSAGGIO_STEP = 3
+    // No personal passaggio hint on the slides step: the only estimate available here comes
+    // from the baseline, which is a scale — and a scale gives no reliable passaggio
+    // (app/src/test/CAPTURING.md, KNOWN_ISSUES.md). A confidently wrong note would mislead.
 
     /** When step [index] starts, in seconds from the beginning of the warm-up. */
     fun stepStartSeconds(index: Int): Int = STEP_SECONDS.take(index).sum()

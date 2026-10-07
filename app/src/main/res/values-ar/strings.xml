@@ -293,9 +293,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">الآن: %1$s · متبقٍّ %2$s</string>
-    <string name="compare_warmup_passaggio_hint_format">يقع الباساجيو التقديري لديك حول %1$s — انزلق عبره بلطف ودون إجهاد.</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">مداك الصوتي عبر الزمن</string>
     <string name="history_progress_cd_format">مخطط المدى. عدد التسجيلات: %1$d. المدى المريح في أول تسجيل: %2$s–%3$s؛ وفي أحدثها: %4$s–%5$s.</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">توقّف الميكروفون عن الاستجابة — ربما يستخدمه تطبيق آخر أو مكالمة. يُرجى المحاولة مرة أخرى.</string>
 </resources>

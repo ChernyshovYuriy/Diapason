@@ -59,6 +59,17 @@
             </intent-filter>
         </activity>
 
+        <!-- Persists the in-app language picked in About (AppCompatDelegate.setApplicationLocales)
+             across restarts on Android 12 and below; Android 13+ stores it in the system. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autostore_locales"
+                android:value="true" />
+        </service>
+
         <!-- Disable WorkManager's automatic androidx.startup initialization. It runs as a
              ContentProvider.onCreate() during handleBindApplication, before MainApp.onCreate()
              — on some Android 14 device firmwares whose framework.jar is missing

@@ -43,8 +43,6 @@ import java.util.Locale
 fun WarmUpTimerScreen(
     remainingSeconds: Int,
     isRunning: Boolean,
-    /** The baseline's passaggio note for the slides step's hint; null hides the hint. */
-    passaggioNote: String? = null,
     onStartTimer: () -> Unit,
     onSkip: () -> Unit,
     onExit: () -> Unit,
@@ -142,9 +140,6 @@ fun WarmUpTimerScreen(
                     timeRange = formatStepRange(index),
                     title = stringResource(titleRes),
                     body = stringResource(bodyRes),
-                    hint = passaggioNote
-                        ?.takeIf { index == WarmUpPlan.PASSAGGIO_STEP }
-                        ?.let { stringResource(R.string.compare_warmup_passaggio_hint_format, it) },
                     nowSecondsLeft = if (index == currentStep) WarmUpPlan.secondsLeftInStep(elapsedSeconds) else null,
                 )
             }
@@ -215,7 +210,6 @@ private fun WarmUpCard(
     timeRange: String,
     title: String,
     body: String,
-    hint: String?,
     nowSecondsLeft: Int?,
 ) {
     val isNow = nowSecondsLeft != null
@@ -247,15 +241,6 @@ private fun WarmUpCard(
                 color = if (isNow) MaterialTheme.colorScheme.onPrimaryContainer
                 else MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            hint?.let {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
-            }
         }
     }
 }

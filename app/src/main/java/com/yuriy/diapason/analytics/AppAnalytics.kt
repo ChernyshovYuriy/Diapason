@@ -135,6 +135,21 @@ object AppAnalytics {
         }
     }
 
+    enum class MicErrorPhase(val value: String) {
+        /** The recorder couldn't be opened or started; nothing was recorded. */
+        Start("start"),
+        /** The mic stopped delivering audio mid-recording (persistent read errors). */
+        Recording("recording"),
+    }
+
+    /** The microphone failed; the attempt ends without an outcome event. */
+    fun analysisMicError(flow: Flow, phase: MicErrorPhase) {
+        logEvent(EVENT_ANALYSIS_MIC_ERROR) {
+            str(PARAM_FLOW, flow.value)
+            str(PARAM_PHASE, phase.value)
+        }
+    }
+
     fun analysisAbandoned(flow: Flow, sampleCount: Int, durationSeconds: Float) {
         logEvent(EVENT_ANALYSIS_ABANDONED) {
             str(PARAM_FLOW, flow.value)
@@ -296,6 +311,7 @@ object AppAnalytics {
     private const val EVENT_ANALYSIS_INSUFFICIENT = "analysis_insufficient"
     private const val EVENT_ANALYSIS_ABANDONED = "analysis_abandoned"
     private const val EVENT_ANALYSIS_STOP_TOO_EARLY = "analysis_stop_too_early"
+    private const val EVENT_ANALYSIS_MIC_ERROR = "analysis_mic_error"
     private const val EVENT_RESULT_VIEWED = "result_viewed"
     private const val EVENT_RESULT_DISMISSED = "result_dismissed"
     private const val EVENT_RESULT_SHARED = "result_shared"
@@ -330,6 +346,7 @@ object AppAnalytics {
     private const val PARAM_VOICE_GROUP = "voice_group"
     private const val PARAM_SOURCE = "source"
     private const val PARAM_TARGET = "target"
+    private const val PARAM_PHASE = "phase"
     private const val PARAM_DETECTED_MIN_MIDI = "detected_min_midi"
     private const val PARAM_DETECTED_MAX_MIDI = "detected_max_midi"
     private const val PARAM_COMFORTABLE_LOW_MIDI = "comfortable_low_midi"

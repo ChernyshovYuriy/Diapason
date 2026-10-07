@@ -1,8 +1,13 @@
 package com.yuriy.diapason.analyzer
 
+import android.media.AudioRecord
+import android.media.MediaRecorder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -11,6 +16,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowAudioRecord
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * Direct tests for [VoiceAnalyzer]'s start/stop lifecycle.
@@ -145,5 +153,73 @@ class VoiceAnalyzerTest {
         val analyzer = newAnalyzer()
         analyzer.start(strings)
         assertTrue(analyzer.elapsedSeconds >= 0f)
+    }
+
+    // ── Microphone failures ──────────────────────────────────────────────────
+
+    @After
+    fun clearAudioSource() {
+        ShadowAudioRecord.clearSource()
+    }
+
+    @Test
+    fun `start returns true when recording begins`() {
+        assertTrue(newAnalyzer().start(strings))
+    }
+
+    @Test
+    fun `start returns false and posts the mic error when no recorder can be opened`() {
+        val analyzer = VoiceAnalyzer(
+            TestScope(UnconfinedTestDispatcher()),
+            createRecorder = { _, _ -> null },
+        )
+        var status: String? = null
+        analyzer.onStatusUpdate = { status = it }
+
+        assertFalse(analyzer.start(strings))
+        assertFalse("nothing to stop — the UI must not show Recording", analyzer.isRunning)
+        assertEquals(strings.micInitError, status)
+    }
+
+    @Test
+    fun `a failing experiment source falls back to MIC`() {
+        val opened = mutableListOf<Int>()
+        val real = newAnalyzer().createRecorder
+        val analyzer = VoiceAnalyzer(
+            TestScope(UnconfinedTestDispatcher()),
+            audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION,
+            createRecorder = { source, size ->
+                opened += source
+                if (source == MediaRecorder.AudioSource.MIC) real(source, size) else null
+            },
+        )
+
+        assertTrue(analyzer.start(strings))
+        assertTrue(analyzer.usedFallbackSource)
+        assertEquals(listOf(MediaRecorder.AudioSource.VOICE_RECOGNITION, MediaRecorder.AudioSource.MIC), opened)
+        analyzer.stop(strings.tooFewSamples)
+    }
+
+    @Test
+    fun `persistent read errors end the session and report the mic as lost`() {
+        // Every read fails, as when a phone call takes the microphone.
+        ShadowAudioRecord.setSource(object : ShadowAudioRecord.AudioRecordSource {
+            override fun readInShortArray(data: ShortArray, offset: Int, size: Int, blocking: Boolean) =
+                AudioRecord.ERROR_DEAD_OBJECT
+        })
+        val lost = CountDownLatch(1)
+        val analyzer = VoiceAnalyzer(CoroutineScope(Dispatchers.Default))
+        analyzer.onRecordingError = { lost.countDown() }
+
+        assertTrue(analyzer.start(strings))
+
+        assertTrue("onRecordingError must fire instead of spinning", lost.await(5, TimeUnit.SECONDS))
+        assertFalse(analyzer.isRunningEventually())
+    }
+
+    /** isRunning flips once the reader coroutine has finished its teardown. */
+    private fun VoiceAnalyzer.isRunningEventually(): Boolean {
+        repeat(50) { if (!isRunning) return false; Thread.sleep(20) }
+        return isRunning
     }
 }

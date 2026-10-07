@@ -305,9 +305,11 @@
 
     <!-- Guided warm-up -->
     <string name="compare_warmup_now_format">现在：%1$s · 剩余 %2$s</string>
-    <string name="compare_warmup_passaggio_hint_format">你估计的换声点在 %1$s 附近——轻柔地滑过它，不要用力。</string>
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">你的音域变化</string>
     <string name="history_progress_cd_format">音域图。录音次数：%1$d。第一次的舒适音区：%2$s–%3$s；最近一次：%4$s–%5$s。</string>
+
+    <!-- Microphone lost mid-recording -->
+    <string name="analyze_error_mic_lost">麦克风已停止响应——可能有其他应用或通话正在使用它。请重试。</string>
 </resources>

@@ -61,11 +61,6 @@ sealed interface ComparisonStage {
     data class WarmUp(
         val remainingSeconds: Int = WARM_UP_DURATION_SECONDS,
         val isRunning: Boolean = true,
-        /**
-         * The baseline's estimated passaggio as a note name, for the slides step's personal
-         * hint; null when the baseline was too short for the windowed estimate to be real.
-         */
-        val passaggioNote: String? = null,
     ) : ComparisonStage
 
     /** User is recording the retest (after warm-up) session. */
@@ -118,12 +113,17 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         // comment in AnalyzeViewModel.startRecording() for why this is needed here too.
         if (analyzer.isRunning) return
         AppLogger.i("$TAG startBaseline()")
-        AppAnalytics.analysisStarted(AppAnalytics.Flow.Baseline)
         _stage.value =
             ComparisonStage.Baseline(statusMessage = str(R.string.analyze_status_listening))
         attachAnalyzerCallbacksForBaseline()
-        analyzer.start(analyzerStrings())
+        val started = analyzer.start(analyzerStrings())
         reportAudioSource()
+        if (!started) {
+            AppAnalytics.analysisMicError(AppAnalytics.Flow.Baseline, AppAnalytics.MicErrorPhase.Start)
+            _stage.value = ComparisonStage.BaselineInsufficient(str(R.string.analyze_status_mic_error))
+            return
+        }
+        AppAnalytics.analysisStarted(AppAnalytics.Flow.Baseline)
     }
 
     fun stopBaseline() {
@@ -176,9 +176,6 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         _stage.value = ComparisonStage.WarmUp(
             remainingSeconds = WARM_UP_DURATION_SECONDS,
             isRunning = false, // user must explicitly start timer
-            passaggioNote = profile.estimatedPassaggioHz
-                .takeIf { profile.sampleCount >= FachClassifier.PASSAGGIO_MIN_SAMPLES }
-                ?.let { FachClassifier.hzToNoteName(it) },
         )
     }
 
@@ -226,14 +223,19 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
         // comment in AnalyzeViewModel.startRecording() for why this is needed here too.
         if (analyzer.isRunning) return
         AppLogger.i("$TAG startRetest()")
-        AppAnalytics.analysisStarted(AppAnalytics.Flow.Retest)
         _stage.value = ComparisonStage.Retest(
             isRecording = true,
             statusMessage = str(R.string.analyze_status_listening),
         )
         attachAnalyzerCallbacksForRetest()
-        analyzer.start(analyzerStrings())
+        val started = analyzer.start(analyzerStrings())
         reportAudioSource()
+        if (!started) {
+            AppAnalytics.analysisMicError(AppAnalytics.Flow.Retest, AppAnalytics.MicErrorPhase.Start)
+            _stage.value = ComparisonStage.RetestInsufficient(str(R.string.analyze_status_mic_error))
+            return
+        }
+        AppAnalytics.analysisStarted(AppAnalytics.Flow.Retest)
     }
 
     fun stopRetest() {
@@ -340,6 +342,13 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     )
 
     private fun attachAnalyzerCallbacksForBaseline() {
+        analyzer.onRecordingError = {
+            AppAnalytics.analysisMicError(AppAnalytics.Flow.Baseline, AppAnalytics.MicErrorPhase.Recording)
+            _stage.update {
+                if (it is ComparisonStage.Baseline) ComparisonStage.BaselineInsufficient(str(R.string.analyze_error_mic_lost))
+                else it
+            }
+        }
         analyzer.onPitchDetected = { hz, note ->
             _stage.update {
                 if (it is ComparisonStage.Baseline) {
@@ -361,6 +370,13 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     }
 
     private fun attachAnalyzerCallbacksForRetest() {
+        analyzer.onRecordingError = {
+            AppAnalytics.analysisMicError(AppAnalytics.Flow.Retest, AppAnalytics.MicErrorPhase.Recording)
+            _stage.update {
+                if (it is ComparisonStage.Retest) ComparisonStage.RetestInsufficient(str(R.string.analyze_error_mic_lost))
+                else it
+            }
+        }
         analyzer.onPitchDetected = { hz, note ->
             _stage.update {
                 if (it is ComparisonStage.Retest) {

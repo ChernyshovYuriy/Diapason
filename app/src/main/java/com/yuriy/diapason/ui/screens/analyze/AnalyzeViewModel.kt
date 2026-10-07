@@ -137,6 +137,17 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
             }
         }
 
+        analyzer.onRecordingError = {
+            // The session already ended inside the analyzer; leave "Recording" with a
+            // message instead of a Stop button that has nothing left to stop.
+            AppAnalytics.analysisMicError(AppAnalytics.Flow.Single, AppAnalytics.MicErrorPhase.Recording)
+            _uiState.update { current ->
+                if (current is AnalyzeUiState.Recording) {
+                    AnalyzeUiState.InsufficientData(getString(R.string.analyze_error_mic_lost))
+                } else current
+            }
+        }
+
         analyzer.onStatusUpdate = { message ->
             _uiState.update { current ->
                 if (current is AnalyzeUiState.Recording) current.copy(statusMessage = message)
@@ -156,7 +167,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_listening)
         )
-        analyzer.start(
+        val started = analyzer.start(
             VoiceAnalyzerStrings(
                 listeningMessage = getString(R.string.analyze_status_listening_short),
                 micInitError = getString(R.string.analyze_status_mic_error),
@@ -167,6 +178,12 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         AppAnalytics.setAudioSource(
             if (analyzer.usedFallbackSource) AudioSourceExperiment.FALLBACK_ANALYTICS_VALUE else audioSourceArm.analyticsValue
         )
+        if (!started) {
+            // Not "Recording": there's nothing to stop. The error state offers Try Again.
+            AppAnalytics.analysisMicError(AppAnalytics.Flow.Single, AppAnalytics.MicErrorPhase.Start)
+            _uiState.value = AnalyzeUiState.InsufficientData(getString(R.string.analyze_status_mic_error))
+            return
+        }
         AppAnalytics.analysisStarted(AppAnalytics.Flow.Single)
     }
 
@@ -260,20 +277,17 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Sets the Male · Female · Not sure switch; it stays as the default for the next
-     * recording. A result already on screen is re-ranked within the new group — its
-     * profile is kept, so the user sees the effect without recording again — and the
-     * combined profile switches to sessions recorded with the new choice.
+     * Sets the Male · Female · Not sure switch for the *next* recording; it stays as the
+     * default afterwards. The last result is deliberately left as it was recorded: the
+     * switch is per recording, so flipping it usually means a different singer is about
+     * to sing (a teacher's next student), and re-ranking the previous take would put that
+     * student's result in the wrong half of the table — and contradict their History row.
+     * The combined profile does switch to sessions recorded with the new choice.
      */
     fun setVoiceChoice(choice: VoiceGroupChoice, source: AppAnalytics.VoiceGroupSource) {
         voiceGroupPreferences.choice = choice
         _voiceChoice.value = choice
         AppAnalytics.voiceGroupSelected(choice.group, source)
-        _lastResult.value?.let { last ->
-            val reranked = last.copy(matches = FachClassifier.classify(last.profile, choice.group))
-            _lastResult.value = reranked
-            if (_uiState.value is AnalyzeUiState.ResultReady) _uiState.value = reranked
-        }
         viewModelScope.launch(Dispatchers.IO) { refreshCombinedProfile() }
     }
 

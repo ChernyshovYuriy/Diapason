@@ -30,6 +30,9 @@ android {
 
     androidResources {
         localeFilters += listOf("en", "fr", "it", "es", "pt", "zh", "fa", "ar")
+        // Generates the manifest's localeConfig from the res/values-xx folders, so the app
+        // appears in Android 13+'s per-app language settings. Needs res/resources.properties.
+        generateLocaleConfig = true
     }
 
     buildTypes {
@@ -50,7 +53,11 @@ android {
 
     bundle {
         language {
-            enableSplit = true
+            // Off: the in-app language picker (About) can choose a language the device
+            // doesn't use, and Play only installs the language splits matching the device's
+            // languages — the picked language would silently render in English. All
+            // translations are text, so shipping them all costs little.
+            enableSplit = false
         }
         density {
             enableSplit = true

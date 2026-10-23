@@ -84,7 +84,7 @@ Strings live in `res/values-xx/strings.xml` for `en`, `fr`, `it`, `es`, `pt`, `z
 
 ## Testing
 
-All tests run on the JVM (no emulator). Most are plain JUnit; ViewModel, `VoiceAnalyzer`, and Room DAO tests use `@RunWith(RobolectricTestRunner::class)` (Robolectric's `AudioRecord` shadow lets `VoiceAnalyzer.start()` genuinely run). `android.util.Log` is stubbed via `testOptions { unitTests { isReturnDefaultValues = true } }` in `build.gradle.kts`.
+All tests run on the JVM (no emulator). Most are plain JUnit; ViewModel, `VoiceAnalyzer`, and Room DAO tests use `@RunWith(RobolectricTestRunner::class)` (Robolectric's `AudioRecord` shadow lets `VoiceAnalyzer.start()` genuinely run). `android.util.Log` is stubbed via `testOptions { unitTests { isReturnDefaultValues = true } }` in `build.gradle.kts`. Robolectric boots `TestMainApp` (`app/src/test/resources/robolectric.properties`), a `MainApp` whose `initFirebase()` is a no-op — Firebase Analytics' measurement thread throws a `VerifyError` on the JVM (seen with BOM 35.x) that kills the test process; `AppAnalytics` no-ops while uninitialized.
 
 **Two fixture styles** (both run in the same suite):
 - **Kotlin DSL** (`AnalyzerTestFixtures.kt` / `buildSession { … }`) — precise edge-case engineering with controlled Hz values and a fluent builder (`sustainedNote`, `stepUp`, `noisyGlide`, `silenceGap`, `isolatedSpike`, `fadingConfidence`)

@@ -15,7 +15,7 @@ import com.yuriy.diapason.reminder.ReminderWorker
 import com.yuriy.diapason.reminder.WorkManagerSupport
 import java.util.Locale
 
-class MainApp : Application() {
+open class MainApp : Application() {
 
     /**
      * Application-scoped repository. Initialised lazily on first access so that
@@ -34,6 +34,17 @@ class MainApp : Application() {
     override fun onCreate() {
         super.onCreate()
         AppLogger.setDebug(isDebug(applicationContext))
+        initFirebase()
+        WorkManagerSupport.initialize(applicationContext)
+        ReminderWorker.Channel.ensureRegistered(applicationContext)
+    }
+
+    /**
+     * Open so Robolectric tests can skip it (`TestMainApp`): Firebase Analytics starts a
+     * measurement thread whose bytecode fails JVM verification, and the resulting
+     * VerifyError kills the test process.
+     */
+    protected open fun initFirebase() {
         FirebaseApp.initializeApp(applicationContext)
         AppAnalytics.init(applicationContext)
         // Analytics/Crashlytics collection defaults to off via the manifest meta-data
@@ -44,8 +55,6 @@ class MainApp : Application() {
         if (PrivacyConsentPreferences(applicationContext).granted) {
             setCollectionEnabled(enabled = true)
         }
-        WorkManagerSupport.initialize(applicationContext)
-        ReminderWorker.Channel.ensureRegistered(applicationContext)
     }
 
     private fun isDebug(context: Context): Boolean {

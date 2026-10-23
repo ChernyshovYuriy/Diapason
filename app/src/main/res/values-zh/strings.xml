@@ -10,7 +10,18 @@
     <string name="analyze_stat_samples">样本数</string>
     <string name="analyze_stat_hz">Hz</string>
     <string name="analyze_btn_grant_permission">授予麦克风权限</string>
-    <string name="analyze_btn_start">开始</string>
+    <string name="analyze_btn_start_range_test">开始音域测试</string>
+    <string name="analyze_btn_free_recording">自由录音</string>
+    <string name="range_test_duration_format">%1$d 个简短练习 · 约 %2$d 秒</string>
+    <string name="range_test_step_format">第 %1$d 步，共 %2$d 步：%3$s · 剩余 %4$s</string>
+    <string name="range_test_step_note_title">舒适的音</string>
+    <string name="range_test_step_note_body">用“啊”唱一个轻松的音，大约在你说话的音高，并稳定地保持住。</string>
+    <string name="range_test_step_song_title">一首熟悉的歌</string>
+    <string name="range_test_step_song_body">用舒适的调唱一首你熟悉的简单歌曲。不要刻意去够很高或很低的音。</string>
+    <string name="range_test_step_up_title">向上滑音</string>
+    <string name="range_test_step_up_body">用“呜”慢慢向上滑到你能轻松唱出的最高音，保持直声（不带颤音）。在感到吃力之前停下。</string>
+    <string name="range_test_step_down_title">向下滑音</string>
+    <string name="range_test_step_down_body">现在慢慢向下滑到你能清晰唱出的最低音。不要低吼，也不要发出气泡音。</string>
     <string name="analyze_btn_stop">停止</string>
     <string name="analyze_btn_try_again">重试</string>
     <string name="analyze_unknown">未知</string>
@@ -69,12 +80,11 @@
     <string name="guide_step2_title">先热身</string>
     <string name="guide_step2_body">开始前进行 5–10 分钟的声乐热身。
         未热身的嗓音会产生不可靠的结果，也可能无法达到真实的音域极限。</string>
-    <string name="guide_step3_title">演唱持续音</string>
-    <string name="guide_step3_body">每个音至少保持 2–3 秒。Diapason 需要稳定、
-        持续的音才能可靠地检测音高——说话声和音符间的滑音会被过滤掉。</string>
-    <string name="guide_step4_title">覆盖你的全部音域</string>
-    <string name="guide_step4_body">从你舒适的最低音开始，按半音阶或音阶逐渐上行到最高音，然后再唱回来。这有助于同时检测你的绝对音域和换声点（声区转换处）。演唱时长请争取达到 30–45 秒以上。请用直音（不加颤音）演唱——颤音可能被误判为声区不稳定，使换声点的估计不够可靠。</string>
-    <string name="guide_step5_title">点击停止并查看结果</string>
+    <string name="guide_step3_title">进行音域测试</string>
+    <string name="guide_step3_body">点击“开始音域测试”，按照屏幕上的四个简短练习进行：一个舒适的音、一首熟悉的歌、一次缓慢的向上滑音和一次缓慢的向下滑音。用时不到一分钟，会自动结束。</string>
+    <string name="guide_step4_title">每次都用同样的测试</string>
+    <string name="guide_step4_body">只有唱同样的练习，结果才能相互比较，所以每次检查声音时都请做音域测试。滑音要慢，并保持直声（不带颤音）：颤音可能被误认为换声。只想随便唱的时候，可以用自由录音。</string>
+    <string name="guide_step5_title">查看结果</string>
     <string name="guide_step5_body">Diapason 会显示你测得的音域、舒适音域和估计的换声点，并与各声部对比，以及这一音域符合哪个声部和哪些 Fach 类型。</string>
     <string name="guide_fach_section_title">什么是 Fach？</string>
     <string name="guide_fach_body1">"Fach"（德语意为"分类/隔间"）是歌剧院用来
@@ -89,11 +99,9 @@
         均需在两个半音以内至少有一个邻近样本予以验证。单个孤立的边缘音
         不会单独决定音域的上下限。</string>
     <string name="guide_measure_tessitura_term">常用音区</string>
-    <string name="guide_measure_tessitura_def">你音高样本中第 20 到第 80 百分位
-        的区间——即你的声音自然且舒适地停留时间最长的区域。</string>
+    <string name="guide_measure_tessitura_def">你在舒适的音和歌曲中所唱音高的第 20 至第 80 百分位：你的声音自然停留最多的区域。自由录音时，取你所唱的全部音高。</string>
     <string name="guide_measure_passaggio_term">换声点</string>
-    <string name="guide_measure_passaggio_def">根据本次分析中音高最不稳定的区域
-        估算得出——即胸声与头声之间的过渡点。</string>
+    <string name="guide_measure_passaggio_def">根据缓慢滑音中音高最不稳定的位置估计：胸声与头声之间的过渡点。自由录音时，取整段录音。</string>
     <string name="guide_limitation_title">Diapason 无法测量的内容</string>
     <string name="guide_limitation_body">音色和声音的厚度对准确的 Fach 分类至关
         重要，但无法通过手机麦克风可靠地测量。戏剧女高音和抒情女高音可能

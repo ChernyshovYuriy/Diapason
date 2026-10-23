@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.ALL_FACH
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceGroup
@@ -263,6 +264,57 @@ class AnalyzeViewModelTest {
 
         val state = viewModel.uiState.value
         assertTrue("Expected InsufficientData but got $state", state is AnalyzeUiState.InsufficientData)
+    }
+
+    // ── Guided range test ─────────────────────────────────────────────────────
+
+    @Test
+    fun `the range test starts on its first exercise`() {
+        viewModel.startRangeTest()
+
+        val state = viewModel.uiState.value as AnalyzeUiState.Recording
+        assertEquals(RangeTest.Step.ComfortableNote, state.rangeTestStep)
+        assertEquals(RangeTest.Step.ComfortableNote.seconds, state.stepSecondsLeft)
+    }
+
+    @Test
+    fun `the range test moves to the exercise for the elapsed time`() {
+        viewModel.startRangeTest()
+
+        viewModel.onRangeTestTick(RangeTest.stepStartSeconds(RangeTest.Step.SlideUp) + 2f)
+
+        val state = viewModel.uiState.value as AnalyzeUiState.Recording
+        assertEquals(RangeTest.Step.SlideUp, state.rangeTestStep)
+        assertEquals(RangeTest.Step.SlideUp.seconds - 2, state.stepSecondsLeft)
+    }
+
+    @Test
+    fun `the range test finishes by itself after the last exercise`() {
+        viewModel.startRangeTest()
+
+        viewModel.onRangeTestTick(RangeTest.TOTAL_SECONDS.toFloat())
+
+        // The real analyzer heard nothing, so this ends insufficient — but with no Stop pressed.
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.InsufficientData)
+    }
+
+    @Test
+    fun `a free recording has no exercises and ignores range-test ticks`() {
+        viewModel.startRecording()
+
+        viewModel.onRangeTestTick(RangeTest.TOTAL_SECONDS.toFloat())
+
+        val state = viewModel.uiState.value as AnalyzeUiState.Recording
+        assertNull(state.rangeTestStep)
+    }
+
+    @Test
+    fun `leaving the screen during the range test abandons it`() {
+        viewModel.startRangeTest()
+
+        viewModel.onScreenStopped()
+
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.Idle)
     }
 
     // ── Voice-group check ─────────────────────────────────────────────────────

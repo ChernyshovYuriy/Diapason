@@ -66,7 +66,10 @@ import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
+import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.analyzer.RecordingGate
+import com.yuriy.diapason.analyzer.VoiceTypeReader
+import com.yuriy.diapason.ui.screens.results.familyLabel
 import java.util.Locale
 
 // internal, not private: lets a unit test call this directly rather than only
@@ -121,9 +124,22 @@ fun AnalyzeScreen(
         android.Manifest.permission.RECORD_AUDIO
     )
 
-    fun startOrRequestPermission() {
-        if (micPermission.status.isGranted) viewModel.startRecording()
-        else micPermission.launchPermissionRequest()
+    // Which start the first-run voice prompt is standing in front of.
+    var pendingRangeTest by remember { mutableStateOf(true) }
+
+    fun startOrRequestPermission(rangeTest: Boolean) {
+        if (!micPermission.status.isGranted) micPermission.launchPermissionRequest()
+        else if (rangeTest) viewModel.startRangeTest()
+        else viewModel.startRecording()
+    }
+
+    fun start(rangeTest: Boolean) {
+        if (voiceChoice == null) {
+            pendingRangeTest = rangeTest
+            showVoiceDialog = true
+        } else {
+            startOrRequestPermission(rangeTest)
+        }
     }
 
     (uiState as? AnalyzeUiState.ConfirmVoiceGroup)?.let { check ->
@@ -142,7 +158,7 @@ fun AnalyzeScreen(
             onSelect = { choice ->
                 showVoiceDialog = false
                 viewModel.setVoiceChoice(choice, AppAnalytics.VoiceGroupSource.FirstRun)
-                startOrRequestPermission()
+                startOrRequestPermission(pendingRangeTest)
             },
             onDismiss = { showVoiceDialog = false },
         )
@@ -176,7 +192,7 @@ fun AnalyzeScreen(
         AnimatedVisibility(visible = isIdle && lastResult != null) {
             lastResult?.let { result ->
                 PreviousResultBanner(
-                    voiceType = result.matches.firstOrNull()?.fach?.let { stringResource(it.nameRes) }
+                    voiceType = VoiceTypeReader.read(result.matches)?.let { familyLabel(it) }
                         ?: stringResource(R.string.analyze_unknown),
                     minNote = FachClassifier.hzToNoteName(result.profile.detectedMinHz),
                     maxNote = FachClassifier.hzToNoteName(result.profile.detectedMaxHz),
@@ -218,6 +234,19 @@ fun AnalyzeScreen(
             )
         }
 
+        // ── Range test: the exercise running now ─────────────────────────────
+        val rangeTestStep = (uiState as? AnalyzeUiState.Recording)?.rangeTestStep
+        AnimatedVisibility(visible = rangeTestStep != null) {
+            val recording = uiState as? AnalyzeUiState.Recording
+            recording?.rangeTestStep?.let { step ->
+                RangeTestStepCard(
+                    step = step,
+                    secondsLeft = recording.stepSecondsLeft,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+            }
+        }
+
         Spacer(Modifier.height(24.dp))
 
         // ── Stats row (only while recording) ─────────────────────────────────
@@ -242,7 +271,9 @@ fun AnalyzeScreen(
         // ── Progress toward the sample minimum (until reached) ───────────────
         val gateSampleCount = (uiState as? AnalyzeUiState.Recording)?.sampleCount ?: 0
         AnimatedVisibility(
-            visible = uiState is AnalyzeUiState.Recording && !RecordingGate.isEnough(gateSampleCount)
+            // Not during the range test: it finishes on its own, well past the gate.
+            visible = uiState is AnalyzeUiState.Recording && rangeTestStep == null &&
+                !RecordingGate.isEnough(gateSampleCount)
         ) {
             RecordingGateProgress(gateSampleCount, modifier = Modifier.padding(top = 12.dp))
         }
@@ -271,11 +302,10 @@ fun AnalyzeScreen(
                 onClick = { viewModel.stopRecording() }
             )
         } else {
+            // The range test leads: the same exercises every time make sessions comparable,
+            // as a teacher's range check does. A free recording stays for singing anything.
             Button(
-                onClick = {
-                    if (voiceChoice == null) showVoiceDialog = true
-                    else startOrRequestPermission()
-                },
+                onClick = { start(rangeTest = true) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -291,10 +321,25 @@ fun AnalyzeScreen(
                     )
                         stringResource(R.string.analyze_btn_grant_permission)
                     else
-                        stringResource(R.string.analyze_btn_start),
+                        stringResource(R.string.analyze_btn_start_range_test),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
+            Text(
+                text = stringResource(R.string.range_test_duration_format, RangeTest.STEPS.size, RangeTest.TOTAL_SECONDS),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            )
+            OutlinedButton(
+                onClick = { start(rangeTest = false) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) { Text(stringResource(R.string.analyze_btn_free_recording)) }
         }
 
         // Reset button after insufficient data

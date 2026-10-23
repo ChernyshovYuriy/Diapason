@@ -10,7 +10,18 @@
     <string name="analyze_stat_samples">Samples</string>
     <string name="analyze_stat_hz">Hz</string>
     <string name="analyze_btn_grant_permission">Grant Mic Permission</string>
-    <string name="analyze_btn_start">Start</string>
+    <string name="analyze_btn_start_range_test">Start range test</string>
+    <string name="analyze_btn_free_recording">Free recording</string>
+    <string name="range_test_duration_format">%1$d short exercises · about %2$d seconds</string>
+    <string name="range_test_step_format">Step %1$d of %2$d: %3$s · %4$s left</string>
+    <string name="range_test_step_note_title">Comfortable note</string>
+    <string name="range_test_step_note_body">Sing “ah” on an easy note, about where you speak, and hold it steadily.</string>
+    <string name="range_test_step_song_title">A song you know</string>
+    <string name="range_test_step_song_body">Sing a simple song you know well, in a key that feels easy. Don’t reach for high or low notes.</string>
+    <string name="range_test_step_up_title">Slide up</string>
+    <string name="range_test_step_up_body">On “oo”, slide slowly up to the highest note you can sing easily, with a straight tone. Stop before it strains.</string>
+    <string name="range_test_step_down_title">Slide down</string>
+    <string name="range_test_step_down_body">Now slide slowly down to the lowest note you can sing clearly. No growl or creak.</string>
     <string name="analyze_btn_stop">Stop</string>
     <string name="analyze_btn_try_again">Try Again</string>
     <string name="analyze_unknown">Unknown</string>
@@ -69,17 +80,11 @@
     <string name="guide_step2_title">Warm up first</string>
     <string name="guide_step2_body">Do 5–10 minutes of vocal warm-ups before starting.
         Cold voices produce unreliable results and may not reach their true range extremes.</string>
-    <string name="guide_step3_title">Sing sustained notes</string>
-    <string name="guide_step3_body">Hold each note for at least 2–3 seconds. Diapason needs a
-        stable, sustained tone to detect pitch reliably — speech and slides between notes are
-        filtered out.</string>
-    <string name="guide_step4_title">Cover your full range</string>
-    <string name="guide_step4_body">Start at your lowest comfortable note and step upward
-        chromatically or by scale to your highest. Then come back down. This helps detect both
-        your absolute range and your passaggio (register break). Aim for at least 30–45 seconds
-        of singing. Sing with a straight tone (no vibrato) — vibrato can look like register
-        instability and make the passaggio estimate less reliable.</string>
-    <string name="guide_step5_title">Press Stop and review</string>
+    <string name="guide_step3_title">Take the range test</string>
+    <string name="guide_step3_body">Tap Start range test and follow the four short exercises on screen: a comfortable note, a song you know, a slow slide up and a slow slide down. It takes under a minute and finishes by itself.</string>
+    <string name="guide_step4_title">Use the same test every time</string>
+    <string name="guide_step4_body">Results can only be compared when you sing the same exercises, so take the range test each time you check your voice. Slide slowly with a straight tone (no vibrato): vibrato can look like a register break. Free recording is there when you just want to sing.</string>
+    <string name="guide_step5_title">Review your result</string>
     <string name="guide_step5_body">Diapason will show your measured range, comfortable range and estimated passaggio, drawn against the voice types, and which voice type and Fach types that range fits.</string>
     <string name="guide_fach_section_title">What is Fach?</string>
     <string name="guide_fach_body1">\"Fach\" (pronounced /fax/, German for \"compartment\") is the
@@ -96,11 +101,9 @@
         each validated by the presence of at least one neighboring sample within two semitones.
         A single stray note at the edge of your range will not set the floor or ceiling on its own.</string>
     <string name="guide_measure_tessitura_term">Tessitura</string>
-    <string name="guide_measure_tessitura_def">The 20th–80th percentile of your pitch samples —
-        where your voice naturally and comfortably spends most of its time.</string>
+    <string name="guide_measure_tessitura_def">The 20th–80th percentile of the pitches you sing on the comfortable note and the song: where your voice naturally spends its time. In a free recording, of everything you sing.</string>
     <string name="guide_measure_passaggio_term">Passaggio</string>
-    <string name="guide_measure_passaggio_def">Estimated from the zone of highest pitch instability
-        in your session — the bridge point between your chest and head registers.</string>
+    <string name="guide_measure_passaggio_def">Estimated from where your pitch is least stable during the slow slides: the bridge between your chest and head registers. In a free recording, from the whole session.</string>
     <string name="guide_limitation_title">What Diapason Cannot Measure</string>
     <string name="guide_limitation_body">Timbre (tone color) and vocal weight are essential to
         accurate Fach classification but cannot be reliably measured by a phone microphone. A

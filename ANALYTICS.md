@@ -6,7 +6,7 @@ Reference for every custom event logged through `AppAnalytics`
 Reserved Firebase events (`first_open`, `session_start`, `app_remove`, …) are
 recorded automatically by the SDK and are **not** listed here.
 
-The `flow` parameter is one of: `single`, `baseline`, `retest`
+The `flow` parameter is one of: `single` (free recording), `range_test` (the guided range test, from 2.7.1), `baseline`, `retest`
 (`AppAnalytics.Flow`).
 
 ## User properties
@@ -27,7 +27,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 | Event | Params | Fired from |
 |---|---|---|
 | `analysis_started` | `flow` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` once recording has actually begun (since 2.7 not logged when the mic fails to start — see `analysis_mic_error`) |
-| `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `voice_group`, `reading`, `score`, `max_score`, `runner_up_gap`, `detected_min_midi`, `detected_max_midi`, `comfortable_low_midi`, `comfortable_high_midi`, `passaggio_midi` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` on successful classification. `reading` = the voice-type reading Results shows (`VoiceTypeReader`): `soprano`, or `soprano|mezzo_soprano` for "between" — single flow only, from 2.7.1. `top_fach_key` is still the top-ranked Fach, kept for continuity though no longer shown. `runner_up_gap` = top score − second score; the `*_midi` params are MIDI note numbers (A4 = 69), omitted when a pitch has none |
+| `analysis_completed` | `flow`, `duration_seconds`, `sample_count`, `top_fach_key`, `voice_group`, `reading`, `score`, `max_score`, `runner_up_gap`, `detected_min_midi`, `detected_max_midi`, `comfortable_low_midi`, `comfortable_high_midi`, `passaggio_midi` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` on successful classification. `reading` = the voice-type reading Results shows (`VoiceTypeReader`): `soprano`, or `soprano|mezzo_soprano` for "between" — Analyze screen only (`single`, `range_test`), from 2.7.1. `top_fach_key` is still the top-ranked Fach, kept for continuity though no longer shown. `runner_up_gap` = top score − second score; the `*_midi` params are MIDI note numbers (A4 = 69), omitted when a pitch has none |
 | `analysis_insufficient` | `flow`, `sample_count`, `duration_seconds` | Too few samples to classify (< 40-sample gate, `MIN_ACCEPTED_SAMPLES`) |
 | `analysis_mic_error` | `flow`, `phase` (`start` / `recording`) | The microphone couldn't be opened/started (`start`), or stopped delivering audio mid-recording (`recording`, persistent `read()` errors). The attempt ends in an error state; no outcome event follows |
 | `analysis_stop_too_early` | `flow`, `sample_count`, `duration_seconds` | Stop pressed below the 40-sample gate: recording continues with a "keep singing" prompt and the button becomes "Stop anyway". Follow it to the next outcome event to count recovered takes |
@@ -38,7 +38,7 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 | Event | Params | Fired from |
 |---|---|---|
 | `voice_group_selected` | `voice_group` (`male` / `female` / `unsure`), `source` (`first_run` / `change` / `mismatch_check`) | `AnalyzeViewModel.setVoiceChoice` — the prompt before the first recording (`first_run`), the Analyze screen's voice switch (`change`), or Switch on the voice-check prompt (`mismatch_check`). `voice_group` on `analysis_completed` uses the same values; `unsure` means all 19 Fach competed |
-| `voice_group_mismatch` | `voice_group` (chosen), `suggested_group`, `action` (`switch` / `keep` / `dismiss` / `discard`) | `AnalyzeViewModel.resolveVoiceGroupCheck` — a single-flow take fit the other voice group by `VoiceGroupCheck.MARGIN`+ points and the singer answered the "Check the voice setting" prompt. `analysis_completed` follows (with the final `voice_group`) except after `discard`, so count `discard` as an attempt outcome. Not asked again after `keep` until the switch changes |
+| `voice_group_mismatch` | `voice_group` (chosen), `suggested_group`, `action` (`switch` / `keep` / `dismiss` / `discard`) | `AnalyzeViewModel.resolveVoiceGroupCheck` — an Analyze-screen take (`single` or `range_test`) fit the other voice group by `VoiceGroupCheck.MARGIN`+ points and the singer answered the "Check the voice setting" prompt. `analysis_completed` follows (with the final `voice_group`) except after `discard`, so count `discard` as an attempt outcome. Not asked again after `keep` until the switch changes |
 
 ## Result screen
 

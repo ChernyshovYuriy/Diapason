@@ -10,7 +10,18 @@
     <string name="analyze_stat_samples">Échantillons</string>
     <string name="analyze_stat_hz">Hz</string>
     <string name="analyze_btn_grant_permission">Autoriser le micro</string>
-    <string name="analyze_btn_start">Démarrer</string>
+    <string name="analyze_btn_start_range_test">Lancer le test d’étendue</string>
+    <string name="analyze_btn_free_recording">Enregistrement libre</string>
+    <string name="range_test_duration_format">%1$d exercices courts · environ %2$d secondes</string>
+    <string name="range_test_step_format">Étape %1$d sur %2$d : %3$s · encore %4$s</string>
+    <string name="range_test_step_note_title">Note confortable</string>
+    <string name="range_test_step_note_body">Chantez « a » sur une note facile, à peu près à la hauteur de votre voix parlée, et tenez-la de façon stable.</string>
+    <string name="range_test_step_song_title">Une chanson que vous connaissez</string>
+    <string name="range_test_step_song_body">Chantez une chanson simple que vous connaissez bien, dans une tonalité facile. Ne cherchez pas les notes très aiguës ou très graves.</string>
+    <string name="range_test_step_up_title">Glissando montant</string>
+    <string name="range_test_step_up_body">Sur « ou », glissez lentement jusqu’à la note la plus aiguë que vous chantez sans effort, en voix droite (sans vibrato). Arrêtez-vous avant de forcer.</string>
+    <string name="range_test_step_down_title">Glissando descendant</string>
+    <string name="range_test_step_down_body">Glissez maintenant lentement jusqu’à la note la plus grave que vous chantez clairement, sans grognement ni voix craquée.</string>
     <string name="analyze_btn_stop">Arrêter</string>
     <string name="analyze_btn_try_again">Réessayer</string>
     <string name="analyze_unknown">Inconnu</string>
@@ -64,17 +75,11 @@
     <string name="guide_step2_title">Échauffez-vous d’abord</string>
     <string name="guide_step2_body">Faites 5 à 10 minutes d’échauffement vocal avant de commencer.
         Les voix à froid donnent des résultats peu fiables et peuvent ne pas atteindre leurs véritables extrêmes.</string>
-    <string name="guide_step3_title">Chantez des notes tenues</string>
-    <string name="guide_step3_body">Tenez chaque note au moins 2 à 3 secondes. Diapason a besoin d’un
-        son stable et tenu pour détecter la hauteur de façon fiable — la parole et les glissandos entre notes
-        sont filtrés.</string>
-    <string name="guide_step4_title">Couvrez toute votre étendue</string>
-    <string name="guide_step4_body">Commencez par votre note confortable la plus grave puis montez
-        chromatiquement ou par gamme jusqu’à la plus aiguë. Redescendez ensuite. Cela aide à détecter
-        votre étendue absolue et votre passaggio (rupture de registre). Visez au moins 30 à 45 secondes
-        de chant. Chantez avec un son droit (sans vibrato) — le vibrato peut ressembler à une
-        instabilité de registre et rendre l’estimation du passaggio moins fiable.</string>
-    <string name="guide_step5_title">Appuyez sur Arrêter puis consultez</string>
+    <string name="guide_step3_title">Faites le test d’étendue</string>
+    <string name="guide_step3_body">Touchez « Lancer le test d’étendue » et suivez les quatre exercices courts à l’écran : une note confortable, une chanson que vous connaissez, un glissando lent vers l’aigu et un vers le grave. Cela prend moins d’une minute et se termine tout seul.</string>
+    <string name="guide_step4_title">Le même test à chaque fois</string>
+    <string name="guide_step4_body">Les résultats ne sont comparables que si vous chantez les mêmes exercices : faites donc le test d’étendue chaque fois que vous vérifiez votre voix. Glissez lentement en voix droite (sans vibrato) : le vibrato peut ressembler à un changement de registre. L’enregistrement libre est là quand vous voulez simplement chanter.</string>
+    <string name="guide_step5_title">Consultez votre résultat</string>
     <string name="guide_step5_body">Diapason affichera votre étendue mesurée, votre zone confortable et votre passaggio estimé, comparés aux types de voix, ainsi que le type de voix et les types de Fach auxquels cette étendue correspond.</string>
     <string name="guide_fach_section_title">Qu’est-ce que le Fach ?</string>
     <string name="guide_fach_body1">"Fach" (prononcé /fax/, mot allemand signifiant "compartiment") est le
@@ -90,11 +95,9 @@
     <string name="guide_measure_range_def">La hauteur propre la plus grave et la plus aiguë détectées pendant
         votre session.</string>
     <string name="guide_measure_tessitura_term">Tessiture</string>
-    <string name="guide_measure_tessitura_def">Le 20e–80e percentile de vos échantillons de hauteur —
-        là où votre voix passe naturellement et confortablement la majeure partie du temps.</string>
+    <string name="guide_measure_tessitura_def">Le 20e au 80e centile des hauteurs chantées sur la note confortable et la chanson : là où votre voix passe naturellement son temps. En enregistrement libre, de tout ce que vous chantez.</string>
     <string name="guide_measure_passaggio_term">Passaggio</string>
-    <string name="guide_measure_passaggio_def">Estimé à partir de la zone de plus forte instabilité de hauteur
-        de votre session — le point de transition entre registres de poitrine et de tête.</string>
+    <string name="guide_measure_passaggio_def">Estimé à l’endroit où votre hauteur est la moins stable pendant les glissandos lents : le pont entre registre de poitrine et registre de tête. En enregistrement libre, sur toute la session.</string>
     <string name="guide_limitation_title">Ce que Diapason ne peut pas mesurer</string>
     <string name="guide_limitation_body">Le timbre (couleur vocale) et le poids vocal sont essentiels à une
         classification Fach précise mais ne peuvent pas être mesurés de manière fiable avec le micro d’un téléphone.

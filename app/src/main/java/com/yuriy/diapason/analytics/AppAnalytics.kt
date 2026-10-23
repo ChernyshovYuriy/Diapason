@@ -25,6 +25,8 @@ object AppAnalytics {
 
     enum class Flow(val value: String) {
         Single("single"),
+        /** The guided range test on the Analyze screen ([com.yuriy.diapason.analyzer.RangeTest]). */
+        RangeTest("range_test"),
         Baseline("baseline"),
         Retest("retest"),
     }

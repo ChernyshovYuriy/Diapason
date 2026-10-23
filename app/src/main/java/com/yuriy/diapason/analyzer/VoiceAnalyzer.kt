@@ -75,6 +75,9 @@ class VoiceAnalyzer(
     // be in pitchSamples.add() when stop() reads the list. COWAL is write-safe
     // without locking reads, which is exactly this access pattern.
     private val pitchSamples = CopyOnWriteArrayList<Float>()
+    // When each pitch was accepted, ms after the start — for a profile built per exercise
+    // (RangeTest). Added before its pitch, so it is never shorter than pitchSamples.
+    private val sampleTimesMs = CopyOnWriteArrayList<Long>()
     private var sessionStartMs = 0L
     private var lastLoggedNote = ""
 
@@ -105,6 +108,7 @@ class VoiceAnalyzer(
     fun start(strings: VoiceAnalyzerStrings): Boolean {
         if (isRunning) return true
         pitchSamples.clear()
+        sampleTimesMs.clear()
         lastLoggedNote = ""
         sessionStartMs = System.currentTimeMillis()
 
@@ -197,6 +201,7 @@ class VoiceAnalyzer(
 
                     if (pitchHz in MIN_PITCH_HZ..MAX_PITCH_HZ && confidence >= MIN_YIN_CONFIDENCE) {
                         val noteName = FachClassifier.hzToNoteName(pitchHz)
+                        sampleTimesMs.add(System.currentTimeMillis() - sessionStartMs)
                         pitchSamples.add(pitchHz)
 
                         if (noteName != lastLoggedNote) {
@@ -220,7 +225,15 @@ class VoiceAnalyzer(
         return true
     }
 
-    fun stop(tooFewSamplesMessage: String): VoiceProfile? {
+    /**
+     * Ends the session and builds its profile — from all samples alike, or with
+     * [buildProfile] when the session was a structured exercise (the guided range test
+     * measures each thing from its own step). Null below [MIN_ACCEPTED_SAMPLES].
+     */
+    fun stop(
+        tooFewSamplesMessage: String,
+        buildProfile: ((pitches: List<Float>, timesMs: List<Long>, durationSeconds: Float) -> VoiceProfile)? = null,
+    ): VoiceProfile? {
         if (!isRunning) return null
         analyzerJob?.cancel()
         // Unblocks a read() in progress; the reader coroutine releases the recorder.
@@ -244,6 +257,12 @@ class VoiceAnalyzer(
         // not on COWSubList which throws ConcurrentModificationException if the IO
         // coroutine adds one more sample before fully stopping.
         val snapshot = pitchSamples.toList()
+
+        if (buildProfile != null) {
+            val times = sampleTimesMs.toList().take(snapshot.size)
+            logHistogram(snapshot)
+            return buildProfile(snapshot, times, duration)
+        }
 
         val (detectedMin, detectedMax) = FachClassifier.estimateDetectedExtremes(snapshot)
         val (comfortableLow, comfortableHigh) = FachClassifier.estimateComfortableRange(snapshot)

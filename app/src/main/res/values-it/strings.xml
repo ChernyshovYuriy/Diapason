@@ -10,7 +10,18 @@
     <string name="analyze_stat_samples">Campioni</string>
     <string name="analyze_stat_hz">Hz</string>
     <string name="analyze_btn_grant_permission">Concedi permesso microfono</string>
-    <string name="analyze_btn_start">Avvia</string>
+    <string name="analyze_btn_start_range_test">Avvia il test di estensione</string>
+    <string name="analyze_btn_free_recording">Registrazione libera</string>
+    <string name="range_test_duration_format">%1$d brevi esercizi · circa %2$d secondi</string>
+    <string name="range_test_step_format">Passo %1$d di %2$d: %3$s · mancano %4$s</string>
+    <string name="range_test_step_note_title">Nota comoda</string>
+    <string name="range_test_step_note_body">Canta “a” su una nota facile, più o meno all’altezza della voce parlata, e tienila ferma.</string>
+    <string name="range_test_step_song_title">Una canzone che conosci</string>
+    <string name="range_test_step_song_body">Canta una canzone semplice che conosci bene, in una tonalità comoda. Non cercare note molto acute o molto gravi.</string>
+    <string name="range_test_step_up_title">Glissando in salita</string>
+    <string name="range_test_step_up_body">Su “u”, sali lentamente fino alla nota più acuta che canti con facilità, a voce ferma (senza vibrato). Fermati prima di forzare.</string>
+    <string name="range_test_step_down_title">Glissando in discesa</string>
+    <string name="range_test_step_down_body">Ora scendi lentamente fino alla nota più grave che canti in modo chiaro, senza ringhiare né raschiare.</string>
     <string name="analyze_btn_stop">Ferma</string>
     <string name="analyze_btn_try_again">Riprova</string>
     <string name="analyze_unknown">Sconosciuto</string>
@@ -64,17 +75,11 @@
     <string name="guide_step2_title">Riscaldati prima</string>
     <string name="guide_step2_body">Fai 5–10 minuti di riscaldamento vocale prima di iniziare.
         Le voci non riscaldate producono risultati poco affidabili e potrebbero non raggiungere i veri estremi.</string>
-    <string name="guide_step3_title">Canta note sostenute</string>
-    <string name="guide_step3_body">Mantieni ogni nota per almeno 2–3 secondi. Diapason ha bisogno di un
-        suono stabile e sostenuto per rilevare l’intonazione in modo affidabile — parlato e glissati tra note
-        vengono filtrati.</string>
-    <string name="guide_step4_title">Copri tutta la tua estensione</string>
-    <string name="guide_step4_body">Inizia dalla tua nota confortevole più grave e sali
-        cromaticamente o per scala fino alla più acuta. Poi ridiscendi. Questo aiuta a rilevare
-        sia l’estensione assoluta sia il passaggio (rottura di registro). Punta ad almeno 30–45 secondi
-        di canto. Canta con un suono dritto (senza vibrato) — il vibrato può assomigliare a
-        un’instabilità di registro e rendere la stima del passaggio meno affidabile.</string>
-    <string name="guide_step5_title">Premi Ferma e rivedi</string>
+    <string name="guide_step3_title">Fai il test di estensione</string>
+    <string name="guide_step3_body">Tocca «Avvia il test di estensione» e segui i quattro brevi esercizi sullo schermo: una nota comoda, una canzone che conosci, un glissando lento verso l’acuto e uno verso il grave. Dura meno di un minuto e si conclude da solo.</string>
+    <string name="guide_step4_title">Lo stesso test ogni volta</string>
+    <string name="guide_step4_body">I risultati sono confrontabili solo se canti gli stessi esercizi: fai quindi il test di estensione ogni volta che controlli la tua voce. Scivola lentamente a voce ferma (senza vibrato): il vibrato può sembrare un cambio di registro. La registrazione libera c’è quando vuoi semplicemente cantare.</string>
+    <string name="guide_step5_title">Guarda il risultato</string>
     <string name="guide_step5_body">Diapason mostrerà la tua estensione misurata, l’intervallo confortevole e il passaggio stimato, confrontati con i tipi di voce, e a quale tipo di voce e quali Fach corrisponde questa estensione.</string>
     <string name="guide_fach_section_title">Che cos’è il Fach?</string>
     <string name="guide_fach_body1">"Fach" (pronunciato /fax/, parola tedesca per "compartimento") è il
@@ -90,11 +95,9 @@
     <string name="guide_measure_range_def">L’intonazione pulita più grave e più acuta rilevata durante
         la sessione.</string>
     <string name="guide_measure_tessitura_term">Tessitura</string>
-    <string name="guide_measure_tessitura_def">Il 20º–80º percentile dei tuoi campioni di intonazione —
-        dove la tua voce si colloca naturalmente e comodamente per la maggior parte del tempo.</string>
+    <string name="guide_measure_tessitura_def">Dal 20° all’80° percentile delle altezze cantate sulla nota comoda e sulla canzone: dove la tua voce passa naturalmente il suo tempo. Nella registrazione libera, di tutto ciò che canti.</string>
     <string name="guide_measure_passaggio_term">Passaggio</string>
-    <string name="guide_measure_passaggio_def">Stimato dalla zona di maggiore instabilità di intonazione
-        nella sessione — il punto di ponte tra registri di petto e di testa.</string>
+    <string name="guide_measure_passaggio_def">Stimato dove l’intonazione è meno stabile durante i glissandi lenti: il ponte tra registro di petto e di testa. Nella registrazione libera, dall’intera sessione.</string>
     <string name="guide_limitation_title">Cosa Diapason non può misurare</string>
     <string name="guide_limitation_body">Timbro (colore vocale) e peso vocale sono essenziali per una
         classificazione Fach accurata ma non possono essere misurati in modo affidabile con il microfono di un telefono.

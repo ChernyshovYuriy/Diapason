@@ -11,6 +11,7 @@ import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.CombinedVoiceProfile
 import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
@@ -31,6 +32,8 @@ import com.yuriy.diapason.reminder.ReminderScheduler
 import com.yuriy.diapason.settings.AudioSourceExperiment
 import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -42,6 +45,9 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 private const val TAG = "AnalyzeViewModel"
+
+/** How often the range test checks which step it's in; well under a second so the countdown reads true. */
+private const val RANGE_TEST_TICK_MS = 250L
 
 // ── UI State ─────────────────────────────────────────────────────────────────
 
@@ -60,6 +66,10 @@ sealed interface AnalyzeUiState {
          * prompt, and the next Stop finishes anyway. Cleared once the gate is reached.
          */
         val earlyStopPrompted: Boolean = false,
+        /** The range-test exercise running now; null for a free recording. */
+        val rangeTestStep: RangeTest.Step? = null,
+        /** Seconds left in [rangeTestStep]. */
+        val stepSecondsLeft: Int = 0,
     ) : AnalyzeUiState
 
     /**
@@ -114,6 +124,12 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     private val voiceGroupPreferences = VoiceGroupPreferences(application)
 
+    /** What the running (or last) recording is: free singing or the guided range test. */
+    private var currentFlow = AppAnalytics.Flow.Single
+
+    /** Advances the range test's steps; null outside a range test. */
+    private var rangeTestJob: Job? = null
+
     /** The Male · Female · Not sure switch; null until the first-run prompt is answered. */
     private val _voiceChoice = MutableStateFlow(voiceGroupPreferences.choice)
     val voiceChoice: StateFlow<VoiceGroupChoice?> = _voiceChoice.asStateFlow()
@@ -151,9 +167,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         }
 
         analyzer.onRecordingError = {
+            rangeTestJob?.cancel()
             // The session already ended inside the analyzer; leave "Recording" with a
             // message instead of a Stop button that has nothing left to stop.
-            AppAnalytics.analysisMicError(AppAnalytics.Flow.Single, AppAnalytics.MicErrorPhase.Recording)
+            AppAnalytics.analysisMicError(currentFlow, AppAnalytics.MicErrorPhase.Recording)
             _uiState.update { current ->
                 if (current is AnalyzeUiState.Recording) {
                     AnalyzeUiState.InsufficientData(getString(R.string.analyze_error_mic_lost))
@@ -169,14 +186,53 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    /** A free recording: sing anything, press Stop. */
     fun startRecording() {
+        beginRecording(AppAnalytics.Flow.Single)
+    }
+
+    /**
+     * The guided range test: four timed exercises ([RangeTest]), advanced by a ticker and
+     * finished automatically at the end — nobody has to judge when to press Stop.
+     */
+    fun startRangeTest() {
+        if (!beginRecording(AppAnalytics.Flow.RangeTest)) return
+        onRangeTestTick(0f)
+        rangeTestJob = viewModelScope.launch {
+            while (analyzer.isRunning) {
+                delay(RANGE_TEST_TICK_MS)
+                onRangeTestTick(analyzer.elapsedSeconds)
+            }
+        }
+    }
+
+    /** Moves the range test to the step at [elapsedSeconds], or finishes it once all are done. */
+    internal fun onRangeTestTick(elapsedSeconds: Float) {
+        if (currentFlow != AppAnalytics.Flow.RangeTest) return
+        if (elapsedSeconds >= RangeTest.TOTAL_SECONDS) {
+            finishRecording()
+            return
+        }
+        _uiState.update { current ->
+            if (current is AnalyzeUiState.Recording) {
+                current.copy(
+                    rangeTestStep = RangeTest.stepAt(elapsedSeconds),
+                    stepSecondsLeft = RangeTest.secondsLeftInStep(elapsedSeconds),
+                )
+            } else current
+        }
+    }
+
+    /** Starts a session of [flow]; false (already reported) when it didn't start. */
+    private fun beginRecording(flow: AppAnalytics.Flow): Boolean {
         // VoiceAnalyzer.start() already no-ops internally if already running, but
         // without this mirror guard a redundant call (e.g. a double-tap before the
         // UI visually responds) still resets _uiState to a fresh Recording(sampleCount
         // = 0) while the real, still-running analyzer keeps accumulating from the
         // original session — desyncing the visible counter from the real buffer.
-        if (analyzer.isRunning) return
-        AppLogger.i("$TAG startRecording()")
+        if (analyzer.isRunning) return false
+        AppLogger.i("$TAG beginRecording($flow)")
+        currentFlow = flow
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_listening)
         )
@@ -193,11 +249,12 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         )
         if (!started) {
             // Not "Recording": there's nothing to stop. The error state offers Try Again.
-            AppAnalytics.analysisMicError(AppAnalytics.Flow.Single, AppAnalytics.MicErrorPhase.Start)
+            AppAnalytics.analysisMicError(currentFlow, AppAnalytics.MicErrorPhase.Start)
             _uiState.value = AnalyzeUiState.InsufficientData(getString(R.string.analyze_status_mic_error))
-            return
+            return false
         }
-        AppAnalytics.analysisStarted(AppAnalytics.Flow.Single)
+        AppAnalytics.analysisStarted(currentFlow)
+        return true
     }
 
     fun stopRecording() {
@@ -211,24 +268,34 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         // First Stop below the gate: keep recording and say how much longer, instead of
         // throwing the take away. The next Stop finishes regardless.
         if (recording != null && !recording.earlyStopPrompted && !RecordingGate.isEnough(priorSampleCount)) {
-            AppAnalytics.analysisStopTooEarly(AppAnalytics.Flow.Single, priorSampleCount, elapsedSeconds)
+            AppAnalytics.analysisStopTooEarly(currentFlow, priorSampleCount, elapsedSeconds)
             _uiState.value = recording.copy(
                 earlyStopPrompted = true,
                 statusMessage = getApplication<Application>().keepSingingMessage(priorSampleCount, elapsedSeconds),
             )
             return
         }
+        finishRecording()
+    }
+
+    /** Ends the session — Stop past the gate, Stop anyway, or the range test's end. */
+    private fun finishRecording() {
+        if (!analyzer.isRunning) return
+        rangeTestJob?.cancel()
+        val priorSampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
+        val elapsedSeconds = analyzer.elapsedSeconds
         _uiState.value = AnalyzeUiState.Recording(
             statusMessage = getString(R.string.analyze_status_analyzing),
             sampleCount = priorSampleCount
         )
 
         val profile = analyzer.stop(
-            tooFewSamplesMessage = getString(R.string.analyze_status_too_few_samples)
+            tooFewSamplesMessage = getString(R.string.analyze_status_too_few_samples),
+            buildProfile = if (currentFlow == AppAnalytics.Flow.RangeTest) RangeTest::profileOf else null,
         )
 
         if (profile == null) {
-            AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Single, priorSampleCount, elapsedSeconds)
+            AppAnalytics.analysisInsufficient(currentFlow, priorSampleCount, elapsedSeconds)
             _uiState.value = AnalyzeUiState.InsufficientData(
                 getApplication<Application>().insufficientMessage(priorSampleCount)
             )
@@ -279,7 +346,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         val topMatch = matches.firstOrNull()
         val topFachKey = topMatch?.let { fachKeyOf(it.fach) }
         AppAnalytics.analysisCompleted(
-            flow = AppAnalytics.Flow.Single,
+            flow = currentFlow,
             profile = profile,
             matches = matches,
             topFachKey = topFachKey,
@@ -397,9 +464,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     /** Logs `analysis_abandoned` and stops the analyzer; returns false if nothing was running. */
     private fun abandonIfRecording(): Boolean {
         if (!analyzer.isRunning) return false
+        rangeTestJob?.cancel()
         val abandonedSampleCount = (uiState.value as? AnalyzeUiState.Recording)?.sampleCount ?: 0
         AppAnalytics.analysisAbandoned(
-            AppAnalytics.Flow.Single, abandonedSampleCount, analyzer.elapsedSeconds
+            currentFlow, abandonedSampleCount, analyzer.elapsedSeconds
         )
         // stop()'s return value is intentionally unused; this is purely to release AudioRecord.
         analyzer.stop(getString(R.string.analyze_status_too_few_samples))

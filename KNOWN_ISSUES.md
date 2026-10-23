@@ -438,8 +438,10 @@ Trophy, percentage and scores removed; History shows the same reading. Rejected:
 looser family margin — the replay showed every margin (1–3) agreeing only 10–17 points more often
 than a stranger's label, so the margin was chosen for honesty (one family only when it clearly
 leads), not stability. **Not fixed:** the reading still changes between sessions ~40% of the time.
-The input is the cause — people sing something different each time — and the real remedy is a
-guided range test (same exercise every session), the next planned step.
+The input is the cause — people sing something different each time — and the remedy is the guided
+range test (`RangeTest`, 2026-10-23): the same four exercises every session, each measurement taken
+from the step made for it. Whether it makes readings stable must be measured from production:
+compare `flow = range_test` with `single` in `CombinedProfileReplayTest`'s export.
 
 ---
 

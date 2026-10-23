@@ -9,6 +9,7 @@ import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.FachDefinition
 import com.yuriy.diapason.analyzer.FachMatch
+import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
@@ -52,6 +53,9 @@ sealed interface ComparisonStage {
         val statusMessage: String = "",
         /** Stop was pressed below the sample gate — see AnalyzeUiState.Recording. */
         val earlyStopPrompted: Boolean = false,
+        /** The range-test exercise running now ([RangeTest]); null before it starts. */
+        val rangeTestStep: RangeTest.Step? = null,
+        val stepSecondsLeft: Int = 0,
     ) : ComparisonStage
 
     /** Baseline failed — not enough data. */
@@ -73,6 +77,9 @@ sealed interface ComparisonStage {
         val isRecording: Boolean = false,
         /** Stop was pressed below the sample gate — see AnalyzeUiState.Recording. */
         val earlyStopPrompted: Boolean = false,
+        /** The range-test exercise running now ([RangeTest]); null before it starts. */
+        val rangeTestStep: RangeTest.Step? = null,
+        val stepSecondsLeft: Int = 0,
     ) : ComparisonStage
 
     /** Retest failed — not enough data. */
@@ -106,6 +113,43 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     private var timerJob: Job? = null
 
+    /**
+     * Steps the range test that both recordings now are: the same exercises before and
+     * after the warm-up, so the two sessions can actually be compared.
+     */
+    private var rangeTestJob: Job? = null
+
+    private fun startRangeTestTicker() {
+        onRangeTestTick(0f)
+        rangeTestJob?.cancel()
+        rangeTestJob = viewModelScope.launch {
+            while (analyzer.isRunning) {
+                delay(RangeTest.TICK_MS)
+                onRangeTestTick(analyzer.elapsedSeconds)
+            }
+        }
+    }
+
+    /** Moves the running recording to the step at [elapsedSeconds], or finishes it after the last. */
+    internal fun onRangeTestTick(elapsedSeconds: Float) {
+        val stage = _stage.value
+        val recording = stage is ComparisonStage.Baseline || (stage is ComparisonStage.Retest && stage.isRecording)
+        if (!recording) return
+        if (elapsedSeconds >= RangeTest.TOTAL_SECONDS) {
+            if (stage is ComparisonStage.Baseline) finishBaseline() else finishRetest()
+            return
+        }
+        val step = RangeTest.stepAt(elapsedSeconds)
+        val left = RangeTest.secondsLeftInStep(elapsedSeconds)
+        _stage.update {
+            when (it) {
+                is ComparisonStage.Baseline -> it.copy(rangeTestStep = step, stepSecondsLeft = left)
+                is ComparisonStage.Retest -> if (it.isRecording) it.copy(rangeTestStep = step, stepSecondsLeft = left) else it
+                else -> it
+            }
+        }
+    }
+
     // ── Baseline ──────────────────────────────────────────────────────────────
 
     fun startBaseline() {
@@ -124,6 +168,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             return
         }
         AppAnalytics.analysisStarted(AppAnalytics.Flow.Baseline)
+        startRangeTestTicker()
     }
 
     fun stopBaseline() {
@@ -142,14 +187,22 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             )
             return
         }
+        finishBaseline()
+    }
 
+    /** Ends the baseline — Stop past the gate, Stop anyway, or the range test's end. */
+    private fun finishBaseline() {
+        if (!analyzer.isRunning) return
+        rangeTestJob?.cancel()
+        val priorSampleCount = (_stage.value as? ComparisonStage.Baseline)?.sampleCount ?: 0
+        val elapsedSeconds = analyzer.elapsedSeconds
         _stage.update {
             if (it is ComparisonStage.Baseline)
                 it.copy(statusMessage = str(R.string.analyze_status_analyzing))
             else it
         }
 
-        val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples))
+        val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples), RangeTest::profileOf)
         if (profile == null) {
             AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Baseline, priorSampleCount, elapsedSeconds)
             _stage.value = ComparisonStage.BaselineInsufficient(
@@ -236,6 +289,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             return
         }
         AppAnalytics.analysisStarted(AppAnalytics.Flow.Retest)
+        startRangeTestTicker()
     }
 
     fun stopRetest() {
@@ -254,14 +308,22 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             )
             return
         }
+        finishRetest()
+    }
 
+    /** Ends the retest — Stop past the gate, Stop anyway, or the range test's end. */
+    private fun finishRetest() {
+        if (!analyzer.isRunning) return
+        rangeTestJob?.cancel()
+        val priorSampleCount = (_stage.value as? ComparisonStage.Retest)?.sampleCount ?: 0
+        val elapsedSeconds = analyzer.elapsedSeconds
         _stage.update {
             if (it is ComparisonStage.Retest)
                 it.copy(statusMessage = str(R.string.analyze_status_analyzing))
             else it
         }
 
-        val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples))
+        val profile = analyzer.stop(str(R.string.analyze_status_too_few_samples), RangeTest::profileOf)
         if (profile == null) {
             AppAnalytics.analysisInsufficient(AppAnalytics.Flow.Retest, priorSampleCount, elapsedSeconds)
             _stage.value = ComparisonStage.RetestInsufficient(
@@ -343,6 +405,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     private fun attachAnalyzerCallbacksForBaseline() {
         analyzer.onRecordingError = {
+            rangeTestJob?.cancel()
             AppAnalytics.analysisMicError(AppAnalytics.Flow.Baseline, AppAnalytics.MicErrorPhase.Recording)
             _stage.update {
                 if (it is ComparisonStage.Baseline) ComparisonStage.BaselineInsufficient(str(R.string.analyze_error_mic_lost))
@@ -371,6 +434,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     private fun attachAnalyzerCallbacksForRetest() {
         analyzer.onRecordingError = {
+            rangeTestJob?.cancel()
             AppAnalytics.analysisMicError(AppAnalytics.Flow.Retest, AppAnalytics.MicErrorPhase.Recording)
             _stage.update {
                 if (it is ComparisonStage.Retest) ComparisonStage.RetestInsufficient(str(R.string.analyze_error_mic_lost))
@@ -456,6 +520,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     /** Logs `analysis_abandoned` and stops the analyzer; returns false if nothing was running. */
     private fun abandonIfRecording(): Boolean {
         if (!analyzer.isRunning) return false
+        rangeTestJob?.cancel()
         val (flow, sampleCount) = when (val s = _stage.value) {
             is ComparisonStage.Baseline -> AppAnalytics.Flow.Baseline to s.sampleCount
             is ComparisonStage.Retest -> AppAnalytics.Flow.Retest to s.sampleCount

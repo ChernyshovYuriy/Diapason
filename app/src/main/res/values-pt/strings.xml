@@ -207,18 +207,18 @@
     <string name="compare_intro_headline">Comparar duas sessões</string>
     <string name="compare_intro_body">Este fluxo grava sua voz duas vezes — uma antes do aquecimento
 	e outra depois — para que você possa comparar as duas sessões.</string>
-    <string name="compare_intro_step1">Gravação de base — cante por toda a sua extensão</string>
+    <string name="compare_intro_step1">Antes: o teste de extensão, menos de um minuto</string>
     <string name="compare_intro_step2">Aquecimento guiado — 2 minutos de exercícios</string>
-    <string name="compare_intro_step3">Nova gravação — repita o mesmo padrão</string>
+    <string name="compare_intro_step3">Depois: o mesmo teste de extensão de novo</string>
     <string name="compare_intro_step4">Compare as duas sessões lado a lado</string>
     <string name="compare_intro_disclaimer">Com base apenas nestas sessões. Os resultados refletem
 	a medição, não conclusões médicas ou de treino.</string>
     <string name="compare_intro_btn_start">Iniciar gravação de base</string>
     <string name="compare_intro_btn_cancel">Cancelar</string>
     <string name="compare_baseline_title">Antes do aquecimento</string>
-    <string name="compare_baseline_instruction">Cante toda a sua extensão, tal como na análise principal: da nota mais grave à mais aguda e de volta, sustentando cada nota 2–3 segundos. Cerca de 30 segundos.</string>
+    <string name="compare_baseline_instruction">O teste de extensão: quatro exercícios curtos. Siga cada um quando aparecer; ele termina sozinho.</string>
     <string name="compare_retest_title">Depois do aquecimento</string>
-    <string name="compare_retest_instruction">Repita o mesmo padrão — da nota mais grave à mais aguda e depois volte.</string>
+    <string name="compare_retest_instruction">Os mesmos quatro exercícios de novo, para comparar as duas gravações.</string>
     <string name="compare_record_btn_stop">Parar gravação</string>
     <string name="compare_insufficient_title">Dados insuficientes</string>
     <string name="compare_insufficient_btn_retry">Tentar novamente</string>

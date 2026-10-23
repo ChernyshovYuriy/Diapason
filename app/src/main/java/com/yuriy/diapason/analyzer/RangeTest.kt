@@ -32,6 +32,9 @@ object RangeTest {
 
     val TOTAL_SECONDS: Int = STEPS.sumOf { it.seconds }
 
+    /** How often a running test checks which step it's in; well under a second so the countdown reads true. */
+    const val TICK_MS = 250L
+
     /** Fewer than this many samples from the comfortable-range steps falls back to all samples. */
     internal const val MIN_COMFORTABLE_SAMPLES = 20
 

@@ -46,9 +46,6 @@ import java.util.UUID
 
 private const val TAG = "AnalyzeViewModel"
 
-/** How often the range test checks which step it's in; well under a second so the countdown reads true. */
-private const val RANGE_TEST_TICK_MS = 250L
-
 // ── UI State ─────────────────────────────────────────────────────────────────
 
 sealed interface AnalyzeUiState {
@@ -200,7 +197,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         onRangeTestTick(0f)
         rangeTestJob = viewModelScope.launch {
             while (analyzer.isRunning) {
-                delay(RANGE_TEST_TICK_MS)
+                delay(RangeTest.TICK_MS)
                 onRangeTestTick(analyzer.elapsedSeconds)
             }
         }

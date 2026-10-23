@@ -45,7 +45,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuriy.diapason.R
+import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.analyzer.RecordingGate
+import com.yuriy.diapason.ui.screens.analyze.RangeTestStepCard
 import com.yuriy.diapason.ui.screens.analyze.RecordingGateProgress
 import java.util.Locale
 
@@ -68,6 +70,9 @@ fun CompareRecordScreen(
     isRecording: Boolean,
     /** Stop was pressed below the sample gate; the button now reads "Stop anyway". */
     earlyStopPrompted: Boolean = false,
+    /** The range-test exercise running now; null before the recording starts. */
+    rangeTestStep: RangeTest.Step? = null,
+    stepSecondsLeft: Int = 0,
     /** Called when the user taps Start (only shown when isRecording == false). */
     onStart: () -> Unit = {},
     onStop: () -> Unit,
@@ -105,6 +110,14 @@ fun CompareRecordScreen(
                 textAlign = TextAlign.Center,
             )
 
+            if (isRecording && rangeTestStep != null) {
+                RangeTestStepCard(
+                    step = rangeTestStep,
+                    secondsLeft = stepSecondsLeft,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+            }
+
             Spacer(Modifier.height(16.dp))
 
             PitchCircle(note = currentNote, isRecording = isRecording)
@@ -133,7 +146,8 @@ fun CompareRecordScreen(
                         if (currentHz > 0f) formatHz(currentHz) else stringResource(R.string.no_pitch_placeholder),
                     )
                 }
-                if (!RecordingGate.isEnough(sampleCount)) {
+                // Not during the range test: it finishes on its own, well past the gate.
+                if (rangeTestStep == null && !RecordingGate.isEnough(sampleCount)) {
                     RecordingGateProgress(sampleCount, modifier = Modifier.padding(top = 12.dp))
                 }
             }

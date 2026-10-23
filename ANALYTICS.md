@@ -6,7 +6,7 @@ Reference for every custom event logged through `AppAnalytics`
 Reserved Firebase events (`first_open`, `session_start`, `app_remove`, …) are
 recorded automatically by the SDK and are **not** listed here.
 
-The `flow` parameter is one of: `single` (free recording), `range_test` (the guided range test, from 2.7.1), `baseline`, `retest`
+The `flow` parameter is one of: `single` (free recording), `range_test` (the guided range test, from 2.7.1), `baseline`, `retest` (from 2.7.1 both also run the range test's exercises — compare with earlier versions only knowing the exercise changed)
 (`AppAnalytics.Flow`).
 
 ## User properties

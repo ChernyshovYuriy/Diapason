@@ -47,6 +47,8 @@ fun WarmUpFlowScreen(
             statusMessage = s.statusMessage,
             isRecording = true,
             earlyStopPrompted = s.earlyStopPrompted,
+            rangeTestStep = s.rangeTestStep,
+            stepSecondsLeft = s.stepSecondsLeft,
             onStop = { viewModel.stopBaseline() },
             onExit = { viewModel.resetToIntro(); onExit() },
         )
@@ -74,6 +76,8 @@ fun WarmUpFlowScreen(
             statusMessage = s.statusMessage,
             isRecording = s.isRecording,
             earlyStopPrompted = s.earlyStopPrompted,
+            rangeTestStep = s.rangeTestStep,
+            stepSecondsLeft = s.stepSecondsLeft,
             onStart = { viewModel.startRetest() },
             onStop = { viewModel.stopRetest() },
             onExit = { viewModel.resetToIntro(); onExit() },

@@ -206,18 +206,18 @@
     <string name="compare_intro_headline">Confronta due sessioni</string>
     <string name="compare_intro_body">Questo flusso registra la tua voce due volte — una prima del riscaldamento
 	e una dopo — così puoi confrontare le due sessioni.</string>
-    <string name="compare_intro_step1">Registrazione di base — canta su tutta la tua estensione</string>
+    <string name="compare_intro_step1">Prima: il test di estensione, meno di un minuto</string>
     <string name="compare_intro_step2">Riscaldamento guidato — 2 minuti di esercizi</string>
-    <string name="compare_intro_step3">Nuova registrazione — ripeti lo stesso schema</string>
+    <string name="compare_intro_step3">Dopo: lo stesso test di estensione</string>
     <string name="compare_intro_step4">Confronta le due sessioni affiancate</string>
     <string name="compare_intro_disclaimer">Basato solo su queste sessioni. I risultati riflettono
 	la misurazione, non conclusioni mediche o di allenamento.</string>
     <string name="compare_intro_btn_start">Avvia registrazione di base</string>
     <string name="compare_intro_btn_cancel">Annulla</string>
     <string name="compare_baseline_title">Prima del riscaldamento</string>
-    <string name="compare_baseline_instruction">Canta tutta la tua estensione, come nell\'analisi principale: dalla nota più grave alla più acuta e ritorno, tenendo ogni nota 2–3 secondi. Circa 30 secondi.</string>
+    <string name="compare_baseline_instruction">Il test di estensione: quattro brevi esercizi. Seguili uno alla volta mentre compaiono; finisce da solo.</string>
     <string name="compare_retest_title">Dopo il riscaldamento</string>
-    <string name="compare_retest_instruction">Ripeti lo stesso schema — dalla nota più bassa alla più alta, poi torna giù.</string>
+    <string name="compare_retest_instruction">Gli stessi quattro esercizi, così le due registrazioni si possono confrontare.</string>
     <string name="compare_record_btn_stop">Interrompi registrazione</string>
     <string name="compare_insufficient_title">Dati insufficienti</string>
     <string name="compare_insufficient_btn_retry">Riprova</string>

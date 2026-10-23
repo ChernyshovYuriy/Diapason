@@ -206,18 +206,18 @@
     <string name="compare_intro_headline">Comparer deux sessions</string>
     <string name="compare_intro_body">Ce parcours enregistre votre voix deux fois — une fois avant un échauffement
 	et une fois après — pour vous permettre de comparer les deux sessions.</string>
-    <string name="compare_intro_step1">Enregistrement de référence — chantez sur toute votre étendue</string>
+    <string name="compare_intro_step1">Avant : le test d’étendue, moins d’une minute</string>
     <string name="compare_intro_step2">Échauffement guidé — 2 minutes d\'exercices</string>
-    <string name="compare_intro_step3">Nouvel enregistrement — répétez le même schéma</string>
+    <string name="compare_intro_step3">Après : le même test d’étendue</string>
     <string name="compare_intro_step4">Comparez les deux sessions côte à côte</string>
     <string name="compare_intro_disclaimer">Basé uniquement sur ces sessions. Les résultats reflètent
 	la mesure, et non des conclusions médicales ou d’entraînement.</string>
     <string name="compare_intro_btn_start">Commencer l’enregistrement de référence</string>
     <string name="compare_intro_btn_cancel">Annuler</string>
     <string name="compare_baseline_title">Avant l’échauffement</string>
-    <string name="compare_baseline_instruction">Chantez toute votre étendue, comme pour l\'analyse principale : de votre note la plus grave à la plus aiguë puis retour, en tenant chaque note 2 à 3 secondes. Environ 30 secondes.</string>
+    <string name="compare_baseline_instruction">Le test d’étendue : quatre exercices courts. Suivez chacun quand il s’affiche ; il se termine tout seul.</string>
     <string name="compare_retest_title">Après l’échauffement</string>
-    <string name="compare_retest_instruction">Répétez le même schéma — de la note la plus basse à la plus haute, puis redescendez.</string>
+    <string name="compare_retest_instruction">Les mêmes quatre exercices, pour pouvoir comparer les deux enregistrements.</string>
     <string name="compare_record_btn_stop">Arrêter l’enregistrement</string>
     <string name="compare_insufficient_title">Pas assez de données</string>
     <string name="compare_insufficient_btn_retry">Réessayer</string>

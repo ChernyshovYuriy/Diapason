@@ -208,18 +208,18 @@
     <string name="compare_intro_headline">Compare two sessions</string>
     <string name="compare_intro_body">This flow records your voice twice — once before a warm-up
         and once after — so you can see how the two sessions compare.</string>
-    <string name="compare_intro_step1">Baseline recording — sing across your full range</string>
+    <string name="compare_intro_step1">Before: the range test, under a minute</string>
     <string name="compare_intro_step2">Guided warm-up — 2 minutes of exercises</string>
-    <string name="compare_intro_step3">Retest recording — repeat the same pattern</string>
+    <string name="compare_intro_step3">After: the same range test again</string>
     <string name="compare_intro_step4">Compare the two sessions side by side</string>
     <string name="compare_intro_disclaimer">Based on these sessions only. Results reflect
         measurement, not medical or training conclusions.</string>
     <string name="compare_intro_btn_start">Start Baseline Recording</string>
     <string name="compare_intro_btn_cancel">Cancel</string>
     <string name="compare_baseline_title">Before Warm-up</string>
-    <string name="compare_baseline_instruction">Sing your full range, just like the main analysis: from your lowest to your highest note and back, holding each note 2–3 seconds. About 30 seconds.</string>
+    <string name="compare_baseline_instruction">The range test: four short exercises. Follow each one as it comes up; it finishes by itself.</string>
     <string name="compare_retest_title">After Warm-up</string>
-    <string name="compare_retest_instruction">Sing the same pattern — lowest to highest, then back down.</string>
+    <string name="compare_retest_instruction">The same four exercises again, so the two recordings can be compared.</string>
     <string name="compare_record_btn_stop">Stop Recording</string>
     <string name="compare_insufficient_title">Not Enough Data</string>
     <string name="compare_insufficient_btn_retry">Try Again</string>

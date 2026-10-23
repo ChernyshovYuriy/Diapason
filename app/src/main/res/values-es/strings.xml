@@ -206,18 +206,18 @@
     <string name="compare_intro_headline">Comparar dos sesiones</string>
     <string name="compare_intro_body">Este flujo graba tu voz dos veces — una antes del calentamiento
 	y otra después — para que puedas comparar ambas sesiones.</string>
-    <string name="compare_intro_step1">Grabación base — canta a lo largo de todo tu rango</string>
+    <string name="compare_intro_step1">Antes: la prueba de rango, menos de un minuto</string>
     <string name="compare_intro_step2">Calentamiento guiado — 2 minutos de ejercicios</string>
-    <string name="compare_intro_step3">Nueva grabación — repite el mismo patrón</string>
+    <string name="compare_intro_step3">Después: la misma prueba de rango otra vez</string>
     <string name="compare_intro_step4">Compara las dos sesiones lado a lado</string>
     <string name="compare_intro_disclaimer">Basado solo en estas sesiones. Los resultados reflejan
 	la medición, no conclusiones médicas ni de entrenamiento.</string>
     <string name="compare_intro_btn_start">Iniciar grabación base</string>
     <string name="compare_intro_btn_cancel">Cancelar</string>
     <string name="compare_baseline_title">Antes del calentamiento</string>
-    <string name="compare_baseline_instruction">Canta toda tu tesitura, igual que en el análisis principal: de tu nota más grave a la más aguda y de vuelta, sosteniendo cada nota 2–3 segundos. Unos 30 segundos.</string>
+    <string name="compare_baseline_instruction">La prueba de rango: cuatro ejercicios cortos. Sigue cada uno cuando aparezca; termina sola.</string>
     <string name="compare_retest_title">Después del calentamiento</string>
-    <string name="compare_retest_instruction">Repite el mismo patrón: de la nota más grave a la más aguda y luego vuelve a bajar.</string>
+    <string name="compare_retest_instruction">Los mismos cuatro ejercicios otra vez, para poder comparar las dos grabaciones.</string>
     <string name="compare_record_btn_stop">Detener grabación</string>
     <string name="compare_insufficient_title">Datos insuficientes</string>
     <string name="compare_insufficient_btn_retry">Intentar de nuevo</string>

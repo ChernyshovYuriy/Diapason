@@ -205,18 +205,18 @@
     <string name="compare_intro_headline">对比两次分析</string>
     <string name="compare_intro_body">此流程会录制你的声音两次——一次在热身前，
         一次在热身后——以便你比较两次分析结果。</string>
-    <string name="compare_intro_step1">基线录制——唱出你的全部音域</string>
+    <string name="compare_intro_step1">之前：音域测试，不到一分钟</string>
     <string name="compare_intro_step2">引导式热身——2 分钟练习</string>
-    <string name="compare_intro_step3">复测录制——重复相同的模式</string>
+    <string name="compare_intro_step3">之后：再做一次同样的音域测试</string>
     <string name="compare_intro_step4">并排对比两次分析结果</string>
     <string name="compare_intro_disclaimer">结果仅基于本次分析，反映的是测量数据，
         而非医学或训练结论。</string>
     <string name="compare_intro_btn_start">开始基线录制</string>
     <string name="compare_intro_btn_cancel">取消</string>
     <string name="compare_baseline_title">热身前</string>
-    <string name="compare_baseline_instruction">像主分析一样唱出你的完整音域：从最低音唱到最高音再回来，每个音保持 2–3 秒。大约 30 秒。</string>
+    <string name="compare_baseline_instruction">音域测试：四个简短练习。按屏幕提示逐个完成，会自动结束。</string>
     <string name="compare_retest_title">热身后</string>
-    <string name="compare_retest_instruction">重复相同的模式——从最低音到最高音，然后再唱回来。</string>
+    <string name="compare_retest_instruction">再做一遍同样的四个练习，以便比较两次录音。</string>
     <string name="compare_record_btn_stop">停止录制</string>
     <string name="compare_insufficient_title">数据不足</string>
     <string name="compare_insufficient_btn_retry">重试</string>

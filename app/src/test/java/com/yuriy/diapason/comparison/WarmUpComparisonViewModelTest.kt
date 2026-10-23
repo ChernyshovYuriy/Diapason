@@ -2,6 +2,7 @@ package com.yuriy.diapason.comparison
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import kotlinx.coroutines.Dispatchers
@@ -263,6 +264,48 @@ class WarmUpComparisonViewModelTest {
         viewModel.onScreenStopped()
 
         assertEquals(warmUp, viewModel.stage.value)
+    }
+
+    // ── Both recordings are the range test ────────────────────────────────────
+
+    @Test
+    fun `the baseline starts on the range test's first exercise`() = runTest {
+        viewModel.startBaseline()
+
+        val stage = viewModel.stage.value as ComparisonStage.Baseline
+        assertEquals(RangeTest.Step.ComfortableNote, stage.rangeTestStep)
+    }
+
+    @Test
+    fun `the baseline moves through the exercises and finishes by itself`() = runTest {
+        viewModel.startBaseline()
+
+        viewModel.onRangeTestTick(RangeTest.stepStartSeconds(RangeTest.Step.SlideDown) + 1f)
+        assertEquals(RangeTest.Step.SlideDown, (viewModel.stage.value as ComparisonStage.Baseline).rangeTestStep)
+
+        viewModel.onRangeTestTick(RangeTest.TOTAL_SECONDS.toFloat())
+        // The real analyzer heard nothing, so it ends insufficient — but with no Stop pressed.
+        assertTrue(viewModel.stage.value is ComparisonStage.BaselineInsufficient)
+    }
+
+    @Test
+    fun `the retest runs the same exercises`() = runTest {
+        viewModel.startRetest()
+
+        viewModel.onRangeTestTick(RangeTest.stepStartSeconds(RangeTest.Step.Song) + 1f)
+
+        val stage = viewModel.stage.value as ComparisonStage.Retest
+        assertEquals(RangeTest.Step.Song, stage.rangeTestStep)
+        assertTrue(stage.isRecording)
+    }
+
+    @Test
+    fun `a retest waiting for Start ignores range-test ticks`() = runTest {
+        forceStage(ComparisonStage.Retest(isRecording = false))
+
+        viewModel.onRangeTestTick(RangeTest.TOTAL_SECONDS.toFloat())
+
+        assertEquals(ComparisonStage.Retest(isRecording = false), viewModel.stage.value)
     }
 
     // ── Early Stop below the sample gate ──────────────────────────────────────

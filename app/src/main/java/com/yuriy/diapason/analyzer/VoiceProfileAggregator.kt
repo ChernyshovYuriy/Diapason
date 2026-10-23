@@ -7,12 +7,12 @@ data class TimedProfile(val timestampMs: Long, val profile: VoiceProfile)
  * The user's voice profile combined across recent sessions, classified once.
  *
  * [consistentCount] is how many of the [sessionCount] sessions, classified on their own,
- * land in the same family as the combined result — shown as "consistent in k of n".
+ * have their best family among the combined [reading]'s families — "k of n agree".
  */
 data class CombinedVoiceProfile(
     val profile: VoiceProfile,
     val matches: List<FachMatch>,
-    val summary: ResultSummary,
+    val reading: VoiceTypeReading,
     val sessionCount: Int,
     val consistentCount: Int,
 )
@@ -77,14 +77,14 @@ object VoiceProfileAggregator {
         if (recent.size < MIN_SESSIONS) return null
         val combined = medianProfile(recent)
         val matches = FachClassifier.classify(combined, group)
-        val summary = FachClassifier.summarize(matches) ?: return null
+        val reading = VoiceTypeReader.read(matches) ?: return null
         val consistent = recent.count { session ->
-            FachClassifier.classify(session, group).firstOrNull()?.fach?.categoryRes == summary.familyRes
+            FachClassifier.classify(session, group).firstOrNull()?.fach?.categoryRes in reading.familyRes
         }
         return CombinedVoiceProfile(
             profile = combined,
             matches = matches,
-            summary = summary,
+            reading = reading,
             sessionCount = recent.size,
             consistentCount = consistent,
         )

@@ -18,6 +18,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.NotificationsActive
@@ -48,6 +48,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -61,17 +62,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -81,7 +77,10 @@ import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.CombinedVoiceProfile
 import com.yuriy.diapason.analyzer.FachMatch
-import com.yuriy.diapason.analyzer.ResultSummary
+import com.yuriy.diapason.analyzer.FachDefinition
+import com.yuriy.diapason.analyzer.VoiceFamilyRanges
+import com.yuriy.diapason.analyzer.VoiceTypeReader
+import com.yuriy.diapason.analyzer.VoiceTypeReading
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.reminder.ReminderOffer
 import com.yuriy.diapason.reminder.ReminderPreferences
@@ -129,7 +128,12 @@ fun ResultsScreen(
 
     val context = LocalContext.current
     val topMatch = matches.firstOrNull()
-    val summary = remember(matches) { FachClassifier.summarize(matches) }
+    val reading = remember(matches) { VoiceTypeReader.read(matches) }
+    // Several recordings say more than one: when they exist they lead, this take alongside.
+    val headline = combinedProfile?.reading ?: reading
+    val families = remember(matches) {
+        VoiceFamilyRanges.of(matches.map { it.fach.voiceGroup }.distinct().singleOrNull())
+    }
     val topFachKey = remember(topMatch) {
         topMatch?.let {
             runCatching { context.resources.getResourceEntryName(it.fach.nameRes) }.getOrNull()
@@ -150,13 +154,7 @@ fun ResultsScreen(
 
     val shareText = stringResource(
         R.string.share_text,
-        summary?.let {
-            stringResource(
-                R.string.results_family_with_fach_format,
-                stringResource(it.familyRes),
-                stringResource(it.leaning.fach.nameRes),
-            )
-        } ?: stringResource(R.string.share_unknown_voice_type),
+        headline?.let { familyLabel(it) } ?: stringResource(R.string.share_unknown_voice_type),
         FachClassifier.hzToNoteName(profile.detectedMinHz),
         FachClassifier.hzToNoteName(profile.detectedMaxHz),
         FachClassifier.hzToNoteName(profile.comfortableLowHz),
@@ -205,14 +203,23 @@ fun ResultsScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            // ── Top match (hero card) ──────────────────────────────────────
-            summary?.let { TopMatchCard(summary = it) }
-
-            // ── Combined profile across recent sessions ───────────────────
-            combinedProfile?.let {
-                Spacer(Modifier.height(12.dp))
-                CombinedProfileCard(combined = it)
+            // ── Voice-type reading (hero card) ────────────────────────────
+            headline?.let {
+                VoiceReadingCard(
+                    reading = it,
+                    combined = combinedProfile,
+                    thisRecording = reading.takeIf { combinedProfile != null },
+                    onOpenFach = { fach ->
+                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.VoiceType, topFachKey)
+                        onOpenVoiceType(fach.nameRes)
+                    },
+                )
             }
+
+            Spacer(Modifier.height(16.dp))
+
+            // ── This recording against the voice families ─────────────────
+            VoiceRangeChart(profile = profile, families = families)
 
             Spacer(Modifier.height(16.dp))
 
@@ -222,50 +229,28 @@ fun ResultsScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Runner-up matches ─────────────────────────────────────────
-            if (matches.size > 1) {
-                SectionLabel(stringResource(R.string.results_section_other_matches))
-                matches.drop(1).take(4).forEachIndexed { index, match ->
-                    RunnerUpRow(rank = index + 2, match = match)
-                    if (index < 3) {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
             // ── What's next ───────────────────────────────────────────────
             // Results used to be a dead end: ~6,000 views led anywhere but "back" only
-            // 5 times. These are the three places users already went on their own.
-            summary?.let { s ->
-                SectionLabel(stringResource(R.string.results_section_next_steps))
-                NextStepButton(
-                    text = stringResource(R.string.results_next_about_format, stringResource(s.leaning.fach.nameRes)),
-                    icon = Icons.Filled.Info,
-                    onClick = {
-                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.VoiceType, topFachKey)
-                        onOpenVoiceType(s.leaning.fach.nameRes)
-                    },
-                )
-                NextStepButton(
-                    text = stringResource(R.string.results_next_history),
-                    icon = Icons.Filled.History,
-                    onClick = {
-                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.History, topFachKey)
-                        onOpenHistory()
-                    },
-                )
-                NextStepButton(
-                    text = stringResource(R.string.results_next_warmup),
-                    icon = Icons.Filled.Whatshot,
-                    onClick = {
-                        AppAnalytics.resultNextStep(AppAnalytics.NextStep.WarmUp, topFachKey)
-                        onOpenWarmUp()
-                    },
-                )
-                Spacer(Modifier.height(16.dp))
-            }
+            // 5 times. The Fach chips above open Voice Types; these are the other two
+            // places users already went on their own.
+            SectionLabel(stringResource(R.string.results_section_next_steps))
+            NextStepButton(
+                text = stringResource(R.string.results_next_history),
+                icon = Icons.Filled.History,
+                onClick = {
+                    AppAnalytics.resultNextStep(AppAnalytics.NextStep.History, topFachKey)
+                    onOpenHistory()
+                },
+            )
+            NextStepButton(
+                text = stringResource(R.string.results_next_warmup),
+                icon = Icons.Filled.Whatshot,
+                onClick = {
+                    AppAnalytics.resultNextStep(AppAnalytics.NextStep.WarmUp, topFachKey)
+                    onOpenWarmUp()
+                },
+            )
+            Spacer(Modifier.height(16.dp))
 
             // ── Disclaimer ────────────────────────────────────────────────
             DisclaimerCard()
@@ -352,81 +337,91 @@ private fun ShareButton(onClick: () -> Unit) {
 }
 
 /**
- * Leads with the voice family — the part of the answer pitch can support — and shows the
- * Fach as a leaning, naming the runner-up too when it's within a point (see
- * [FachClassifier.summarize]). Description and roles still describe the leaning Fach.
+ * The voice-type reading as a teacher would give it from a range: the family — or the two it
+ * sits between — and the Fach types whose ranges fit, as places to explore rather than a
+ * verdict (see [VoiceTypeReader]). With [combined], the reading is from several recordings
+ * and [thisRecording] shows the take just made.
  */
 @Composable
-private fun TopMatchCard(summary: ResultSummary) {
-    val match = summary.leaning
+private fun VoiceReadingCard(
+    reading: VoiceTypeReading,
+    combined: CombinedVoiceProfile?,
+    thisRecording: VoiceTypeReading?,
+    onOpenFach: (FachDefinition) -> Unit,
+) {
+    val onCard = MaterialTheme.colorScheme.onPrimaryContainer
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                Icons.Filled.EmojiEvents,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
             Text(
-                text = stringResource(R.string.results_best_match_label),
+                text = stringResource(R.string.results_reading_title),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                color = onCard.copy(alpha = 0.7f)
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = stringResource(summary.familyRes),
-                style = MaterialTheme.typography.headlineMedium,
+                text = familyLabel(reading),
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = onCard,
                 textAlign = TextAlign.Center
             )
-            Text(
-                text = leaningText(summary),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = stringResource(match.fach.descriptionRes),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(10.dp))
 
-            val pct = match.score.toFloat() / match.maxScore.toFloat()
-            ConfidenceBar(
-                label = stringResource(R.string.results_confidence_label),
-                fraction = pct
-            )
+            if (combined != null) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.results_profile_based_on,
+                        combined.sessionCount,
+                        combined.sessionCount
+                    ) + " · " + pluralStringResource(
+                        // Quantity follows the agreeing count — it's the verb's subject, and
+                        // it can be 0 or 1 even though the total is always at least 2.
+                        R.plurals.results_profile_consistency,
+                        combined.consistentCount,
+                        combined.consistentCount,
+                        combined.sessionCount
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = onCard.copy(alpha = 0.85f),
+                    textAlign = TextAlign.Center
+                )
+                thisRecording?.let {
+                    Text(
+                        text = stringResource(R.string.results_this_recording_format, familyLabel(it)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onCard.copy(alpha = 0.85f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.results_profile_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = onCard.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
 
             Spacer(Modifier.height(14.dp))
-
-            val famousRoles = stringArrayResource(match.fach.famousRolesRes)
-            if (famousRoles.isNotEmpty()) {
-                Text(
-                    text = stringResource(R.string.results_famous_roles_subheading),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                famousRoles.forEach { role ->
-                    Text(
-                        text = stringResource(R.string.common_bullet_item, role),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 1.dp)
+            Text(
+                text = stringResource(R.string.results_fach_types_title),
+                style = MaterialTheme.typography.labelMedium,
+                color = onCard.copy(alpha = 0.7f)
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                reading.fachTypes.forEach { fach ->
+                    SuggestionChip(
+                        onClick = { onOpenFach(fach) },
+                        label = { Text(stringResource(fach.nameRes)) }
                     )
                 }
             }
@@ -434,14 +429,21 @@ private fun TopMatchCard(summary: ResultSummary) {
     }
 }
 
-/** "Leaning Kavalierbariton" or "Leaning Kavalierbariton, close to Lyric Baritone". */
+/**
+ * "Soprano", or "Between soprano and mezzo-soprano" when the range sits between two families.
+ * Shared with History so a session reads the same in both places.
+ */
 @Composable
-private fun leaningText(summary: ResultSummary): String {
-    val leaning = stringResource(summary.leaning.fach.nameRes)
-    val runnerUp = summary.closeRunnerUp
-        ?: return stringResource(R.string.results_leaning_format, leaning)
-    return stringResource(R.string.results_leaning_close_format, leaning, stringResource(runnerUp.fach.nameRes))
-}
+internal fun familyLabel(reading: VoiceTypeReading): String =
+    if (reading.isBetween) {
+        stringResource(
+            R.string.results_reading_between_format,
+            stringResource(reading.familyRes[0]),
+            stringResource(reading.familyRes[1]),
+        )
+    } else {
+        stringResource(reading.familyRes.first())
+    }
 
 @Composable
 private fun NextStepButton(text: String, icon: ImageVector, onClick: () -> Unit) {
@@ -453,63 +455,6 @@ private fun NextStepButton(text: String, icon: ImageVector, onClick: () -> Unit)
     ) {
         Icon(icon, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
         Text(text, modifier = Modifier.weight(1f), textAlign = TextAlign.Start)
-    }
-}
-
-@Composable
-private fun CombinedProfileCard(combined: CombinedVoiceProfile) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.results_profile_title),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-            )
-            Text(
-                text = stringResource(combined.summary.familyRes),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = leaningText(combined.summary),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = pluralStringResource(
-                    R.plurals.results_profile_based_on,
-                    combined.sessionCount,
-                    combined.sessionCount
-                ) + " · " + pluralStringResource(
-                    // Quantity follows the agreeing count — it's the verb's subject, and
-                    // it can be 0 or 1 even though the total is always at least 2.
-                    R.plurals.results_profile_consistency,
-                    combined.consistentCount,
-                    combined.consistentCount,
-                    combined.sessionCount
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = stringResource(R.string.results_profile_note),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
     }
 }
 
@@ -627,86 +572,6 @@ private fun StatRow(label: String, value: String, sub: String, muted: Boolean = 
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f * contentAlpha)
             )
-        }
-    }
-}
-
-@Composable
-private fun RunnerUpRow(rank: Int, match: FachMatch) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(R.string.results_runner_up_rank_format, rank),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            modifier = Modifier.width(32.dp)
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                stringResource(match.fach.nameRes),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                stringResource(match.fach.categoryRes),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Text(
-            text = stringResource(R.string.results_score_format, match.score, match.maxScore),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-private fun ConfidenceBar(label: String, fraction: Float) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-            )
-            Text(
-                stringResource(R.string.results_percent_format, (fraction * 100).toInt()),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-        Spacer(Modifier.height(4.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(6.dp)
-        ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                drawRoundRect(
-                    color = Color.White.copy(alpha = 0.20f),
-                    cornerRadius = CornerRadius(3.dp.toPx())
-                )
-                // Canvas draws in raw pixel coordinates, so it isn't auto-mirrored by
-                // Compose's layout direction the way padding/arrangement are — flip the
-                // fill origin ourselves so it grows from the reading-start edge in RTL.
-                val filledWidth = size.width * fraction
-                val topLeftX = if (layoutDirection == LayoutDirection.Rtl) {
-                    size.width - filledWidth
-                } else {
-                    0f
-                }
-                drawRoundRect(
-                    color = Color.White.copy(alpha = 0.80f),
-                    topLeft = Offset(topLeftX, 0f),
-                    size = size.copy(width = filledWidth),
-                    cornerRadius = CornerRadius(3.dp.toPx())
-                )
-            }
         }
     }
 }

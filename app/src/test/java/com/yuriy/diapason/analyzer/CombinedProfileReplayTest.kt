@@ -224,6 +224,75 @@ class CombinedProfileReplayTest {
         line("WITHOUT MISMATCHED SESSIONS — ${matching.values.sumOf { it.size }} sessions, ${matching.size} histories")
         for (k in 1..5) disjoint(matching, k)
         for (k in listOf(1, 3, 5)) compatibleSets(matching, k, 1)
+        line()
+
+        // ── The voice-type reading the Results screen shows (VoiceTypeReader) ──
+        line("VOICE-TYPE READING — family, or 'between' two, by family margin g (app uses g=${VoiceTypeReader.FAMILY_MARGIN})")
+        line("same = identical label in both blocks; overlap = labels share a family; other install = same-choice stranger.")
+        line("Without mismatched sessions (what the voice-check prompt leaves):")
+        for (g in 1..3) for (k in listOf(1, 3, 5)) readings(matching, k, g)
+        line()
+        line("Sequential: the combined-profile reading after each session (what a returning singer sees change):")
+        for (g in 1..3) sequentialReadings(matching, g)
+    }
+
+    private fun reading(block: List<Run>, group: VoiceGroup?, g: Int): VoiceTypeReading? =
+        VoiceTypeReader.read(
+            FachClassifier.classify(VoiceProfileAggregator.medianProfile(block.map { it.profile }), group),
+            familyMargin = g,
+        )
+
+    private fun StringBuilder.readings(histories: Map<Pair<String, VoiceGroupChoice>, List<Run>>, k: Int, g: Int) {
+        data class BlockPair(val choice: VoiceGroupChoice, val a: List<Run>, val b: List<Run>)
+        val pairs = histories.flatMap { (key, runs) ->
+            runs.chunked(k).filter { it.size == k }.zipWithNext().map { (a, b) -> BlockPair(key.second, a, b) }
+        }
+        if (pairs.isEmpty()) return
+        val pool = pairs.groupBy { it.choice }.mapValues { (_, p) -> p.map { it.b } }
+        val random = Random(42)
+        var definite = 0; var nonAdjacent = 0; var same = 0; var overlap = 0
+        var otherSame = 0; var otherN = 0
+        pairs.forEach { p ->
+            val group = p.choice.group
+            val ra = reading(p.a, group, g)!!
+            val rb = reading(p.b, group, g)!!
+            if (!ra.isBetween) definite++
+            if (ra.isBetween && !adjacentFamilies(ra.familyRes)) nonAdjacent++
+            if (ra.familyRes == rb.familyRes) same++
+            if (ra.familyRes.intersect(rb.familyRes.toSet()).isNotEmpty()) overlap++
+            val strangers = pool.getValue(p.choice).filter { it.first().uid != p.a.first().uid }
+            if (strangers.isNotEmpty()) {
+                otherN++
+                if (reading(strangers[random.nextInt(strangers.size)], group, g)!!.familyRes == ra.familyRes) otherSame++
+            }
+        }
+        val n = pairs.size
+        line("  g=$g k=$k  pairs=$n  one family ${pct(definite, n)} (non-adjacent 'between' ${pct(nonAdjacent, n)})  |  " +
+            "same ${pct(same, n)}, overlap ${pct(overlap, n)}  |  other install: same ${pct(otherSame, otherN)}")
+    }
+
+    private fun StringBuilder.sequentialReadings(histories: Map<Pair<String, VoiceGroupChoice>, List<Run>>, g: Int) {
+        var pairs = 0; var changed = 0; var shown = 0; var definite = 0
+        histories.forEach { (key, runs) ->
+            val group = key.second.group
+            val labels = runs.indices.mapNotNull { i ->
+                val recent = VoiceProfileAggregator.selectRecent(
+                    runs.subList(0, i + 1).map { TimedProfile(it.tsMs, it.profile) }, runs[i].tsMs,
+                )
+                if (recent.size < VoiceProfileAggregator.MIN_SESSIONS) null
+                else VoiceTypeReader.read(FachClassifier.classify(VoiceProfileAggregator.medianProfile(recent), group), g)!!
+            }
+            shown += labels.size
+            definite += labels.count { !it.isBetween }
+            labels.zipWithNext().forEach { (a, b) -> pairs++; if (a.familyRes != b.familyRes) changed++ }
+        }
+        line("  g=$g  readings=$shown  one family ${pct(definite, shown)}  |  label changed ${pct(changed, pairs)} of $pairs consecutive")
+    }
+
+    /** True when the two families are neighbours in the table (soprano–mezzo, tenor–baritone, …). */
+    private fun adjacentFamilies(familyRes: List<Int>): Boolean {
+        val order = ALL_FACH.map { it.categoryRes }.distinct()
+        return kotlin.math.abs(order.indexOf(familyRes[0]) - order.indexOf(familyRes[1])) == 1
     }
 
     /**
@@ -301,7 +370,7 @@ class CombinedProfileReplayTest {
             singleFamily = single.firstOrNull()?.fach?.categoryRes,
             singleCloseCall = closeCall(single),
             combinedKey = key(combined?.matches?.firstOrNull()),
-            combinedFamily = combined?.summary?.familyRes,
+            combinedFamily = combined?.matches?.firstOrNull()?.fach?.categoryRes,
             combinedCloseCall = combined != null && closeCall(combined.matches),
             windowSize = combined?.sessionCount ?: 1,
             consistent = combined?.consistentCount ?: 0,

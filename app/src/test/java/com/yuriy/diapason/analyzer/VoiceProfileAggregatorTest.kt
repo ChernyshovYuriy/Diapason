@@ -102,7 +102,7 @@ class VoiceProfileAggregatorTest {
 
         val combined = VoiceProfileAggregator.combine(sessions, now, VoiceGroup.MALE)!!
 
-        assertEquals(lyricBaritone.categoryRes, combined.summary.familyRes)
+        assertTrue(lyricBaritone.categoryRes in combined.reading.familyRes)
         assertEquals(4, combined.sessionCount)
         assertEquals("the profundo take lands in another family", 3, combined.consistentCount)
     }

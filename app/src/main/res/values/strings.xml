@@ -32,11 +32,7 @@
     <string name="voice_types_cd_collapse">Collapse</string>
     <string name="voice_types_cd_expand">Expand</string>
     <string name="results_title">Your Results</string>
-    <string name="results_best_match_label">Best Match</string>
-    <string name="results_confidence_label">Match score</string>
-    <string name="results_famous_roles_subheading">Famous roles for this voice</string>
     <string name="results_section_range">Voice Range — This Session</string>
-    <string name="results_section_other_matches">Other Possible Matches</string>
     <string name="results_section_comfortable_range">Comfortable range</string>
     <string name="results_section_detected_extremes">Detected extremes</string>
     <string name="results_stat_comfortable_low">Lower end</string>
@@ -47,12 +43,8 @@
     <string name="results_stat_samples">Valid pitch samples</string>
     <string name="results_session_note">Based on this session · reliable notes only</string>
     <string name="results_stat_session_format">%1$.0fs session</string>
-    <string name="results_runner_up_rank_format">#%1$d</string>
-    <string name="results_score_format">%1$d/%2$d</string>
     <string name="results_btn_analyze_again">Analyze Again</string>
-    <string name="results_disclaimer">Fach classification also depends on timbre and vocal weight,
-        which require a trained ear. Use this as an informed starting point — not a definitive
-        diagnosis. A voice teacher will always give the most accurate assessment.</string>
+    <string name="results_disclaimer">A recording measures pitch: how far your voice reaches, where it sits comfortably and where it changes register. Voice type and Fach also depend on timbre and vocal weight, which take a trained ear. Explore the Fach types above with a voice teacher, who can confirm them.</string>
 
     <!-- Re-test reminder (Results screen card + notification) -->
     <string name="reminder_card_title">Re-test in 7 days?</string>
@@ -88,7 +80,7 @@
         of singing. Sing with a straight tone (no vibrato) — vibrato can look like register
         instability and make the passaggio estimate less reliable.</string>
     <string name="guide_step5_title">Press Stop and review</string>
-    <string name="guide_step5_body">Diapason will show your top voice type match with a match score, your measured range, tessitura, and estimated passaggio.</string>
+    <string name="guide_step5_body">Diapason will show your measured range, comfortable range and estimated passaggio, drawn against the voice types, and which voice type and Fach types that range fits.</string>
     <string name="guide_fach_section_title">What is Fach?</string>
     <string name="guide_fach_body1">\"Fach\" (pronounced /fax/, German for \"compartment\") is the
         classical system used in opera houses to categorise singers by voice type. Knowing your
@@ -146,7 +138,6 @@
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f Hz</string>
-    <string name="results_percent_format">%1$d%%</string>
     <string name="voice_types_separator_dot"> · </string>
     <string name="voice_types_detail_label_format">  %1$s</string>
     <string name="fach_category_soprano">Soprano</string>
@@ -199,7 +190,7 @@
     <string name="share_unknown_voice_type">Unknown</string>
     <string name="share_clipboard_label">Diapason voice type result</string>
     <string name="share_clipboard_toast">Text copied — paste it if the app doesn\'t fill it automatically</string>
-    <string name="share_text">Ever wondered what your singing voice type is? 🎶\nI just found out mine is: %1$s\nDetected range: %2$s–%3$s · Comfortable zone: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
+    <string name="share_text">Ever wondered what your singing voice type is? 🎶\nMy range fits: %1$s\nDetected range: %2$s–%3$s · Comfortable zone: %4$s–%5$s\n\nNow I\'m curious — what\'s yours?\nTry Diapason: %6$s</string>
     <string name="nav_history">History</string>
     <string name="history_title">History</string>
     <string name="history_subtitle">Your past voice analyses, newest first</string>
@@ -292,9 +283,14 @@
     <string name="voice_check_keep_male">Keep Male</string>
     <string name="voice_check_keep_female">Keep Female</string>
     <string name="voice_check_discard">Discard this take</string>
-    <string name="results_leaning_format">Leaning %1$s</string>
-    <string name="results_leaning_close_format">Leaning %1$s, close to %2$s</string>
-    <string name="results_profile_title">Your voice profile</string>
+    <string name="results_reading_title">Your range fits</string>
+    <string name="results_reading_between_format">Between %1$s and %2$s</string>
+    <string name="results_this_recording_format">This recording: %1$s</string>
+    <string name="results_fach_types_title">Fach types with similar ranges</string>
+    <string name="results_chart_title">Your range among the voice types</string>
+    <string name="results_chart_you">You</string>
+    <string name="results_chart_legend_typical">Typical comfortable range</string>
+    <string name="results_chart_cd_format">Your comfortable range, %1$s to %2$s, drawn against the typical ranges of %3$s.</string>
     <plurals name="results_profile_based_on">
         <item quantity="one">Combined from your last %1$d recording</item>
         <item quantity="other">Combined from your last %1$d recordings</item>
@@ -304,7 +300,6 @@
         <item quantity="other">%1$d of %2$d recordings agree</item>
     </plurals>
     <string name="results_profile_note">Uses up to 5 recordings from the last 30 days, so one unusual take doesn\'t change your result.</string>
-    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 
     <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
     <plurals name="analyze_status_keep_singing">
@@ -318,7 +313,6 @@
 
     <!-- Results: next-step links -->
     <string name="results_section_next_steps">What\'s next</string>
-    <string name="results_next_about_format">Learn about %1$s</string>
     <string name="results_next_history">Compare with your past results</string>
     <string name="results_next_warmup">See how warming up changes your range</string>
 

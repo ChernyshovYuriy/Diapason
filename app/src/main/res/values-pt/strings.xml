@@ -32,22 +32,14 @@
     <string name="voice_types_cd_collapse">Recolher</string>
     <string name="voice_types_cd_expand">Expandir</string>
     <string name="results_title">Seus Resultados</string>
-    <string name="results_best_match_label">Melhor correspondência</string>
-    <string name="results_confidence_label">Pontuação de correspondência</string>
-    <string name="results_famous_roles_subheading">Papéis famosos para esta voz</string>
     <string name="results_section_range">Extensão Medida</string>
-    <string name="results_section_other_matches">Outras Correspondências Possíveis</string>
     <string name="results_stat_lowest">Nota mais grave detectada</string>
     <string name="results_stat_highest">Nota mais aguda detectada</string>
     <string name="results_stat_passaggio">Passaggio estimado</string>
     <string name="results_stat_samples">Amostras válidas de altura</string>
     <string name="results_stat_session_format">Sessão de %1$.0fs</string>
-    <string name="results_runner_up_rank_format">#%1$d</string>
-    <string name="results_score_format">%1$d/%2$d</string>
     <string name="results_btn_analyze_again">Analisar novamente</string>
-    <string name="results_disclaimer">A classificação Fach também depende do timbre e do peso vocal,
-        que exigem um ouvido treinado. Use isto como um ponto de partida informado — não como um diagnóstico
-        definitivo. Um professor de canto sempre dará a avaliação mais precisa.</string>
+    <string name="results_disclaimer">Uma gravação mede a altura: até onde sua voz vai, onde ela fica confortável e onde muda de registro. O tipo de voz e o Fach também dependem do timbre e do peso vocal, que exigem um ouvido treinado. Explore os Fach acima com um professor de canto, que poderá confirmá-los.</string>
 
     <!-- Lembrete para repetir o teste -->
     <string name="reminder_card_title">Repetir o teste em 7 dias?</string>
@@ -83,7 +75,7 @@
         de canto. Cante com um som reto (sem vibrato) — o vibrato pode parecer instabilidade de
         registro e tornar a estimativa do passaggio menos confiável.</string>
     <string name="guide_step5_title">Pressione Parar e revise</string>
-    <string name="guide_step5_body">O Diapason mostrará a melhor correspondência do seu tipo de voz com uma pontuação de correspondência, sua extensão medida, tessitura e passaggio estimado.</string>
+    <string name="guide_step5_body">O Diapason mostrará sua extensão medida, sua faixa confortável e seu passaggio estimado, comparados aos tipos de voz, e com qual tipo de voz e quais Fach essa extensão combina.</string>
     <string name="guide_fach_section_title">O que é Fach?</string>
     <string name="guide_fach_body1">"Fach" (pronunciado /fax/, alemão para "compartimento") é o
         sistema clássico usado em casas de ópera para categorizar cantores por tipo de voz. Conhecer o seu
@@ -140,7 +132,6 @@
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f Hz</string>
-    <string name="results_percent_format">%1$d%%</string>
     <string name="voice_types_separator_dot"> · </string>
     <string name="voice_types_detail_label_format">  %1$s</string>
     <string name="fach_category_soprano">Soprano</string>
@@ -193,7 +184,7 @@
     <string name="share_unknown_voice_type">Desconhecido</string>
     <string name="share_clipboard_label">Resultado do tipo de voz no Diapason</string>
     <string name="share_clipboard_toast">Texto copiado — cole-o se o aplicativo não o preencher automaticamente</string>
-    <string name="share_text">Já se perguntou qual é o seu verdadeiro tipo de voz ao cantar? 🎶\nAcabei de descobrir que o meu é: %1$s\nExtensão: %2$s–%3$s · Tessitura: %4$s–%5$s\n\nAgora estou curioso — e a sua?\nExperimente o Diapason: %6$s</string>
+    <string name="share_text">Já se perguntou qual é o seu verdadeiro tipo de voz ao cantar? 🎶\nMinha extensão combina com: %1$s\nExtensão: %2$s–%3$s · Tessitura: %4$s–%5$s\n\nAgora estou curioso — e a sua?\nExperimente o Diapason: %6$s</string>
     <string name="results_section_comfortable_range">Faixa confortável</string>
     <string name="results_section_detected_extremes">Extremos detectados</string>
     <string name="results_stat_comfortable_low">Limite inferior</string>
@@ -290,9 +281,14 @@
     <string name="voice_check_keep_male">Manter voz masculina</string>
     <string name="voice_check_keep_female">Manter voz feminina</string>
     <string name="voice_check_discard">Descartar esta gravação</string>
-    <string name="results_leaning_format">Tendência a %1$s</string>
-    <string name="results_leaning_close_format">Tendência a %1$s, próximo de %2$s</string>
-    <string name="results_profile_title">O seu perfil vocal</string>
+    <string name="results_reading_title">Sua extensão combina com</string>
+    <string name="results_reading_between_format">Entre %1$s e %2$s</string>
+    <string name="results_this_recording_format">Esta gravação: %1$s</string>
+    <string name="results_fach_types_title">Fach com extensões parecidas</string>
+    <string name="results_chart_title">Sua extensão entre os tipos de voz</string>
+    <string name="results_chart_you">Você</string>
+    <string name="results_chart_legend_typical">Faixa confortável típica</string>
+    <string name="results_chart_cd_format">Sua faixa confortável, de %1$s a %2$s, comparada às extensões típicas de %3$s.</string>
     <plurals name="results_profile_based_on">
         <item quantity="one">Combinado a partir da sua última gravação (%1$d)</item>
         <item quantity="other">Combinado a partir das suas últimas %1$d gravações</item>
@@ -304,7 +300,6 @@
         <item quantity="many">%1$d de %2$d gravações concordam</item>
     </plurals>
     <string name="results_profile_note">Usa até 5 gravações dos últimos 30 dias, para que uma gravação atípica não altere o seu resultado.</string>
-    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 
     <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
     <plurals name="analyze_status_keep_singing">
@@ -319,7 +314,6 @@
 
     <!-- Results: next-step links -->
     <string name="results_section_next_steps">E agora</string>
-    <string name="results_next_about_format">Saiba mais sobre %1$s</string>
     <string name="results_next_history">Compare com os seus resultados anteriores</string>
     <string name="results_next_warmup">Veja como o aquecimento muda a sua extensão</string>
 

@@ -92,6 +92,8 @@ object AppAnalytics {
         matches: List<FachMatch>,
         topFachKey: String?,
         voiceGroup: VoiceGroup?,
+        /** The Results screen's voice-type reading: "soprano", or "soprano|mezzo_soprano" for "between". */
+        readingKey: String? = null,
     ) {
         val top = matches.getOrNull(0)
         val runnerUp = matches.getOrNull(1)
@@ -101,6 +103,7 @@ object AppAnalytics {
             long(PARAM_SAMPLE_COUNT, profile.sampleCount.toLong())
             str(PARAM_TOP_FACH_KEY, topFachKey ?: VALUE_UNKNOWN)
             str(PARAM_VOICE_GROUP, voiceGroupValue(voiceGroup))
+            readingKey?.let { str(PARAM_READING, it) }
             long(PARAM_SCORE, (top?.score ?: 0).toLong())
             long(PARAM_MAX_SCORE, (top?.maxScore ?: 0).toLong())
             if (top != null && runnerUp != null) {
@@ -373,6 +376,7 @@ object AppAnalytics {
     private const val PARAM_VOICE_GROUP = "voice_group"
     private const val PARAM_SOURCE = "source"
     private const val PARAM_SUGGESTED_GROUP = "suggested_group"
+    private const val PARAM_READING = "reading"
     private const val PARAM_ACTION = "action"
     private const val PARAM_TARGET = "target"
     private const val PARAM_PHASE = "phase"

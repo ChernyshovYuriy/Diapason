@@ -18,6 +18,7 @@ import com.yuriy.diapason.analyzer.VoiceGroupCheck
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.analyzer.VoiceProfileAggregator
+import com.yuriy.diapason.analyzer.VoiceTypeReader
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.data.recordedWith
@@ -283,6 +284,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
             matches = matches,
             topFachKey = topFachKey,
             voiceGroup = voiceGroup,
+            readingKey = VoiceTypeReader.read(matches)?.familyRes?.mapNotNull { familyKeyOf(it) }?.joinToString("|"),
         )
 
         val result = AnalyzeUiState.ResultReady(profile = profile, matches = matches)
@@ -406,5 +408,10 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     private fun fachKeyOf(fach: FachDefinition): String? = runCatching {
         getApplication<Application>().resources.getResourceEntryName(fach.nameRes)
+    }.getOrNull()
+
+    /** "soprano" for fach_category_soprano. */
+    private fun familyKeyOf(categoryRes: Int): String? = runCatching {
+        getApplication<Application>().resources.getResourceEntryName(categoryRes).removePrefix("fach_category_")
     }.getOrNull()
 }

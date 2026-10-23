@@ -32,11 +32,7 @@
     <string name="voice_types_cd_collapse">收起</string>
     <string name="voice_types_cd_expand">展开</string>
     <string name="results_title">你的结果</string>
-    <string name="results_best_match_label">最佳匹配</string>
-    <string name="results_confidence_label">匹配得分</string>
-    <string name="results_famous_roles_subheading">该声部的著名角色</string>
     <string name="results_section_range">音域——本次分析</string>
-    <string name="results_section_other_matches">其他可能匹配</string>
     <string name="results_section_comfortable_range">舒适音域</string>
     <string name="results_section_detected_extremes">检测到的音域极值</string>
     <string name="results_stat_comfortable_low">下限</string>
@@ -47,12 +43,8 @@
     <string name="results_stat_samples">有效音高样本数</string>
     <string name="results_session_note">基于本次分析 · 仅计入可靠音符</string>
     <string name="results_stat_session_format">%1$.0f 秒分析</string>
-    <string name="results_runner_up_rank_format">#%1$d</string>
-    <string name="results_score_format">%1$d/%2$d</string>
     <string name="results_btn_analyze_again">再次分析</string>
-    <string name="results_disclaimer">Fach 声部分类还取决于音色和声音的厚度，
-        这需要经过训练的耳朵来判断。请将本结果作为有依据的参考起点——而非
-        最终诊断。声乐老师给出的评估始终最为准确。</string>
+    <string name="results_disclaimer">录音只能测量音高：你的声音能达到多高多低、在哪里最舒适、在哪里换声。声部类型和 Fach 还取决于音色和声音的厚度，这需要训练有素的耳朵来判断。请和声乐老师一起了解上面的 Fach 类型，由老师来确认。</string>
 
     <!-- Re-test reminder (Results screen card + notification) -->
     <string name="reminder_card_title">7 天后再次测试？</string>
@@ -83,7 +75,7 @@
     <string name="guide_step4_title">覆盖你的全部音域</string>
     <string name="guide_step4_body">从你舒适的最低音开始，按半音阶或音阶逐渐上行到最高音，然后再唱回来。这有助于同时检测你的绝对音域和换声点（声区转换处）。演唱时长请争取达到 30–45 秒以上。请用直音（不加颤音）演唱——颤音可能被误判为声区不稳定，使换声点的估计不够可靠。</string>
     <string name="guide_step5_title">点击停止并查看结果</string>
-    <string name="guide_step5_body">Diapason 会显示最匹配的声部类型及匹配得分、测得的音域、常用音区和估计的换声点。</string>
+    <string name="guide_step5_body">Diapason 会显示你测得的音域、舒适音域和估计的换声点，并与各声部对比，以及这一音域符合哪个声部和哪些 Fach 类型。</string>
     <string name="guide_fach_section_title">什么是 Fach？</string>
     <string name="guide_fach_body1">"Fach"（德语意为"分类/隔间"）是歌剧院用来
         按声部类型对歌唱家进行分类的传统体系。了解自己的 Fach 有助于选择
@@ -138,7 +130,6 @@
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f Hz</string>
-    <string name="results_percent_format">%1$d%%</string>
     <string name="voice_types_separator_dot"> · </string>
     <string name="voice_types_detail_label_format">  %1$s</string>
     <string name="fach_category_soprano">女高音</string>
@@ -191,7 +182,7 @@
     <string name="share_unknown_voice_type">未知</string>
     <string name="share_clipboard_label">Diapason 声部类型结果</string>
     <string name="share_clipboard_toast">文本已复制——如果应用未自动填充，请手动粘贴</string>
-    <string name="share_text">你有没有想过自己的歌唱声部是什么？🎶\n我刚刚测出我是：%1$s\n检测音域：%2$s–%3$s · 舒适音区：%4$s–%5$s\n\n现在我很好奇——你的呢？\n试试 Diapason：%6$s</string>
+    <string name="share_text">你有没有想过自己的歌唱声部是什么？🎶\n我的音域符合：%1$s\n检测音域：%2$s–%3$s · 舒适音区：%4$s–%5$s\n\n现在我很好奇——你的呢？\n试试 Diapason：%6$s</string>
     <string name="nav_history">历史记录</string>
     <string name="history_title">历史记录</string>
     <string name="history_subtitle">你过去的声音分析记录，按最新排序</string>
@@ -284,9 +275,14 @@
     <string name="voice_check_keep_male">保留男声</string>
     <string name="voice_check_keep_female">保留女声</string>
     <string name="voice_check_discard">放弃这段录音</string>
-    <string name="results_leaning_format">倾向于 %1$s</string>
-    <string name="results_leaning_close_format">倾向于 %1$s，接近 %2$s</string>
-    <string name="results_profile_title">你的声音档案</string>
+    <string name="results_reading_title">你的音域符合</string>
+    <string name="results_reading_between_format">介于%1$s和%2$s之间</string>
+    <string name="results_this_recording_format">本次录音：%1$s</string>
+    <string name="results_fach_types_title">音域相近的 Fach 类型</string>
+    <string name="results_chart_title">你的音域与各声部对比</string>
+    <string name="results_chart_you">你</string>
+    <string name="results_chart_legend_typical">典型舒适音域</string>
+    <string name="results_chart_cd_format">你的舒适音域为 %1$s 至 %2$s，与以下声部的典型音域对比：%3$s。</string>
     <plurals name="results_profile_based_on">
         <item quantity="other">综合了你最近的 %1$d 次录音</item>
     </plurals>
@@ -294,7 +290,6 @@
         <item quantity="other">%2$d 次录音中有 %1$d 次一致</item>
     </plurals>
     <string name="results_profile_note">使用最近 30 天内最多 5 次录音，因此单次异常的录音不会改变你的结果。</string>
-    <string name="results_family_with_fach_format">%1$s（%2$s）</string>
 
     <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
     <plurals name="analyze_status_keep_singing">
@@ -307,7 +302,6 @@
 
     <!-- Results: next-step links -->
     <string name="results_section_next_steps">下一步</string>
-    <string name="results_next_about_format">了解 %1$s</string>
     <string name="results_next_history">与之前的结果比较</string>
     <string name="results_next_warmup">看看热身如何改变你的音域</string>
 

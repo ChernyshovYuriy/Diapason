@@ -32,11 +32,7 @@
     <string name="voice_types_cd_collapse">بستن</string>
     <string name="voice_types_cd_expand">باز کردن</string>
     <string name="results_title">نتایج شما</string>
-    <string name="results_best_match_label">بهترین تطابق</string>
-    <string name="results_confidence_label">امتیاز تطابق</string>
-    <string name="results_famous_roles_subheading">نقش‌های مشهور برای این صدا</string>
     <string name="results_section_range">گستره صدا — این جلسه</string>
-    <string name="results_section_other_matches">دیگر تطابق‌های ممکن</string>
     <string name="results_section_comfortable_range">گستره راحت</string>
     <string name="results_section_detected_extremes">نقاط حدی شناسایی‌شده</string>
     <string name="results_stat_comfortable_low">حد پایین</string>
@@ -47,10 +43,8 @@
     <string name="results_stat_samples">نمونه‌های معتبر</string>
     <string name="results_session_note">بر اساس این جلسه · فقط نت‌های قابل‌اعتماد</string>
     <string name="results_stat_session_format">جلسه %1$.0f ثانیه‌ای</string>
-    <string name="results_runner_up_rank_format">#%1$d</string>
-    <string name="results_score_format">%1$d/%2$d</string>
     <string name="results_btn_analyze_again">تحلیل دوباره</string>
-    <string name="results_disclaimer">طبقه‌بندی فاخ همچنین به تیمبر (رنگ صدا) و وزن آوایی بستگی دارد که نیازمند گوش ورزیده است. از این نتیجه به‌عنوان یک نقطه شروع آگاهانه استفاده کنید — نه یک تشخیص قطعی. یک مربی آواز همیشه دقیق‌ترین ارزیابی را ارائه می‌دهد.</string>
+    <string name="results_disclaimer">ضبط صدا زیر و بمی را می‌سنجد: صدای شما تا کجا می‌رسد، کجا راحت است و کجا رجیستر عوض می‌کند. نوع صدا و فاخ به تیمبر (رنگ صدا) و وزن آوایی هم بستگی دارند که نیازمند گوش ورزیده است. گونه‌های فاخ بالا را با یک مربی آواز بررسی کنید تا آن‌ها را تأیید کند.</string>
 
     <!-- Re-test reminder (Results screen card + notification) -->
     <string name="reminder_card_title">آزمایش دوباره در 7 روز دیگر؟</string>
@@ -75,7 +69,7 @@
     <string name="guide_step4_title">تمام گستره صدای خود را بپوشانید</string>
     <string name="guide_step4_body">از بم‌ترین نت راحت خود شروع کنید و به‌صورت کروماتیک یا با گام به سمت زیرترین نت خود بالا بروید. سپس دوباره پایین بیایید. این کار به تشخیص هم گستره مطلق و هم پاساجو (شکست ثباتی) شما کمک می‌کند. حداقل 30 تا 45 ثانیه آواز بخوانید. با صدای صاف (بدون ویبراتو) بخوانید — ویبراتو می‌تواند شبیه ناپایداری رجیستر به نظر برسد و تخمین پاساجو را کم‌اعتبارتر کند.</string>
     <string name="guide_step5_title">دکمه توقف را بزنید و نتیجه را بررسی کنید</string>
-    <string name="guide_step5_body">دیاپازون بهترین تطابق نوع صدای شما را همراه با امتیاز تطابق، گستره اندازه‌گیری‌شده، تسیتورا و پاساجوی تخمینی نمایش می‌دهد.</string>
+    <string name="guide_step5_body">دیاپازون گستره اندازه‌گیری‌شده، گستره راحت و پاساجوی تخمینی شما را در کنار گونه‌های صدا نشان می‌دهد و اینکه این گستره به کدام نوع صدا و کدام گونه‌های فاخ نزدیک است.</string>
     <string name="guide_fach_section_title">فاخ چیست؟</string>
     <string name="guide_fach_body1">«فاخ» (تلفظ: /fax/، در آلمانی به معنای «بخش») سیستم کلاسیکی است که در تئاترهای اپرا برای دسته‌بندی خوانندگان بر اساس نوع صدا به کار می‌رود. دانستن فاخ خود به شما کمک می‌کند رپرتوار مناسب را بشناسید، از صدای خود محافظت کنید و با کارگردانان بازیگرگزینی و مربیان آواز ارتباط برقرار کنید.</string>
     <string name="guide_fach_body2">فراتر از صرفاً «سوپرانو» یا «باس»، سیستم فاخ بیش از 19 زیرنوع را بر اساس گستره، تسیتورا (جایی که صدا راحت‌تر می‌نشیند)، پاساجو (شکست میان صدای سینه و صدای سر) و تیمبر (رنگ صدا) از هم متمایز می‌کند.</string>
@@ -119,7 +113,6 @@
     <string name="about_footer">© 2026 Chernyshov Yurii · دیاپازون %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f هرتز</string>
-    <string name="results_percent_format">%1$d%%</string>
     <string name="voice_types_separator_dot"> · </string>
     <string name="voice_types_detail_label_format">  %1$s</string>
     <string name="fach_category_soprano">سوپرانو</string>
@@ -172,7 +165,7 @@
     <string name="share_unknown_voice_type">نامشخص</string>
     <string name="share_clipboard_label">نتیجه نوع صدای دیاپازون</string>
     <string name="share_clipboard_toast">متن کپی شد — اگر برنامه به‌طور خودکار آن را پر نکرد، آن را جای‌گذاری کنید</string>
-    <string name="share_text">تا حالا فکر کرده‌اید نوع صدای آوازی شما چیست؟ 🎶\nتازه فهمیدم مال من این است: %1$s\nگستره شناسایی‌شده: %2$s–%3$s · محدوده راحت: %4$s–%5$s\n\nحالا کنجکاوم بدانم — مال شما چیست؟\nدیاپازون را امتحان کنید: %6$s</string>
+    <string name="share_text">تا حالا فکر کرده‌اید نوع صدای آوازی شما چیست؟ 🎶\nگستره صدای من نزدیک است به: %1$s\nگستره شناسایی‌شده: %2$s–%3$s · محدوده راحت: %4$s–%5$s\n\nحالا کنجکاوم بدانم — مال شما چیست؟\nدیاپازون را امتحان کنید: %6$s</string>
     <string name="nav_history">تاریخچه</string>
     <string name="history_title">تاریخچه</string>
     <string name="history_subtitle">تحلیل‌های گذشته صدای شما، از جدیدترین به قدیمی‌ترین</string>
@@ -256,9 +249,14 @@
     <string name="voice_check_keep_male">نگه داشتن صدای مردانه</string>
     <string name="voice_check_keep_female">نگه داشتن صدای زنانه</string>
     <string name="voice_check_discard">حذف این ضبط</string>
-    <string name="results_leaning_format">متمایل به %1$s</string>
-    <string name="results_leaning_close_format">متمایل به %1$s، نزدیک به %2$s</string>
-    <string name="results_profile_title">پروفایل صدای شما</string>
+    <string name="results_reading_title">گستره صدای شما نزدیک است به</string>
+    <string name="results_reading_between_format">بین %1$s و %2$s</string>
+    <string name="results_this_recording_format">این ضبط: %1$s</string>
+    <string name="results_fach_types_title">گونه‌های فاخ با گستره مشابه</string>
+    <string name="results_chart_title">گستره شما در میان گونه‌های صدا</string>
+    <string name="results_chart_you">شما</string>
+    <string name="results_chart_legend_typical">گستره راحت معمول</string>
+    <string name="results_chart_cd_format">گستره راحت شما، از %1$s تا %2$s، در مقایسه با گستره‌های معمول %3$s.</string>
     <plurals name="results_profile_based_on">
         <item quantity="one">ترکیب‌شده از %1$d ضبط اخیر شما</item>
         <item quantity="other">ترکیب‌شده از %1$d ضبط اخیر شما</item>
@@ -268,7 +266,6 @@
         <item quantity="other">%1$d از %2$d ضبط هم‌خوانی دارند</item>
     </plurals>
     <string name="results_profile_note">از حداکثر ۵ ضبط در ۳۰ روز گذشته استفاده می‌کند، تا یک اجرای غیرعادی نتیجه شما را تغییر ندهد.</string>
-    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 
     <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
     <plurals name="analyze_status_keep_singing">
@@ -282,7 +279,6 @@
 
     <!-- Results: next-step links -->
     <string name="results_section_next_steps">قدم بعدی</string>
-    <string name="results_next_about_format">درباره %1$s بیشتر بدانید</string>
     <string name="results_next_history">مقایسه با نتایج قبلی شما</string>
     <string name="results_next_warmup">ببینید گرم کردن صدا چگونه گستره شما را تغییر می‌دهد</string>
 

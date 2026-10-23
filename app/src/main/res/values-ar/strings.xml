@@ -32,11 +32,7 @@
     <string name="voice_types_cd_collapse">طيّ</string>
     <string name="voice_types_cd_expand">توسيع</string>
     <string name="results_title">نتائجك</string>
-    <string name="results_best_match_label">أفضل تطابق</string>
-    <string name="results_confidence_label">درجة التطابق</string>
-    <string name="results_famous_roles_subheading">أدوار شهيرة لهذا الصوت</string>
     <string name="results_section_range">المدى الصوتي — هذه الجلسة</string>
-    <string name="results_section_other_matches">تطابقات محتملة أخرى</string>
     <string name="results_section_comfortable_range">المدى المريح</string>
     <string name="results_section_detected_extremes">الحدود المكتشَفة</string>
     <string name="results_stat_comfortable_low">الطرف الأدنى</string>
@@ -47,10 +43,8 @@
     <string name="results_stat_samples">عيّنات نغمية صالحة</string>
     <string name="results_session_note">استنادًا إلى هذه الجلسة · النغمات الموثوقة فقط</string>
     <string name="results_stat_session_format">جلسة مدتها %1$.0f ث</string>
-    <string name="results_runner_up_rank_format">#%1$d</string>
-    <string name="results_score_format">%1$d/%2$d</string>
     <string name="results_btn_analyze_again">تحليل مرة أخرى</string>
-    <string name="results_disclaimer">يعتمد تصنيف الفاخ أيضًا على الطابع الصوتي (لون الصوت) ووزنه، وهما يحتاجان إلى أذن مدرَّبة. استخدم هذه النتيجة نقطةَ انطلاق مستنيرة — لا تشخيصًا نهائيًا. يبقى مدرّس الغناء صاحب التقييم الأدق دائمًا.</string>
+    <string name="results_disclaimer">يقيس التسجيل درجة الصوت: إلى أين يصل صوتك، وأين يكون مرتاحًا، وأين ينتقل بين الطبقات. ويعتمد نوع الصوت والفاخ أيضًا على الطابع الصوتي (لون الصوت) ووزنه، وهما يحتاجان إلى أذن مدرَّبة. استكشف أنواع الفاخ أعلاه مع مدرّس غناء يمكنه تأكيدها.</string>
 
     <!-- Re-test reminder (Results screen card + notification) -->
     <string name="reminder_card_title">إعادة الاختبار بعد 7 أيام؟</string>
@@ -75,7 +69,7 @@
     <string name="guide_step4_title">غطِّ مداك الصوتي كاملًا</string>
     <string name="guide_step4_body">ابدأ من أخفض نغمة مريحة لديك واصعد كروماتيكيًا أو على السلّم الموسيقي حتى أعلى نغمة، ثم انزل مجددًا. يساعد ذلك على اكتشاف مداك المطلق ونقطة الباساجيو (انتقال السجل الصوتي). احرص على الغناء 30–45 ثانية على الأقل. غنِّ بصوت مستقيم (دون فيبراتو) — فقد يبدو الفيبراتو كعدم استقرار في السجل ويجعل تقدير الباساجيو أقل موثوقية.</string>
     <string name="guide_step5_title">اضغط «إيقاف» وراجِع النتيجة</string>
-    <string name="guide_step5_body">سيعرض Diapason أقرب نوع صوتي إليك مع درجة التطابق، ومداك المُقاس، والتيسيتورا، والباساجيو التقديري.</string>
+    <string name="guide_step5_body">سيعرض Diapason مداك المُقاس ومداك المريح والباساجيو التقديري، مقارنةً بأنواع الأصوات، وأيّ نوع صوتي وأيّ أنواع الفاخ يناسبها هذا المدى.</string>
     <string name="guide_fach_section_title">ما هو الفاخ؟</string>
     <string name="guide_fach_body1">«الفاخ» (Fach، كلمة ألمانية تعني «الحُجرة») هو النظام الكلاسيكي المستخدم في دور الأوبرا لتصنيف المغنّين حسب نوع الصوت. معرفة الفاخ الخاص بك تساعدك على اختيار الريبرتوار المناسب، وحماية صوتك، والتواصل مع مديري اختيار الأدوار ومدرّسي الغناء.</string>
     <string name="guide_fach_body2">يتجاوز نظام الفاخ مجرد «سوبرانو» أو «باص»، فيميّز أكثر من 19 نوعًا فرعيًا بناءً على المدى، والتيسيتورا (حيث يستقر الصوت براحة أكبر)، والباساجيو (نقطة الانتقال بين صوت الصدر وصوت الرأس)، والطابع الصوتي (لون الصوت).</string>
@@ -119,7 +113,6 @@
     <string name="about_footer">© 2026 Chernyshov Yurii · Diapason %1$s</string>
     <string name="common_bullet_item">• %1$s</string>
     <string name="results_hz_format">%1$.0f هرتز</string>
-    <string name="results_percent_format">%1$d%%</string>
     <string name="voice_types_separator_dot"> · </string>
     <string name="voice_types_detail_label_format">  %1$s</string>
     <string name="fach_category_soprano">سوبرانو</string>
@@ -172,7 +165,7 @@
     <string name="share_unknown_voice_type">غير معروف</string>
     <string name="share_clipboard_label">نتيجة نوع الصوت من Diapason</string>
     <string name="share_clipboard_toast">تم نسخ النص — الصقه إن لم يملأه التطبيق تلقائيًا</string>
-    <string name="share_text">هل تساءلت يومًا ما نوع صوتك في الغناء؟ 🎶\nاكتشفت للتو أن صوتي: %1$s\nالمدى المكتشَف: %2$s–%3$s · المنطقة المريحة: %4$s–%5$s\n\nأنا فضولي الآن — ما نوع صوتك؟\nجرّب Diapason: %6$s</string>
+    <string name="share_text">هل تساءلت يومًا ما نوع صوتك في الغناء؟ 🎶\nمدى صوتي يناسب: %1$s\nالمدى المكتشَف: %2$s–%3$s · المنطقة المريحة: %4$s–%5$s\n\nأنا فضولي الآن — ما نوع صوتك؟\nجرّب Diapason: %6$s</string>
     <string name="nav_history">السجلّ</string>
     <string name="history_title">السجلّ</string>
     <string name="history_subtitle">تحليلات صوتك السابقة، الأحدث أولًا</string>
@@ -256,9 +249,14 @@
     <string name="voice_check_keep_male">إبقاء الصوت الرجالي</string>
     <string name="voice_check_keep_female">إبقاء الصوت النسائي</string>
     <string name="voice_check_discard">تجاهل هذا التسجيل</string>
-    <string name="results_leaning_format">يميل إلى %1$s</string>
-    <string name="results_leaning_close_format">يميل إلى %1$s، وقريب من %2$s</string>
-    <string name="results_profile_title">ملفّك الصوتي</string>
+    <string name="results_reading_title">مدى صوتك يناسب</string>
+    <string name="results_reading_between_format">بين %1$s و%2$s</string>
+    <string name="results_this_recording_format">هذا التسجيل: %1$s</string>
+    <string name="results_fach_types_title">أنواع الفاخ ذات المدى المشابه</string>
+    <string name="results_chart_title">مدى صوتك بين أنواع الأصوات</string>
+    <string name="results_chart_you">أنت</string>
+    <string name="results_chart_legend_typical">المدى المريح المعتاد</string>
+    <string name="results_chart_cd_format">مداك المريح، من %1$s إلى %2$s، مقارنةً بالمدى المعتاد لـ %3$s.</string>
     <plurals name="results_profile_based_on">
         <item quantity="zero">مُجمَّع من آخر %1$d تسجيل لك</item>
         <item quantity="one">مُجمَّع من آخر تسجيل واحد لك</item>
@@ -277,7 +275,6 @@
         <item quantity="other">التسجيلات المتوافقة: %1$d من %2$d</item>
     </plurals>
     <string name="results_profile_note">يستخدم حتى 5 تسجيلات من آخر 30 يومًا، حتى لا يغيّر تسجيلٌ غير معتاد واحد نتيجتك.</string>
-    <string name="results_family_with_fach_format">%1$s (%2$s)</string>
 
     <!-- Recording gate: progress toward the sample minimum, early-Stop prompt -->
     <plurals name="analyze_status_keep_singing">
@@ -295,7 +292,6 @@
 
     <!-- Results: next-step links -->
     <string name="results_section_next_steps">الخطوة التالية</string>
-    <string name="results_next_about_format">تعرّف على %1$s</string>
     <string name="results_next_history">قارِن بنتائجك السابقة</string>
     <string name="results_next_warmup">اكتشف كيف يغيّر الإحماء مداك</string>
 

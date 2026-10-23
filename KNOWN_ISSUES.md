@@ -419,6 +419,30 @@ the check disabled. The warm-up comparison flow is not checked — it shows no F
 
 ---
 
+## 17 · Results named one Fach that pitch alone can't support [MITIGATED 2026-10-23]
+
+**File:** `VoiceTypeReading.kt` (`VoiceTypeReader`), `VoiceFamilyRanges.kt`; `ResultsScreen.kt`, `VoiceRangeChart.kt`; `HistoryScreen.kt`
+
+Results crowned one Fach with a trophy, a "match score" percentage and ranked runner-ups;
+History listed a Fach and score per session. Replaying 2.7.0 sessions (`CombinedProfileReplayTest`)
+showed the answer couldn't hold: within a voice group, two independent sets of takes from the same
+singer named the same top Fach only ~24% of the time — no better with 5 sessions than with 1 — and
+81% of results had the runner-up within a point. Even 5-session medians moved 2–3 semitones,
+about the spacing between neighbouring Fach. Fach rests on timbre and weight; a recording can't
+hear either, and a voice teacher wouldn't name one from a range.
+
+**Fix:** Results leads with a reading a teacher would give from a range — the family, or "between"
+two when no family leads by 2 points — and the Fach types within a point of the best as links to
+explore, then the singer's range drawn against each family's typical range, then the numbers.
+Trophy, percentage and scores removed; History shows the same reading. Rejected: a stricter or
+looser family margin — the replay showed every margin (1–3) agreeing only 10–17 points more often
+than a stranger's label, so the margin was chosen for honesty (one family only when it clearly
+leads), not stability. **Not fixed:** the reading still changes between sessions ~40% of the time.
+The input is the cause — people sing something different each time — and the real remedy is a
+guided range test (same exercise every session), the next planned step.
+
+---
+
 ## Planned · Singer profiles ("Who's singing?") [TODO — next release after 2.7]
 
 **Why:** the Male/Female voice switch (2.7) is per recording, so a teacher or a shared phone no

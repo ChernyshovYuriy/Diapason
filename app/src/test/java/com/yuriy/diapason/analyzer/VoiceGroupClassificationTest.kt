@@ -2,13 +2,11 @@ package com.yuriy.diapason.analyzer
 
 import com.yuriy.diapason.R
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Voice-group (male/female) classification and the family-first [ResultSummary].
+ * Voice-group (male/female) classification.
  *
  * Background: in production, 28% of consecutive takes by the same install crossed
  * between the male and female halves of the table — always between range-overlapping
@@ -110,43 +108,5 @@ class VoiceGroupClassificationTest {
                 assertEquals(all.getValue(m.fach), m.score)
             }
         }
-    }
-
-    // ── summarize ─────────────────────────────────────────────────────────────
-
-    @Test
-    fun `summarize of an empty list is null`() {
-        assertNull(FachClassifier.summarize(emptyList()))
-    }
-
-    @Test
-    fun `summarize leads with the top match's family`() {
-        val summary = FachClassifier.summarize(listOf(match(lyricTenor, 12), match(contralto, 8)))!!
-        assertEquals(lyricTenor.categoryRes, summary.familyRes)
-        assertEquals(lyricTenor, summary.leaning.fach)
-    }
-
-    @Test
-    fun `a runner-up within one point is reported as close`() {
-        val summary = FachClassifier.summarize(listOf(match(lyricTenor, 12), match(contralto, 11)))!!
-        assertNotNull(summary.closeRunnerUp)
-        assertEquals(contralto, summary.closeRunnerUp!!.fach)
-    }
-
-    @Test
-    fun `a tied runner-up is reported as close`() {
-        val summary = FachClassifier.summarize(listOf(match(lyricTenor, 12), match(contralto, 12)))!!
-        assertEquals(contralto, summary.closeRunnerUp?.fach)
-    }
-
-    @Test
-    fun `a runner-up two points behind is not reported`() {
-        val summary = FachClassifier.summarize(listOf(match(lyricTenor, 12), match(contralto, 10)))!!
-        assertNull(summary.closeRunnerUp)
-    }
-
-    @Test
-    fun `a single match has no runner-up`() {
-        assertNull(FachClassifier.summarize(listOf(match(lyricTenor, 12)))!!.closeRunnerUp)
     }
 }

@@ -396,41 +396,4 @@ object FachClassifier {
 
         return results
     }
-
-    // ── Result summary (family first, Fach as a leaning) ─────────────────────
-
-    /**
-     * Two adjacent Fach types within this many points of each other are presented as
-     * "leaning X, close to Y" rather than a single verdict. One point is the smallest
-     * possible gap and the one the production data showed flipping between takes.
-     */
-    internal const val CLOSE_RUNNER_UP_POINTS = 1
-
-    /**
-     * Turns a ranked [classify] result into what the Results screen headlines: the voice
-     * family ([FachDefinition.categoryRes]), the top Fach as a leaning, and — when the
-     * runner-up is within [CLOSE_RUNNER_UP_POINTS] — that runner-up too. Returns null for
-     * an empty list.
-     *
-     * Leads with the family because nearly all take-to-take changes in production stayed
-     * inside one family (basso cantante ↔ profundo, Kavalier ↔ lyric baritone): the
-     * family is the part of the answer pitch can actually support.
-     */
-    fun summarize(matches: List<FachMatch>): ResultSummary? {
-        val top = matches.firstOrNull() ?: return null
-        val runnerUp = matches.getOrNull(1)
-            ?.takeIf { top.score - it.score <= CLOSE_RUNNER_UP_POINTS }
-        return ResultSummary(
-            familyRes = top.fach.categoryRes,
-            leaning = top,
-            closeRunnerUp = runnerUp,
-        )
-    }
 }
-
-/** See [FachClassifier.summarize]. */
-data class ResultSummary(
-    val familyRes: Int,
-    val leaning: FachMatch,
-    val closeRunnerUp: FachMatch?,
-)

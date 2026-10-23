@@ -120,14 +120,21 @@ fun AnalyzeScreen(
         }
     }
 
-    val micPermission = rememberPermissionState(
-        android.Manifest.permission.RECORD_AUDIO
-    )
-
-    // Which start the first-run voice prompt is standing in front of.
+    // Which start the first-run voice prompt or the permission dialog is standing in front of.
     var pendingRangeTest by remember { mutableStateOf(true) }
 
+    val micPermission = rememberPermissionState(
+        android.Manifest.permission.RECORD_AUDIO
+    ) { granted ->
+        AppAnalytics.micPermissionResult(granted)
+        // Start what they tapped — before, a grant left them on the idle screen to tap Start again.
+        if (granted) {
+            if (pendingRangeTest) viewModel.startRangeTest() else viewModel.startRecording()
+        }
+    }
+
     fun startOrRequestPermission(rangeTest: Boolean) {
+        pendingRangeTest = rangeTest
         if (!micPermission.status.isGranted) micPermission.launchPermissionRequest()
         else if (rangeTest) viewModel.startRangeTest()
         else viewModel.startRecording()

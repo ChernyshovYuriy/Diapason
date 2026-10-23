@@ -28,6 +28,7 @@ internal fun SessionEntity.toDomain() = SessionRecord(
     isPartial = isPartial,
     // An unrecognised stored name (none exist today) is treated like a pre-v2 row.
     voiceGroupChoice = voiceGroup?.let { stored -> VoiceGroupChoice.entries.firstOrNull { it.name == stored } },
+    recordingKind = recordingKind?.let { stored -> RecordingKind.entries.firstOrNull { it.name == stored } },
 )
 
 /** Maps [SessionRecord] → [SessionEntity]. */
@@ -46,6 +47,7 @@ internal fun SessionRecord.toEntity() = SessionEntity(
     topFachMaxScore = topFachMaxScore,
     isPartial = isPartial,
     voiceGroup = voiceGroupChoice?.name,
+    recordingKind = recordingKind?.name,
 )
 
 /** The stored profile with its recording time, as [VoiceProfileAggregator] consumes it. */
@@ -69,3 +71,16 @@ fun SessionRecord.toTimedProfile() = TimedProfile(
  */
 fun List<SessionRecord>.recordedWith(choice: VoiceGroupChoice): List<SessionRecord> =
     filter { it.voiceGroupChoice == choice }
+
+/** How a session was recorded; rows from before that was stored were free recordings. */
+val SessionRecord.kind: RecordingKind get() = recordingKind ?: RecordingKind.FREE
+
+/**
+ * The sessions comparable with the most recent one: the same kind of recording. A singer who
+ * takes the range test is compared only with their range tests — free singing measures
+ * whatever happened to be sung, so mixing the two would move the numbers for no vocal reason.
+ */
+fun List<SessionRecord>.comparableWithLatest(): List<SessionRecord> {
+    val latest = maxByOrNull { it.timestampMs } ?: return emptyList()
+    return filter { it.kind == latest.kind }
+}

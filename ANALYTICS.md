@@ -13,7 +13,7 @@ The `flow` parameter is one of: `single` (free recording), `range_test` (the gui
 
 | Property | Set from | Notes |
 |---|---|---|
-| `audio_source` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` after each recording starts → `AppAnalytics.setAudioSource` | Audio-source A/B arm actually recording: `mic`, `voice_recognition`, or `mic_fallback` (the arm's source failed to initialise). Assigned 50/50 per install by `AudioSourceExperiment`; split completion/insufficient rates by it and by `device.mobile_brand_name` |
+| `audio_source` | `AnalyzeViewModel` / `WarmUpComparisonViewModel` after each recording starts → `AppAnalytics.setAudioSourceMic` | Always `mic` from 2.7.1 — the 2.7.0 A/B (`mic` / `voice_recognition` / `mic_fallback`) ended with `voice_recognition` leaving more takes too short (22.0% vs 14.4%). Re-set on every recording so former `voice_recognition` installs stop reporting it |
 | `app_language` | `MainApp.setCollectionEnabled(true)` → `AppAnalytics.setLanguage` | From `Locale.getDefault()`. Set only once collection is on (every launch for a consenting user, and right after Agree) — a property set while collection is off is dropped, which left it empty for ~80% of users before 2026-10 |
 
 ## Screen tracking
@@ -62,7 +62,20 @@ The `flow` parameter is one of: `single` (free recording), `range_test` (the gui
 
 | Event | Params | Fired from |
 |---|---|---|
+| `history_chart_viewed` | `session_count`, `range_tests_only` (0/1) | `HistoryScreen` when "Your range over time" is drawn — from 2.7.1. `session_count` = sessions comparable with the latest (same voice choice and recording kind) |
 | `history_opened` | `item_count` | `HistoryScreen` opened; logged after the first non-Loading state, so `item_count` is the real size (before 2026-10 it read the state once at launch and logged 0 for nearly every visit) |
+
+## Combined voice profile
+
+| Event | Params | Fired from |
+|---|---|---|
+| `combined_profile_viewed` | `session_count`, `consistent_count`, `reading` | `ResultsScreen` when the reading comes from several recent sessions (from 2.7.1). `reading` as on `analysis_completed` |
+
+## Microphone permission
+
+| Event | Params | Fired from |
+|---|---|---|
+| `mic_permission_result` | `granted` (0/1) | `AnalyzeScreen` when the system microphone-permission dialog closes (from 2.7.1). On a grant the recording the user tapped now starts at once; before, they had to tap Start again |
 
 ## Privacy consent
 

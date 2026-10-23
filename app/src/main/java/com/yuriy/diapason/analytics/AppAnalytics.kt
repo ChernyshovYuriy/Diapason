@@ -56,12 +56,13 @@ object AppAnalytics {
     }
 
     /**
-     * The audio-source experiment arm actually recording for this install ("mic",
-     * "voice_recognition", or "mic_fallback" when the arm's source failed to initialise).
-     * A user property so every event can be split by it in BigQuery.
+     * The microphone audio source recording for this install. Always "mic" since 2.7.1: the
+     * 2.7.0 A/B against VOICE_RECOGNITION ended with VOICE_RECOGNITION leaving 22.0% of takes
+     * too short against 14.4% on MIC. Still set on every recording so installs that were in
+     * the VOICE_RECOGNITION arm stop reporting it.
      */
-    fun setAudioSource(value: String) {
-        analytics?.setUserProperty(USER_PROP_AUDIO_SOURCE, value)
+    fun setAudioSourceMic() {
+        analytics?.setUserProperty(USER_PROP_AUDIO_SOURCE, AUDIO_SOURCE_MIC)
     }
 
     // ── Screen tracking (Compose nav routes) ─────────────────────────────────
@@ -274,6 +275,35 @@ object AppAnalytics {
         logEvent(EVENT_HISTORY_OPENED) { long(PARAM_ITEM_COUNT, itemCount.toLong()) }
     }
 
+    /** History drew "Your range over time" from [sessionCount] sessions, range tests only or free recordings. */
+    fun historyChartViewed(sessionCount: Int, rangeTestsOnly: Boolean) {
+        logEvent(EVENT_HISTORY_CHART_VIEWED) {
+            long(PARAM_SESSION_COUNT, sessionCount.toLong())
+            long(PARAM_RANGE_TESTS_ONLY, if (rangeTestsOnly) 1L else 0L)
+        }
+    }
+
+    // ── Combined voice profile ───────────────────────────────────────────────
+
+    /**
+     * Results showed the reading combined from [sessionCount] recent sessions, [consistentCount]
+     * of which agree; [readingKey] as on `analysis_completed`.
+     */
+    fun combinedProfileViewed(sessionCount: Int, consistentCount: Int, readingKey: String?) {
+        logEvent(EVENT_COMBINED_PROFILE_VIEWED) {
+            long(PARAM_SESSION_COUNT, sessionCount.toLong())
+            long(PARAM_CONSISTENT_COUNT, consistentCount.toLong())
+            readingKey?.let { str(PARAM_READING, it) }
+        }
+    }
+
+    // ── Microphone permission ────────────────────────────────────────────────
+
+    /** The system microphone-permission dialog closed; [granted] is the answer. */
+    fun micPermissionResult(granted: Boolean) {
+        logEvent(EVENT_MIC_PERMISSION_RESULT) { long(PARAM_GRANTED, if (granted) 1L else 0L) }
+    }
+
     // ── Privacy consent ──────────────────────────────────────────────────────
 
     /**
@@ -354,6 +384,9 @@ object AppAnalytics {
     private const val EVENT_HISTORY_OPENED = "history_opened"
     private const val EVENT_VOICE_GROUP_SELECTED = "voice_group_selected"
     private const val EVENT_VOICE_GROUP_MISMATCH = "voice_group_mismatch"
+    private const val EVENT_HISTORY_CHART_VIEWED = "history_chart_viewed"
+    private const val EVENT_COMBINED_PROFILE_VIEWED = "combined_profile_viewed"
+    private const val EVENT_MIC_PERMISSION_RESULT = "mic_permission_result"
     private const val EVENT_PRIVACY_CONSENT_ACCEPTED = "privacy_consent_accepted"
     private const val EVENT_REMINDER_OPT_IN_SHOWN = "reminder_opt_in_shown"
     private const val EVENT_REMINDER_OPT_IN_ACCEPTED = "reminder_opt_in_accepted"
@@ -379,6 +412,10 @@ object AppAnalytics {
     private const val PARAM_SOURCE = "source"
     private const val PARAM_SUGGESTED_GROUP = "suggested_group"
     private const val PARAM_READING = "reading"
+    private const val PARAM_SESSION_COUNT = "session_count"
+    private const val PARAM_RANGE_TESTS_ONLY = "range_tests_only"
+    private const val PARAM_CONSISTENT_COUNT = "consistent_count"
+    private const val PARAM_GRANTED = "granted"
     private const val PARAM_ACTION = "action"
     private const val PARAM_TARGET = "target"
     private const val PARAM_PHASE = "phase"
@@ -391,6 +428,7 @@ object AppAnalytics {
     private const val USER_PROP_LANGUAGE = "app_language"
     private const val USER_PROP_AUDIO_SOURCE = "audio_source"
 
+    private const val AUDIO_SOURCE_MIC = "mic"
     private const val VALUE_UNKNOWN = "unknown"
     private const val VALUE_UNSURE = "unsure"
 }

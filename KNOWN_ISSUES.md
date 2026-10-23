@@ -441,7 +441,7 @@ leads), not stability. **Not fixed:** the reading still changes between sessions
 The input is the cause — people sing something different each time — and the remedy is the guided
 range test (`RangeTest`, 2026-10-23): the same four exercises every session, each measurement taken
 from the step made for it. Whether it makes readings stable must be measured from production:
-compare `flow = range_test` with `single` in `CombinedProfileReplayTest`'s export.
+compare `REPLAY_FLOWS=range_test,baseline,retest` with `REPLAY_FLOWS=single` in `CombinedProfileReplayTest`. Done when independent blocks agree on the reading well above today's ~31% (target ~60%) and it changes between sessions well below ~40%. The combined profile and History chart compare only the same kind of recording (`comparableWithLatest`, schema v3).
 
 ---
 

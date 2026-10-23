@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
  * move — the ~14% of users still active after a month had no way to see it before.
  */
 @Composable
-fun RangeProgressChart(progress: RangeProgress, modifier: Modifier = Modifier) {
+fun RangeProgressChart(progress: RangeProgress, rangeTestsOnly: Boolean = false, modifier: Modifier = Modifier) {
     val bandColor = MaterialTheme.colorScheme.primary
     val extremesColor = MaterialTheme.colorScheme.onSurfaceVariant
     val passaggioColor = MaterialTheme.colorScheme.tertiary
@@ -70,6 +70,13 @@ fun RangeProgressChart(progress: RangeProgress, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
             )
+            if (rangeTestsOnly) {
+                Text(
+                    text = stringResource(R.string.history_progress_range_tests_only),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Spacer(Modifier.height(12.dp))
 
             Canvas(

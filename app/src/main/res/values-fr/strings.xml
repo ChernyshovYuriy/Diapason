@@ -325,6 +325,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">Votre étendue au fil du temps</string>
+    <string name="history_progress_range_tests_only">Tests d’étendue uniquement : les enregistrements libres ne leur sont pas comparables.</string>
+    <string name="history_kind_range_test">Test d’étendue</string>
     <string name="history_progress_cd_format">Graphique d\'étendue. Enregistrements : %1$d. Tessiture au premier : %2$s–%3$s ; au plus récent : %4$s–%5$s.</string>
 
     <!-- Microphone lost mid-recording -->

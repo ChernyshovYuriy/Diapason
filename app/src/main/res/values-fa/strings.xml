@@ -298,6 +298,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">گستره صدای شما در طول زمان</string>
+    <string name="history_progress_range_tests_only">فقط آزمون‌های گستره: ضبط‌های آزاد با آن‌ها قابل مقایسه نیستند.</string>
+    <string name="history_kind_range_test">آزمون گستره</string>
     <string name="history_progress_cd_format">نمودار گستره. تعداد ضبط‌ها: %1$d. محدوده راحت در اولین ضبط: %2$s–%3$s؛ در آخرین ضبط: %4$s–%5$s.</string>
 
     <!-- Microphone lost mid-recording -->

@@ -311,6 +311,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">مداك الصوتي عبر الزمن</string>
+    <string name="history_progress_range_tests_only">اختبارات المدى فقط: لا تُقارَن التسجيلات الحرة بها.</string>
+    <string name="history_kind_range_test">اختبار المدى</string>
     <string name="history_progress_cd_format">مخطط المدى. عدد التسجيلات: %1$d. المدى المريح في أول تسجيل: %2$s–%3$s؛ وفي أحدثها: %4$s–%5$s.</string>
 
     <!-- Microphone lost mid-recording -->

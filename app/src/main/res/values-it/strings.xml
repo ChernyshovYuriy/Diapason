@@ -325,6 +325,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">La tua estensione nel tempo</string>
+    <string name="history_progress_range_tests_only">Solo test di estensione: le registrazioni libere non sono confrontabili con essi.</string>
+    <string name="history_kind_range_test">Test di estensione</string>
     <string name="history_progress_cd_format">Grafico dell\'estensione. Registrazioni: %1$d. Estensione comoda nella prima: %2$s–%3$s; nell\'ultima: %4$s–%5$s.</string>
 
     <!-- Microphone lost mid-recording -->

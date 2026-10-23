@@ -52,6 +52,13 @@ import kotlin.random.Random
  * task up to date and not replay a new CSV. The report is written next to the CSV
  * (`<name>.report.txt`).
  *
+ * Only the same kind of recording is comparable, as in the app (`comparableWithLatest`), so
+ * replay range tests and free recordings separately with `REPLAY_FLOWS` — a comma-separated
+ * list of `flow` values; the report is then `<name>.<flows>.report.txt`:
+ *
+ *     REPLAY_FLOWS=range_test,baseline,retest   # the guided range test (2.7.1+)
+ *     REPLAY_FLOWS=single                       # free recordings
+ *
  * Analytics logs pitches as whole MIDI notes, so every profile here is quantised to the
  * semitone; the "fidelity" line says how often that still reproduces the Fach the app logged.
  */
@@ -82,9 +89,14 @@ class CombinedProfileReplayTest {
         // line in memory, which runs a full replay out of heap.
         AppLogger.setDebug(false)
         val csv = File(path!!)
-        val runs = parse(csv)
-        val report = buildString { analyse(runs) }
-        File(csv.parentFile, csv.nameWithoutExtension + ".report.txt").writeText(report)
+        val flows = System.getenv("REPLAY_FLOWS")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
+        val runs = parse(csv).filter { flows.isEmpty() || it.flow in flows }
+        val report = buildString {
+            if (flows.isNotEmpty()) line("Flows: ${flows.joinToString(", ")}")
+            analyse(runs)
+        }
+        val suffix = if (flows.isEmpty()) "" else "." + flows.joinToString("+")
+        File(csv.parentFile, csv.nameWithoutExtension + suffix + ".report.txt").writeText(report)
         println(report)
     }
 

@@ -20,7 +20,9 @@ import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.analyzer.VoiceProfileAggregator
 import com.yuriy.diapason.analyzer.VoiceTypeReader
+import com.yuriy.diapason.data.RecordingKind
 import com.yuriy.diapason.data.SessionRecord
+import com.yuriy.diapason.data.comparableWithLatest
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.data.recordedWith
 import com.yuriy.diapason.data.toTimedProfile
@@ -29,7 +31,6 @@ import com.yuriy.diapason.keepSingingMessage
 import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
-import com.yuriy.diapason.settings.AudioSourceExperiment
 import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -105,8 +106,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     private val _uiState = MutableStateFlow<AnalyzeUiState>(AnalyzeUiState.Idle)
     val uiState: StateFlow<AnalyzeUiState> = _uiState.asStateFlow()
-    private val audioSourceArm = AudioSourceExperiment(application).arm
-    private val analyzer = VoiceAnalyzer(viewModelScope, audioSourceArm.audioSource)
+    private val analyzer = VoiceAnalyzer(viewModelScope)
 
     /**
      * Holds the last result so ResultsScreen can retrieve it after navigation.
@@ -147,10 +147,11 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         analyzer.onPitchDetected = { hz, noteName ->
+            var gateJustReached = false
             _uiState.update { current ->
                 if (current is AnalyzeUiState.Recording) {
                     val sampleCount = current.sampleCount + 1
-                    val gateJustReached = current.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
+                    gateJustReached = current.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
                     current.copy(
                         currentNote = noteName,
                         currentHz = hz,
@@ -161,6 +162,9 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                     )
                 } else current
             }
+            // They pressed Stop and kept singing as asked: finish now instead of making them
+            // press it again. Posted to the main thread — this callback runs on the audio thread.
+            if (gateJustReached) viewModelScope.launch { finishRecording() }
         }
 
         analyzer.onRecordingError = {
@@ -240,10 +244,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 tooFewSamples = getString(R.string.analyze_status_too_few_samples)
             )
         )
-        // After start(), so a failed experiment source is reported as the fallback.
-        AppAnalytics.setAudioSource(
-            if (analyzer.usedFallbackSource) AudioSourceExperiment.FALLBACK_ANALYTICS_VALUE else audioSourceArm.analyticsValue
-        )
+        AppAnalytics.setAudioSourceMic()
         if (!started) {
             // Not "Recording": there's nothing to stop. The error state offers Try Again.
             AppAnalytics.analysisMicError(currentFlow, AppAnalytics.MicErrorPhase.Start)
@@ -364,6 +365,8 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
         }
 
         // ── Persist session to local database ─────────────────────────────
+        // Read now: the save runs later, and a new recording may have started by then.
+        val recordingKind = if (currentFlow == AppAnalytics.Flow.RangeTest) RecordingKind.RANGE_TEST else RecordingKind.FREE
         viewModelScope.launch(Dispatchers.IO) {
             val record = SessionRecord(
                 id = UUID.randomUUID().toString(),
@@ -383,6 +386,7 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,
                 voiceGroupChoice = voiceChoice,
+                recordingKind = recordingKind,
             )
             runCatching { repository.save(record) }
                 .onSuccess { AppLogger.i("$TAG Session saved: ${record.topFachKey} (${record.id})") }
@@ -418,7 +422,8 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
             VoiceProfileAggregator.combine(
                 // Same choice only: with a per-recording switch, a session recorded as the
                 // other voice group is most likely a different singer on the same phone.
-                sessions = all.recordedWith(choice).map { it.toTimedProfile() },
+                // Same kind as the latest too: range tests combine only with range tests.
+                sessions = all.recordedWith(choice).comparableWithLatest().map { it.toTimedProfile() },
                 nowMs = System.currentTimeMillis(),
                 group = choice.group,
             )

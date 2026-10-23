@@ -3,6 +3,8 @@ package com.yuriy.diapason.comparison
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.yuriy.diapason.analyzer.RangeTest
+import com.yuriy.diapason.analyzer.RecordingGate
+import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import kotlinx.coroutines.Dispatchers
@@ -345,6 +347,16 @@ class WarmUpComparisonViewModelTest {
         assertTrue(stage.isRecording)
     }
 
+    @Test
+    fun `reaching the gate after a baseline prompt finishes without a second Stop`() = runTest {
+        viewModel.startBaseline()
+        forceStage(ComparisonStage.Baseline(sampleCount = RecordingGate.MIN_SAMPLES - 1, earlyStopPrompted = true))
+
+        analyzerPitchCallback().invoke(440f, "A4")
+
+        assertTrue(viewModel.stage.value is ComparisonStage.BaselineInsufficient)
+    }
+
     // ── ComparisonStage.Done invariant ────────────────────────────────────────
 
     @Test
@@ -374,6 +386,13 @@ class WarmUpComparisonViewModelTest {
      * For WarmUp, BaselineInsufficient, RetestInsufficient and Done we reach
      * them by calling [resetToIntro] then using reflection on the private field.
      */
+    /** The ViewModel's pitch callback, as the real analyzer would call it per accepted frame. */
+    private fun analyzerPitchCallback(): (Float, String) -> Unit {
+        val field = WarmUpComparisonViewModel::class.java.getDeclaredField("analyzer")
+        field.isAccessible = true
+        return (field.get(viewModel) as VoiceAnalyzer).onPitchDetected!!
+    }
+
     private fun forceStage(stage: ComparisonStage) {
         val field = WarmUpComparisonViewModel::class.java.getDeclaredField("_stage")
         field.isAccessible = true

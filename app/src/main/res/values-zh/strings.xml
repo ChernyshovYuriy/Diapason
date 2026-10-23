@@ -318,6 +318,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">你的音域变化</string>
+    <string name="history_progress_range_tests_only">仅显示音域测试：自由录音无法与之比较。</string>
+    <string name="history_kind_range_test">音域测试</string>
     <string name="history_progress_cd_format">音域图。录音次数：%1$d。第一次的舒适音区：%2$s–%3$s；最近一次：%4$s–%5$s。</string>
 
     <!-- Microphone lost mid-recording -->

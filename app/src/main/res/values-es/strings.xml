@@ -325,6 +325,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">Tu tesitura a lo largo del tiempo</string>
+    <string name="history_progress_range_tests_only">Solo pruebas de rango: las grabaciones libres no son comparables con ellas.</string>
+    <string name="history_kind_range_test">Prueba de rango</string>
     <string name="history_progress_cd_format">Gráfico de tesitura. Grabaciones: %1$d. Rango cómodo en la primera: %2$s–%3$s; en la última: %4$s–%5$s.</string>
 
     <!-- Microphone lost mid-recording -->

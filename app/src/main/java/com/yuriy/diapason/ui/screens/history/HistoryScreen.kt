@@ -38,7 +38,10 @@ import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
 import com.yuriy.diapason.analyzer.VoiceTypeReader
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
+import com.yuriy.diapason.data.RecordingKind
 import com.yuriy.diapason.data.SessionRecord
+import com.yuriy.diapason.data.comparableWithLatest
+import com.yuriy.diapason.data.kind
 import com.yuriy.diapason.data.recordedWith
 import com.yuriy.diapason.data.toTimedProfile
 import com.yuriy.diapason.ui.screens.results.familyLabel
@@ -140,14 +143,21 @@ private fun EmptyContent() {
 private fun SessionList(items: List<SessionRecord>) {
     // Same rule as the combined voice profile: chart only sessions recorded with the
     // current Male · Female · Not sure choice, so two singers sharing a phone aren't
-    // drawn as one voice. Read on each composition, i.e. each visit to this tab.
+    // drawn as one voice — and only the same kind of recording as the latest, so range
+    // tests are compared with range tests. Read on each composition, i.e. each visit to this tab.
     val context = LocalContext.current
     val choice = remember { VoiceGroupPreferences(context).choice ?: VoiceGroupChoice.UNSURE }
-    val progress = remember(items, choice) { buildRangeProgress(items.recordedWith(choice)) }
+    val charted = remember(items, choice) { items.recordedWith(choice).comparableWithLatest() }
+    val progress = remember(charted) { buildRangeProgress(charted) }
+    val rangeTestsOnly = charted.firstOrNull()?.kind == RecordingKind.RANGE_TEST
+
+    LaunchedEffect(progress != null) {
+        if (progress != null) AppAnalytics.historyChartViewed(charted.size, rangeTestsOnly)
+    }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         progress?.let {
-            item(key = "range_progress") { RangeProgressChart(it) }
+            item(key = "range_progress") { RangeProgressChart(it, rangeTestsOnly = rangeTestsOnly) }
         }
         items(items, key = { it.id }) { session ->
             SessionCard(session = session)
@@ -174,11 +184,20 @@ private fun SessionCard(session: SessionRecord) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = formatTimestamp(session.timestampMs),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
+                Column {
+                    Text(
+                        text = formatTimestamp(session.timestampMs),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                    if (session.kind == RecordingKind.RANGE_TEST) {
+                        Text(
+                            text = stringResource(R.string.history_kind_range_test),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        )
+                    }
+                }
                 // Recomputed from the stored pitches rather than the Fach saved at the time, so
                 // History reads the same way as Results: a family or "between" two, no score.
                 // Sessions from before the voice choice was stored rank all 19 Fach.

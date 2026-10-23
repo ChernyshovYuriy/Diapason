@@ -15,6 +15,7 @@ import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
+import com.yuriy.diapason.data.RecordingKind
 import com.yuriy.diapason.data.SessionRecord
 import com.yuriy.diapason.data.repository.SessionRepository
 import com.yuriy.diapason.insufficientMessage
@@ -22,7 +23,6 @@ import com.yuriy.diapason.keepSingingMessage
 import com.yuriy.diapason.localizedString
 import com.yuriy.diapason.logging.AppLogger
 import com.yuriy.diapason.reminder.ReminderScheduler
-import com.yuriy.diapason.settings.AudioSourceExperiment
 import com.yuriy.diapason.settings.VoiceGroupPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -108,8 +108,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
 
     // ── Audio analyzer (shared across baseline and retest) ────────────────────
 
-    private val audioSourceArm = AudioSourceExperiment(application).arm
-    private val analyzer = VoiceAnalyzer(viewModelScope, audioSourceArm.audioSource)
+    private val analyzer = VoiceAnalyzer(viewModelScope)
 
     private var timerJob: Job? = null
 
@@ -393,9 +392,7 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     private fun voiceChoice() =
         VoiceGroupPreferences(getApplication()).choice ?: VoiceGroupChoice.UNSURE
 
-    private fun reportAudioSource() = AppAnalytics.setAudioSource(
-        if (analyzer.usedFallbackSource) AudioSourceExperiment.FALLBACK_ANALYTICS_VALUE else audioSourceArm.analyticsValue
-    )
+    private fun reportAudioSource() = AppAnalytics.setAudioSourceMic()
 
     private fun analyzerStrings() = VoiceAnalyzerStrings(
         listeningMessage = str(R.string.analyze_status_listening_short),
@@ -413,10 +410,11 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             }
         }
         analyzer.onPitchDetected = { hz, note ->
+            var gateJustReached = false
             _stage.update {
                 if (it is ComparisonStage.Baseline) {
                     val sampleCount = it.sampleCount + 1
-                    val gateJustReached = it.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
+                    gateJustReached = it.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
                     it.copy(
                         currentNote = note, currentHz = hz, sampleCount = sampleCount,
                         earlyStopPrompted = it.earlyStopPrompted && !gateJustReached,
@@ -424,6 +422,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                     )
                 } else it
             }
+            // Pressed Stop, kept singing as asked: finish now (main thread — this is the audio thread).
+            if (gateJustReached) viewModelScope.launch { finishBaseline() }
         }
         analyzer.onStatusUpdate = { msg ->
             _stage.update {
@@ -442,10 +442,11 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
             }
         }
         analyzer.onPitchDetected = { hz, note ->
+            var gateJustReached = false
             _stage.update {
                 if (it is ComparisonStage.Retest) {
                     val sampleCount = it.sampleCount + 1
-                    val gateJustReached = it.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
+                    gateJustReached = it.earlyStopPrompted && RecordingGate.isEnough(sampleCount)
                     it.copy(
                         currentNote = note,
                         currentHz = hz,
@@ -456,6 +457,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                     )
                 } else it
             }
+            // Pressed Stop, kept singing as asked: finish now (main thread — this is the audio thread).
+            if (gateJustReached) viewModelScope.launch { finishRetest() }
         }
         analyzer.onStatusUpdate = { msg ->
             _stage.update {
@@ -484,6 +487,8 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
                 topFachMaxScore = topMatch?.maxScore,
                 isPartial = false,
                 voiceGroupChoice = voiceChoice(),
+                // Baseline and retest both run the range test's exercises.
+                recordingKind = RecordingKind.RANGE_TEST,
             )
             runCatching { repository.save(record) }
                 .onSuccess { AppLogger.i("$TAG Comparison session saved: ${record.topFachKey}") }

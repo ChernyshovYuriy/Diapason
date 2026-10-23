@@ -240,7 +240,7 @@ class AnalyzeViewModelTest {
     }
 
     @Test
-    fun `reaching the gate after a prompt clears it`() {
+    fun `reaching the gate after a prompt finishes the take without a second Stop`() {
         viewModel.startRecording()
         forceUiState(
             AnalyzeUiState.Recording(sampleCount = RecordingGate.MIN_SAMPLES - 1, earlyStopPrompted = true)
@@ -248,9 +248,20 @@ class AnalyzeViewModelTest {
 
         analyzerPitchCallback().invoke(440f, "A4")
 
+        // The real analyzer heard nothing, so it ends insufficient — but it did end.
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.InsufficientData)
+    }
+
+    @Test
+    fun `reaching the gate without a prompt keeps recording`() {
+        viewModel.startRecording()
+        forceUiState(AnalyzeUiState.Recording(sampleCount = RecordingGate.MIN_SAMPLES - 1))
+
+        analyzerPitchCallback().invoke(440f, "A4")
+
         val state = viewModel.uiState.value as AnalyzeUiState.Recording
         assertEquals(RecordingGate.MIN_SAMPLES, state.sampleCount)
-        assertFalse("the next Stop must finish normally", state.earlyStopPrompted)
+        assertFalse(state.earlyStopPrompted)
     }
 
     // ── Microphone failure ────────────────────────────────────────────────────

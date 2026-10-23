@@ -140,6 +140,19 @@ fun ResultsScreen(
         }
     }
 
+    // What a returning singer is shown as "their" voice — does the combined card get seen?
+    LaunchedEffect(Unit) {
+        combinedProfile?.let { combined ->
+            AppAnalytics.combinedProfileViewed(
+                sessionCount = combined.sessionCount,
+                consistentCount = combined.consistentCount,
+                readingKey = combined.reading.familyRes.mapNotNull { res ->
+                    runCatching { context.resources.getResourceEntryName(res).removePrefix("fach_category_") }.getOrNull()
+                }.joinToString("|"),
+            )
+        }
+    }
+
     // dwell tracking — fire result_viewed on entry, result_dismissed on dispose
     // with elapsed seconds. Without this the funnel can't distinguish "user read
     // the result" from "user opened and bounced".

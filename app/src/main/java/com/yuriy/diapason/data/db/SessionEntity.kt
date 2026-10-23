@@ -92,4 +92,12 @@ data class SessionEntity(
      */
     @ColumnInfo(name = "voice_group")
     val voiceGroup: String? = null,
+
+    /**
+     * How the session was recorded, as a `RecordingKind` name (free recording or the guided
+     * range test). Null for sessions recorded before schema v3 — all free recordings, since
+     * the range test didn't exist yet.
+     */
+    @ColumnInfo(name = "recording_kind")
+    val recordingKind: String? = null,
 )

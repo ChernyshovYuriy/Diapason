@@ -275,4 +275,45 @@ class SessionMapperTest {
             listOf("u"), sessions.recordedWith(VoiceGroupChoice.UNSURE).map { it.id }
         )
     }
+
+    // ── Recording kind ────────────────────────────────────────────────────────
+
+    @Test
+    fun `recording kind round-trips, and a pre-v3 row is a free recording`() {
+        RecordingKind.entries.forEach { kind ->
+            assertEquals(kind, fullRecord().copy(recordingKind = kind).toEntity().toDomain().recordingKind)
+        }
+        val legacy = fullEntity().toDomain()
+        assertNull(legacy.recordingKind)
+        assertEquals(RecordingKind.FREE, legacy.kind)
+    }
+
+    private fun at(id: String, timestampMs: Long, kind: RecordingKind?) =
+        fullRecord(id = id).copy(timestampMs = timestampMs, recordingKind = kind)
+
+    @Test
+    fun `after a range test, only range tests are comparable`() {
+        val sessions = listOf(
+            at("free-old", 1, null),
+            at("test-1", 2, RecordingKind.RANGE_TEST),
+            at("free", 3, RecordingKind.FREE),
+            at("test-2", 4, RecordingKind.RANGE_TEST),
+        )
+        assertEquals(listOf("test-1", "test-2"), sessions.comparableWithLatest().map { it.id })
+    }
+
+    @Test
+    fun `after a free recording, free recordings and pre-v3 rows are comparable`() {
+        val sessions = listOf(
+            at("free-old", 1, null),
+            at("test", 2, RecordingKind.RANGE_TEST),
+            at("free", 3, RecordingKind.FREE),
+        )
+        assertEquals(listOf("free-old", "free"), sessions.comparableWithLatest().map { it.id })
+    }
+
+    @Test
+    fun `no sessions, nothing comparable`() {
+        assertTrue(emptyList<SessionRecord>().comparableWithLatest().isEmpty())
+    }
 }

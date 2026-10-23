@@ -325,6 +325,8 @@
 
     <!-- History: range progress chart -->
     <string name="history_progress_title">A sua extensão ao longo do tempo</string>
+    <string name="history_progress_range_tests_only">Só testes de extensão: as gravações livres não são comparáveis com eles.</string>
+    <string name="history_kind_range_test">Teste de extensão</string>
     <string name="history_progress_cd_format">Gráfico de extensão. Gravações: %1$d. Extensão confortável na primeira: %2$s–%3$s; na mais recente: %4$s–%5$s.</string>
 
     <!-- Microphone lost mid-recording -->

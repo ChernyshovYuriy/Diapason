@@ -48,4 +48,16 @@ data class SessionRecord(
      * saved before that choice was stored (schema v1).
      */
     val voiceGroupChoice: VoiceGroupChoice? = null,
+
+    /** How it was recorded; null for sessions saved before that was stored (schema v2) — free recordings. */
+    val recordingKind: RecordingKind? = null,
 )
+
+/**
+ * Free singing or the guided range test. Only the same kind of recording can be compared:
+ * free singing measures whatever was sung, the range test the same exercises every time.
+ */
+enum class RecordingKind {
+    FREE,
+    RANGE_TEST,
+}

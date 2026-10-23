@@ -17,6 +17,13 @@ import com.yuriy.diapason.logging.AppLogger
  * reminders. Calling [initialize] from `MainApp.onCreate()` instead lets that failure be caught
  * here; [ReminderScheduler] checks [isAvailable] and no-ops instead of calling into a
  * `WorkManager` that never started.
+ *
+ * WorkManager also opens its database asynchronously right after [initialize] returns
+ * (`ForceStopRunnable`, on its own executor), so a failure there escapes the try/catch below.
+ * Observed on Xiaomi / Android 15: the process starts before credential-encrypted storage is
+ * unlocked, the database can't be opened, and WorkManager throws `IllegalStateException`
+ * ("can't be accessed from direct boot") on a background thread, killing the app. The
+ * [Configuration]'s initialization exception handler routes that into [isAvailable] instead.
  */
 object WorkManagerSupport {
 
@@ -26,7 +33,7 @@ object WorkManagerSupport {
 
     fun initialize(context: Context) {
         try {
-            WorkManager.initialize(context.applicationContext, Configuration.Builder().build())
+            WorkManager.initialize(context.applicationContext, configuration())
             isAvailable = true
         } catch (t: Throwable) {
             // Broad catch is deliberate: the failure mode is a device/firmware defect
@@ -37,4 +44,11 @@ object WorkManagerSupport {
             isAvailable = false
         }
     }
+
+    internal fun configuration(): Configuration = Configuration.Builder()
+        .setInitializationExceptionHandler { t ->
+            AppLogger.e("WorkManagerSupport: WorkManager failed after initialization", t)
+            isAvailable = false
+        }
+        .build()
 }

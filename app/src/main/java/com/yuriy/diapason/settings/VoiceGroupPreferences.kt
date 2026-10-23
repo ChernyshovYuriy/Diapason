@@ -22,9 +22,24 @@ class VoiceGroupPreferences(context: Context) {
             editor.apply()
         }
 
+    /**
+     * The choice a singer said "Keep" for when a take fit the other voice group, so a low
+     * female or falsetto voice isn't asked again every session. Cleared when the switch
+     * changes — a different choice usually means a different singer.
+     */
+    var mismatchKeptFor: VoiceGroupChoice?
+        get() = prefs.getString(KEY_MISMATCH_KEPT_FOR, null)
+            ?.let { stored -> VoiceGroupChoice.entries.firstOrNull { it.name == stored } }
+        set(value) {
+            val editor = prefs.edit()
+            if (value == null) editor.remove(KEY_MISMATCH_KEPT_FOR) else editor.putString(KEY_MISMATCH_KEPT_FOR, value.name)
+            editor.apply()
+        }
+
     companion object {
         private const val PREFS_NAME = "diapason_voice_group"
         // Stored values are VoiceGroupChoice names ("MALE" / "FEMALE" / "UNSURE").
         private const val KEY_VOICE_GROUP = "voice_group"
+        private const val KEY_MISMATCH_KEPT_FOR = "mismatch_kept_for"
     }
 }

@@ -276,6 +276,14 @@
     <string name="voice_group_male">男声</string>
     <string name="voice_group_female">女声</string>
     <string name="voice_group_unsure">不确定</string>
+    <string name="voice_check_title">请检查声音设置</string>
+    <string name="voice_check_body_fits_female">这段录音与女声类型（女高音、女中音、女低音）的吻合度明显高于男声类型。如果是别人唱的，请切换为女声。如果是你本人（例如用假声演唱），请保留男声。</string>
+    <string name="voice_check_body_fits_male">这段录音与男声类型（男高音、男中音、男低音）的吻合度明显高于女声类型。如果是别人唱的，请切换为男声。如果这就是你的声音，请保留女声。</string>
+    <string name="voice_check_switch_to_female">切换为女声</string>
+    <string name="voice_check_switch_to_male">切换为男声</string>
+    <string name="voice_check_keep_male">保留男声</string>
+    <string name="voice_check_keep_female">保留女声</string>
+    <string name="voice_check_discard">放弃这段录音</string>
     <string name="results_leaning_format">倾向于 %1$s</string>
     <string name="results_leaning_close_format">倾向于 %1$s，接近 %2$s</string>
     <string name="results_profile_title">你的声音档案</string>

@@ -282,6 +282,14 @@
     <string name="voice_group_male">Masculine</string>
     <string name="voice_group_female">Féminine</string>
     <string name="voice_group_unsure">Je ne sais pas</string>
+    <string name="voice_check_title">Vérifiez le réglage de voix</string>
+    <string name="voice_check_body_fits_female">Cet enregistrement correspond bien mieux aux voix féminines (soprano, mezzo, contralto) qu’aux voix masculines. Si quelqu’un d’autre a chanté, passez en voix féminine. Si c’était vous, en falsetto par exemple, gardez la voix masculine.</string>
+    <string name="voice_check_body_fits_male">Cet enregistrement correspond bien mieux aux voix masculines (ténor, baryton, basse) qu’aux voix féminines. Si quelqu’un d’autre a chanté, passez en voix masculine. Si c’est votre voix, gardez la voix féminine.</string>
+    <string name="voice_check_switch_to_female">Passer en voix féminine</string>
+    <string name="voice_check_switch_to_male">Passer en voix masculine</string>
+    <string name="voice_check_keep_male">Garder la voix masculine</string>
+    <string name="voice_check_keep_female">Garder la voix féminine</string>
+    <string name="voice_check_discard">Supprimer cet enregistrement</string>
     <string name="results_leaning_format">Tendance %1$s</string>
     <string name="results_leaning_close_format">Tendance %1$s, proche de %2$s</string>
     <string name="results_profile_title">Votre profil vocal</string>

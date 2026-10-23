@@ -248,6 +248,14 @@
     <string name="voice_group_male">رجالي</string>
     <string name="voice_group_female">نسائي</string>
     <string name="voice_group_unsure">لست متأكدًا</string>
+    <string name="voice_check_title">تحقّق من إعداد الصوت</string>
+    <string name="voice_check_body_fits_female">يتوافق هذا التسجيل مع أنواع الأصوات النسائية (سوبرانو، ميتزو سوبرانو، كونترالتو) أكثر بكثير من الأصوات الرجالية. إذا غنّى شخص آخر، فبدّل إلى صوت نسائي. وإذا كنت أنت، بصوت الفالسيتو مثلًا، فأبقِ الصوت الرجالي.</string>
+    <string name="voice_check_body_fits_male">يتوافق هذا التسجيل مع أنواع الأصوات الرجالية (تينور، باريتون، باص) أكثر بكثير من الأصوات النسائية. إذا غنّى شخص آخر، فبدّل إلى صوت رجالي. وإذا كان هذا صوتك، فأبقِ الصوت النسائي.</string>
+    <string name="voice_check_switch_to_female">التبديل إلى صوت نسائي</string>
+    <string name="voice_check_switch_to_male">التبديل إلى صوت رجالي</string>
+    <string name="voice_check_keep_male">إبقاء الصوت الرجالي</string>
+    <string name="voice_check_keep_female">إبقاء الصوت النسائي</string>
+    <string name="voice_check_discard">تجاهل هذا التسجيل</string>
     <string name="results_leaning_format">يميل إلى %1$s</string>
     <string name="results_leaning_close_format">يميل إلى %1$s، وقريب من %2$s</string>
     <string name="results_profile_title">ملفّك الصوتي</string>

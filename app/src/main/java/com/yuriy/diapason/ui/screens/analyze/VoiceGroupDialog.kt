@@ -61,6 +61,53 @@ fun VoiceGroupDialog(
 }
 
 /**
+ * "Check the voice setting" — the take fits the [suggested] voice group clearly better than
+ * the [chosen] one (see `VoiceGroupCheck`). Worded about the recording, not the person: a
+ * low female voice or a falsetto take is a legitimate reason to keep the choice.
+ */
+@Composable
+fun VoiceGroupCheckDialog(
+    chosen: VoiceGroupChoice,
+    suggested: VoiceGroupChoice,
+    onSwitch: () -> Unit,
+    onKeep: () -> Unit,
+    onDiscard: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val fitsFemale = suggested == VoiceGroupChoice.FEMALE
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.voice_check_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(
+                        if (fitsFemale) R.string.voice_check_body_fits_female else R.string.voice_check_body_fits_male
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Button(
+                    onClick = onSwitch,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(if (fitsFemale) R.string.voice_check_switch_to_female else R.string.voice_check_switch_to_male))
+                }
+                OutlinedButton(
+                    onClick = onKeep,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(if (chosen == VoiceGroupChoice.MALE) R.string.voice_check_keep_male else R.string.voice_check_keep_female))
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDiscard) { Text(stringResource(R.string.voice_check_discard)) }
+        },
+    )
+}
+
+/**
  * Male · Female · Not sure, visible above Start on every recording and pre-set to the last
  * choice. Visible rather than a buried setting so a teacher testing several students — or
  * two people sharing a phone — sees it and switches it per singer instead of silently

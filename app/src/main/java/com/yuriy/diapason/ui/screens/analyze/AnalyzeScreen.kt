@@ -126,6 +126,17 @@ fun AnalyzeScreen(
         else micPermission.launchPermissionRequest()
     }
 
+    (uiState as? AnalyzeUiState.ConfirmVoiceGroup)?.let { check ->
+        VoiceGroupCheckDialog(
+            chosen = check.chosen,
+            suggested = check.suggested,
+            onSwitch = { viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Switch) },
+            onKeep = { viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Keep) },
+            onDiscard = { viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Discard) },
+            onDismiss = { viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Dismiss) },
+        )
+    }
+
     if (showVoiceDialog) {
         VoiceGroupDialog(
             onSelect = { choice ->
@@ -192,6 +203,7 @@ fun AnalyzeScreen(
                     is AnalyzeUiState.Idle -> stringResource(R.string.analyze_idle_prompt)
                     is AnalyzeUiState.Recording -> state.statusMessage
                     is AnalyzeUiState.InsufficientData -> state.reason
+                    is AnalyzeUiState.ConfirmVoiceGroup -> stringResource(R.string.voice_check_title)
                     is AnalyzeUiState.ResultReady -> stringResource(R.string.analyze_complete)
                 },
                 style = MaterialTheme.typography.bodyMedium,
@@ -237,9 +249,10 @@ fun AnalyzeScreen(
 
         Spacer(Modifier.weight(1f))
 
-        // ── Voice switch (per recording; hidden while recording and until first answered) ──
+        // ── Voice switch (per recording; hidden while recording, while the voice-check prompt
+        // decides the take's choice, and until first answered) ──
         val currentChoice = voiceChoice
-        if (currentChoice != null && uiState !is AnalyzeUiState.Recording) {
+        if (currentChoice != null && uiState !is AnalyzeUiState.Recording && uiState !is AnalyzeUiState.ConfirmVoiceGroup) {
             VoiceGroupSwitch(
                 selected = currentChoice,
                 onSelect = { viewModel.setVoiceChoice(it, AppAnalytics.VoiceGroupSource.Change) },

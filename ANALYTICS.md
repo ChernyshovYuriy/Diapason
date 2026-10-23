@@ -37,7 +37,8 @@ The `flow` parameter is one of: `single`, `baseline`, `retest`
 
 | Event | Params | Fired from |
 |---|---|---|
-| `voice_group_selected` | `voice_group` (`male` / `female` / `unsure`), `source` (`first_run` / `change`) | `AnalyzeViewModel.setVoiceGroup` — the prompt before the first recording (`first_run`) or the Analyze screen's voice chip (`change`). `voice_group` on `analysis_completed` uses the same values; `unsure` means all 19 Fach competed |
+| `voice_group_selected` | `voice_group` (`male` / `female` / `unsure`), `source` (`first_run` / `change` / `mismatch_check`) | `AnalyzeViewModel.setVoiceChoice` — the prompt before the first recording (`first_run`), the Analyze screen's voice switch (`change`), or Switch on the voice-check prompt (`mismatch_check`). `voice_group` on `analysis_completed` uses the same values; `unsure` means all 19 Fach competed |
+| `voice_group_mismatch` | `voice_group` (chosen), `suggested_group`, `action` (`switch` / `keep` / `dismiss` / `discard`) | `AnalyzeViewModel.resolveVoiceGroupCheck` — a single-flow take fit the other voice group by `VoiceGroupCheck.MARGIN`+ points and the singer answered the "Check the voice setting" prompt. `analysis_completed` follows (with the final `voice_group`) except after `discard`, so count `discard` as an attempt outcome. Not asked again after `keep` until the switch changes |
 
 ## Result screen
 

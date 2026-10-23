@@ -398,6 +398,27 @@ language splits disabled; the service declared; `generateLocaleConfig` (with
 
 ---
 
+## 16 · Takes in the other voice group's range were ranked within the chosen group [MITIGATED 2026-10-23]
+
+**File:** `VoiceGroupCheck.kt`; `AnalyzeViewModel.onProfileReady` / `resolveVoiceGroupCheck`; `VoiceGroupCheckDialog`
+
+Replaying 2.7.0 sessions through the real classifier (`CombinedProfileReplayTest`, on the BigQuery
+export documented in its KDoc) showed 14% of Male and 21.5% of Female takes fitting the
+other half of the table by 3+ of 14 points — shared phones with the switch left on the previous
+singer, falsetto, children. Ranked within the chosen half they always landed on its edge type:
+countertenor won 29% of male results (comfortable F#4–F#5), contralto 24% of female results
+(G3–E4, a tenor's range). Being consistently wrong, they also made combined results look more
+stable than they are.
+
+**Fix:** such a take now asks "Check the voice setting" before it is ranked, logged as completed or
+saved: switch group (also the default for the next take), keep (remembered for that choice until
+the switch changes, so a low female or falsetto voice isn't asked every session), or discard. A
+margin of 3 points keeps the ordinary overlap between the halves quiet. New `voice_group_mismatch`
+event. Tests: `VoiceGroupCheckTest` (2.7.0 medians), `AnalyzeViewModelTest`; verified to fail with
+the check disabled. The warm-up comparison flow is not checked — it shows no Fach.
+
+---
+
 ## Planned · Singer profiles ("Who's singing?") [TODO — next release after 2.7]
 
 **Why:** the Male/Female voice switch (2.7) is per recording, so a teacher or a shared phone no

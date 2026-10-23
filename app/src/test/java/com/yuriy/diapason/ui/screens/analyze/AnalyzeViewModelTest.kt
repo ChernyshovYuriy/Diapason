@@ -265,6 +265,111 @@ class AnalyzeViewModelTest {
         assertTrue("Expected InsufficientData but got $state", state is AnalyzeUiState.InsufficientData)
     }
 
+    // ── Voice-group check ─────────────────────────────────────────────────────
+    //
+    // A take that fits the other half of the table clearly better asks before it is
+    // ranked, logged or saved (VoiceGroupCheck).
+
+    /** Soprano-range take: the median of "Male" takes that won countertenor in 2.7.0. */
+    private val femaleRangeTake = VoiceProfile(220f, 932f, 370f, 740f, 587f, 120, 40f)
+
+    /** Lyric baritone take: fits Male. */
+    private val baritoneTake = VoiceProfile(117f, 349f, 147f, 262f, 196f, 120, 40f)
+
+    private fun recordAsMale(profile: VoiceProfile) {
+        viewModel.setVoiceChoice(VoiceGroupChoice.MALE, AppAnalytics.VoiceGroupSource.Change)
+        viewModel.onProfileReady(profile)
+    }
+
+    @Test
+    fun `a take that fits the chosen group goes straight to the result`() {
+        recordAsMale(baritoneTake)
+
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.ResultReady)
+    }
+
+    @Test
+    fun `a take that fits the other group asks first and produces no result yet`() {
+        recordAsMale(femaleRangeTake)
+
+        val state = viewModel.uiState.value
+        assertTrue("Expected ConfirmVoiceGroup but got $state", state is AnalyzeUiState.ConfirmVoiceGroup)
+        state as AnalyzeUiState.ConfirmVoiceGroup
+        assertEquals(VoiceGroupChoice.MALE, state.chosen)
+        assertEquals(VoiceGroupChoice.FEMALE, state.suggested)
+        assertNull("nothing is shown as a result before the answer", viewModel.lastResult)
+    }
+
+    @Test
+    fun `Switch ranks the take within the suggested group and keeps it for the next take`() {
+        recordAsMale(femaleRangeTake)
+
+        viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Switch)
+
+        val result = viewModel.uiState.value as AnalyzeUiState.ResultReady
+        assertTrue(result.matches.all { it.fach.voiceGroup == VoiceGroup.FEMALE })
+        assertEquals(VoiceGroupChoice.FEMALE, viewModel.voiceChoice.value)
+    }
+
+    @Test
+    fun `Keep ranks the take within the chosen group and is not asked again for it`() {
+        recordAsMale(femaleRangeTake)
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.ConfirmVoiceGroup)
+
+        viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Keep)
+
+        val result = viewModel.uiState.value as AnalyzeUiState.ResultReady
+        assertTrue(result.matches.all { it.fach.voiceGroup == VoiceGroup.MALE })
+        assertEquals(VoiceGroupChoice.MALE, viewModel.voiceChoice.value)
+
+        // A falsetto singer or a low female voice shouldn't be asked every session.
+        viewModel.onProfileReady(femaleRangeTake)
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.ResultReady)
+    }
+
+    @Test
+    fun `changing the switch after Keep asks again — likely a different singer`() {
+        recordAsMale(femaleRangeTake)
+        viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Keep)
+
+        viewModel.setVoiceChoice(VoiceGroupChoice.FEMALE, AppAnalytics.VoiceGroupSource.Change)
+        recordAsMale(femaleRangeTake)
+
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.ConfirmVoiceGroup)
+    }
+
+    @Test
+    fun `Dismiss ranks within the chosen group but asks again next time`() {
+        recordAsMale(femaleRangeTake)
+
+        viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Dismiss)
+
+        val result = viewModel.uiState.value as AnalyzeUiState.ResultReady
+        assertTrue(result.matches.all { it.fach.voiceGroup == VoiceGroup.MALE })
+        viewModel.onProfileReady(femaleRangeTake)
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.ConfirmVoiceGroup)
+    }
+
+    @Test
+    fun `Discard throws the take away and leaves the previous result alone`() {
+        val previous = AnalyzeUiState.ResultReady(baritoneTake, FachClassifier.classify(baritoneTake, VoiceGroup.MALE))
+        forceLastResult(previous)
+        recordAsMale(femaleRangeTake)
+
+        viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Discard)
+
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.Idle)
+        assertEquals(previous, viewModel.lastResult)
+    }
+
+    @Test
+    fun `an answer with no prompt showing is ignored`() {
+        viewModel.resolveVoiceGroupCheck(AppAnalytics.MismatchAction.Switch)
+
+        assertTrue(viewModel.uiState.value is AnalyzeUiState.Idle)
+        assertNull(viewModel.voiceChoice.value)
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**

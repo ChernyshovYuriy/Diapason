@@ -165,6 +165,32 @@ object AppAnalytics {
         FirstRun("first_run"),
         /** Changed later from the Analyze screen. */
         Change("change"),
+        /** Switched from the "check the voice setting" prompt after a mismatched take. */
+        MismatchCheck("mismatch_check"),
+    }
+
+    /** The singer's answer when a take fit the other voice group ([voiceGroupMismatch]). */
+    enum class MismatchAction(val value: String) {
+        /** Re-ranked within the suggested group (and the switch set to it). */
+        Switch("switch"),
+        /** Kept the chosen group; not asked again for it until the switch changes. */
+        Keep("keep"),
+        /** Closed the prompt without answering; ranked within the chosen group, asked again next time. */
+        Dismiss("dismiss"),
+        /** Threw the take away; nothing saved or classified. */
+        Discard("discard"),
+    }
+
+    /**
+     * A take fit [suggestedGroup] clearly better than the [chosenGroup] it was recorded with,
+     * and the singer answered the prompt with [action].
+     */
+    fun voiceGroupMismatch(chosenGroup: VoiceGroup?, suggestedGroup: VoiceGroup?, action: MismatchAction) {
+        logEvent(EVENT_VOICE_GROUP_MISMATCH) {
+            str(PARAM_VOICE_GROUP, voiceGroupValue(chosenGroup))
+            str(PARAM_SUGGESTED_GROUP, voiceGroupValue(suggestedGroup))
+            str(PARAM_ACTION, action.value)
+        }
     }
 
     fun voiceGroupSelected(voiceGroup: VoiceGroup?, source: VoiceGroupSource) {
@@ -322,6 +348,7 @@ object AppAnalytics {
     private const val EVENT_COMPARISON_COMPLETED = "comparison_completed"
     private const val EVENT_HISTORY_OPENED = "history_opened"
     private const val EVENT_VOICE_GROUP_SELECTED = "voice_group_selected"
+    private const val EVENT_VOICE_GROUP_MISMATCH = "voice_group_mismatch"
     private const val EVENT_PRIVACY_CONSENT_ACCEPTED = "privacy_consent_accepted"
     private const val EVENT_REMINDER_OPT_IN_SHOWN = "reminder_opt_in_shown"
     private const val EVENT_REMINDER_OPT_IN_ACCEPTED = "reminder_opt_in_accepted"
@@ -345,6 +372,8 @@ object AppAnalytics {
     private const val PARAM_RUNNER_UP_GAP = "runner_up_gap"
     private const val PARAM_VOICE_GROUP = "voice_group"
     private const val PARAM_SOURCE = "source"
+    private const val PARAM_SUGGESTED_GROUP = "suggested_group"
+    private const val PARAM_ACTION = "action"
     private const val PARAM_TARGET = "target"
     private const val PARAM_PHASE = "phase"
     private const val PARAM_DETECTED_MIN_MIDI = "detected_min_midi"

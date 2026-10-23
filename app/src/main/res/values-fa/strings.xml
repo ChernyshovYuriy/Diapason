@@ -248,6 +248,14 @@
     <string name="voice_group_male">مردانه</string>
     <string name="voice_group_female">زنانه</string>
     <string name="voice_group_unsure">مطمئن نیستم</string>
+    <string name="voice_check_title">تنظیم صدا را بررسی کنید</string>
+    <string name="voice_check_body_fits_female">این ضبط با گونه‌های صدای زنانه (سوپرانو، مزو-سوپرانو، کنترالتو) بسیار بیشتر از گونه‌های مردانه جور است. اگر کس دیگری خوانده، به صدای زنانه تغییر دهید. اگر خودتان بودید، مثلاً با فالستو، صدای مردانه را نگه دارید.</string>
+    <string name="voice_check_body_fits_male">این ضبط با گونه‌های صدای مردانه (تنور، باریتون، باس) بسیار بیشتر از گونه‌های زنانه جور است. اگر کس دیگری خوانده، به صدای مردانه تغییر دهید. اگر این صدای خودتان است، صدای زنانه را نگه دارید.</string>
+    <string name="voice_check_switch_to_female">تغییر به صدای زنانه</string>
+    <string name="voice_check_switch_to_male">تغییر به صدای مردانه</string>
+    <string name="voice_check_keep_male">نگه داشتن صدای مردانه</string>
+    <string name="voice_check_keep_female">نگه داشتن صدای زنانه</string>
+    <string name="voice_check_discard">حذف این ضبط</string>
     <string name="results_leaning_format">متمایل به %1$s</string>
     <string name="results_leaning_close_format">متمایل به %1$s، نزدیک به %2$s</string>
     <string name="results_profile_title">پروفایل صدای شما</string>

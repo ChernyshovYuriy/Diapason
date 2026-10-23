@@ -14,6 +14,7 @@ import com.yuriy.diapason.analyzer.FachMatch
 import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceAnalyzer
 import com.yuriy.diapason.analyzer.VoiceAnalyzerStrings
+import com.yuriy.diapason.analyzer.VoiceGroupCheck
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
 import com.yuriy.diapason.analyzer.VoiceProfile
 import com.yuriy.diapason.analyzer.VoiceProfileAggregator
@@ -58,6 +59,17 @@ sealed interface AnalyzeUiState {
          * prompt, and the next Stop finishes anyway. Cleared once the gate is reached.
          */
         val earlyStopPrompted: Boolean = false,
+    ) : AnalyzeUiState
+
+    /**
+     * The take fits [suggested]'s half of the Fach table clearly better than [chosen]'s
+     * ([com.yuriy.diapason.analyzer.VoiceGroupCheck]). Nothing is classified, logged as
+     * completed or saved until the singer answers via [AnalyzeViewModel.resolveVoiceGroupCheck].
+     */
+    data class ConfirmVoiceGroup(
+        val profile: VoiceProfile,
+        val chosen: VoiceGroupChoice,
+        val suggested: VoiceGroupChoice,
     ) : AnalyzeUiState
 
     /** Processing finished but resulted in insufficient data */
@@ -222,7 +234,45 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
             return
         }
 
-        val voiceChoice = effectiveChoice
+        onProfileReady(profile)
+    }
+
+    /**
+     * A take with enough samples: asks first when it fits the other voice group clearly
+     * better than the chosen one — unless the singer already said "Keep" for this choice.
+     * Internal so tests can drive it with a constructed profile instead of real audio.
+     */
+    internal fun onProfileReady(profile: VoiceProfile) {
+        val choice = effectiveChoice
+        val suggested = if (voiceGroupPreferences.mismatchKeptFor == choice) null
+        else VoiceGroupCheck.betterFittingChoice(profile, choice)
+        if (suggested != null) {
+            _uiState.value = AnalyzeUiState.ConfirmVoiceGroup(profile, chosen = choice, suggested = suggested)
+            return
+        }
+        completeAnalysis(profile, choice)
+    }
+
+    /** The singer's answer to the [AnalyzeUiState.ConfirmVoiceGroup] prompt. */
+    fun resolveVoiceGroupCheck(action: AppAnalytics.MismatchAction) {
+        val check = uiState.value as? AnalyzeUiState.ConfirmVoiceGroup ?: return
+        AppAnalytics.voiceGroupMismatch(check.chosen.group, check.suggested.group, action)
+        when (action) {
+            AppAnalytics.MismatchAction.Switch -> {
+                // Also the default for the next take: whoever just sang is likely to go again.
+                setVoiceChoice(check.suggested, AppAnalytics.VoiceGroupSource.MismatchCheck)
+                completeAnalysis(check.profile, check.suggested)
+            }
+            AppAnalytics.MismatchAction.Keep -> {
+                voiceGroupPreferences.mismatchKeptFor = check.chosen
+                completeAnalysis(check.profile, check.chosen)
+            }
+            AppAnalytics.MismatchAction.Dismiss -> completeAnalysis(check.profile, check.chosen)
+            AppAnalytics.MismatchAction.Discard -> _uiState.value = AnalyzeUiState.Idle
+        }
+    }
+
+    private fun completeAnalysis(profile: VoiceProfile, voiceChoice: VoiceGroupChoice) {
         val voiceGroup = voiceChoice.group
         val matches = FachClassifier.classify(profile, voiceGroup)
         val topMatch = matches.firstOrNull()
@@ -285,6 +335,9 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
      * The combined profile does switch to sessions recorded with the new choice.
      */
     fun setVoiceChoice(choice: VoiceGroupChoice, source: AppAnalytics.VoiceGroupSource) {
+        // A "Keep" answer belongs to the singer it was given for; a different choice
+        // usually means a different singer.
+        if (choice != _voiceChoice.value) voiceGroupPreferences.mismatchKeptFor = null
         voiceGroupPreferences.choice = choice
         _voiceChoice.value = choice
         AppAnalytics.voiceGroupSelected(choice.group, source)

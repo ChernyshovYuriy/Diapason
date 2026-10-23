@@ -284,6 +284,14 @@
     <string name="voice_group_male">Male</string>
     <string name="voice_group_female">Female</string>
     <string name="voice_group_unsure">Not sure</string>
+    <string name="voice_check_title">Check the voice setting</string>
+    <string name="voice_check_body_fits_female">This take fits the female voice types (soprano, mezzo, contralto) much better than the male ones. If someone else sang, switch to Female. If it was you, in falsetto for example, keep Male.</string>
+    <string name="voice_check_body_fits_male">This take fits the male voice types (tenor, baritone, bass) much better than the female ones. If someone else sang, switch to Male. If this is your voice, keep Female.</string>
+    <string name="voice_check_switch_to_female">Switch to Female</string>
+    <string name="voice_check_switch_to_male">Switch to Male</string>
+    <string name="voice_check_keep_male">Keep Male</string>
+    <string name="voice_check_keep_female">Keep Female</string>
+    <string name="voice_check_discard">Discard this take</string>
     <string name="results_leaning_format">Leaning %1$s</string>
     <string name="results_leaning_close_format">Leaning %1$s, close to %2$s</string>
     <string name="results_profile_title">Your voice profile</string>

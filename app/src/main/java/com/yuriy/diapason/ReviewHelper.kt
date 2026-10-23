@@ -1,6 +1,7 @@
 package com.yuriy.diapason
 
 import android.content.Context
+import androidx.core.content.edit
 
 class ReviewHelper(context: Context) {
 
@@ -9,7 +10,7 @@ class ReviewHelper(context: Context) {
     // Returns true on the 3rd successful analysis and every 10th one after that.
     fun recordAnalysisAndCheckShouldPrompt(): Boolean {
         val count = prefs.getInt(KEY_COUNT, 0) + 1
-        prefs.edit().putInt(KEY_COUNT, count).apply()
+        prefs.edit { putInt(KEY_COUNT, count) }
         return count == 3 || (count > 3 && count % 10 == 0)
     }
 

@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">Grant Mic Permission</string>
     <string name="analyze_btn_start_range_test">Start range test</string>
     <string name="analyze_btn_free_recording">Free recording</string>
-    <string name="range_test_duration_format">%1$d short exercises · about %2$d seconds</string>
+    <string name="range_test_summary">Four short exercises, under a minute</string>
     <string name="range_test_step_format">Step %1$d of %2$d: %3$s · %4$s left</string>
     <string name="range_test_step_note_title">Comfortable note</string>
     <string name="range_test_step_note_body">Sing “ah” on an easy note, about where you speak, and hold it steadily.</string>

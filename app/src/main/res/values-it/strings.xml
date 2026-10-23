@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">Concedi permesso microfono</string>
     <string name="analyze_btn_start_range_test">Avvia il test di estensione</string>
     <string name="analyze_btn_free_recording">Registrazione libera</string>
-    <string name="range_test_duration_format">%1$d brevi esercizi · circa %2$d secondi</string>
+    <string name="range_test_summary">Quattro brevi esercizi, meno di un minuto</string>
     <string name="range_test_step_format">Passo %1$d di %2$d: %3$s · mancano %4$s</string>
     <string name="range_test_step_note_title">Nota comoda</string>
     <string name="range_test_step_note_body">Canta “a” su una nota facile, più o meno all’altezza della voce parlata, e tienila ferma.</string>

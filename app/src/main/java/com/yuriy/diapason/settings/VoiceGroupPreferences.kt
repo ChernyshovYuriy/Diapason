@@ -1,6 +1,7 @@
 package com.yuriy.diapason.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import com.yuriy.diapason.analyzer.VoiceGroupChoice
 
 /**
@@ -17,9 +18,7 @@ class VoiceGroupPreferences(context: Context) {
         get() = prefs.getString(KEY_VOICE_GROUP, null)
             ?.let { stored -> VoiceGroupChoice.entries.firstOrNull { it.name == stored } }
         set(value) {
-            val editor = prefs.edit()
-            if (value == null) editor.remove(KEY_VOICE_GROUP) else editor.putString(KEY_VOICE_GROUP, value.name)
-            editor.apply()
+            prefs.edit { if (value == null) remove(KEY_VOICE_GROUP) else putString(KEY_VOICE_GROUP, value.name) }
         }
 
     /**
@@ -31,9 +30,7 @@ class VoiceGroupPreferences(context: Context) {
         get() = prefs.getString(KEY_MISMATCH_KEPT_FOR, null)
             ?.let { stored -> VoiceGroupChoice.entries.firstOrNull { it.name == stored } }
         set(value) {
-            val editor = prefs.edit()
-            if (value == null) editor.remove(KEY_MISMATCH_KEPT_FOR) else editor.putString(KEY_MISMATCH_KEPT_FOR, value.name)
-            editor.apply()
+            prefs.edit { if (value == null) remove(KEY_MISMATCH_KEPT_FOR) else putString(KEY_MISMATCH_KEPT_FOR, value.name) }
         }
 
     companion object {

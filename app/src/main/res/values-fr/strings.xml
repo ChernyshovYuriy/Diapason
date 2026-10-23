@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">Autoriser le micro</string>
     <string name="analyze_btn_start_range_test">Lancer le test d’étendue</string>
     <string name="analyze_btn_free_recording">Enregistrement libre</string>
-    <string name="range_test_duration_format">%1$d exercices courts · environ %2$d secondes</string>
+    <string name="range_test_summary">Quatre exercices courts, moins d’une minute</string>
     <string name="range_test_step_format">Étape %1$d sur %2$d : %3$s · encore %4$s</string>
     <string name="range_test_step_note_title">Note confortable</string>
     <string name="range_test_step_note_body">Chantez « a » sur une note facile, à peu près à la hauteur de votre voix parlée, et tenez-la de façon stable.</string>

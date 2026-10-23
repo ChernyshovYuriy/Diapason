@@ -66,7 +66,6 @@ import com.yuriy.diapason.BuildConfig
 import com.yuriy.diapason.R
 import com.yuriy.diapason.analytics.AppAnalytics
 import com.yuriy.diapason.analyzer.FachClassifier
-import com.yuriy.diapason.analyzer.RangeTest
 import com.yuriy.diapason.analyzer.RecordingGate
 import com.yuriy.diapason.analyzer.VoiceTypeReader
 import com.yuriy.diapason.ui.screens.results.familyLabel
@@ -333,7 +332,7 @@ fun AnalyzeScreen(
                 )
             }
             Text(
-                text = stringResource(R.string.range_test_duration_format, RangeTest.STEPS.size, RangeTest.TOTAL_SECONDS),
+                text = stringResource(R.string.range_test_summary),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

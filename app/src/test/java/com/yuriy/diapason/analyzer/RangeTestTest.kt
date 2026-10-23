@@ -64,6 +64,13 @@ class RangeTestTest {
     }
 
     @Test
+    fun `the Analyze screen's "four short exercises, under a minute" stays true`() {
+        // range_test_summary states both in words in every language; change it with these.
+        assertEquals(4, RangeTest.STEPS.size)
+        assertTrue(RangeTest.TOTAL_SECONDS < 60)
+    }
+
+    @Test
     fun `extremes come from the slides`() {
         val take = fullTest()
         val profile = RangeTest.profileOf(take.pitches, take.timesMs, RangeTest.TOTAL_SECONDS.toFloat())

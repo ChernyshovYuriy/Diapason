@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">اجازه دسترسی به میکروفون</string>
     <string name="analyze_btn_start_range_test">شروع آزمون گستره</string>
     <string name="analyze_btn_free_recording">ضبط آزاد</string>
-    <string name="range_test_duration_format">%1$d تمرین کوتاه · حدود %2$d ثانیه</string>
+    <string name="range_test_summary">چهار تمرین کوتاه، کمتر از یک دقیقه</string>
     <string name="range_test_step_format">مرحله %1$d از %2$d: %3$s · %4$s باقی مانده</string>
     <string name="range_test_step_note_title">نت راحت</string>
     <string name="range_test_step_note_body">روی «آ» یک نت راحت، تقریباً هم‌ارتفاع صدای حرف‌زدنتان، بخوانید و آن را پایدار نگه دارید.</string>

@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">授予麦克风权限</string>
     <string name="analyze_btn_start_range_test">开始音域测试</string>
     <string name="analyze_btn_free_recording">自由录音</string>
-    <string name="range_test_duration_format">%1$d 个简短练习 · 约 %2$d 秒</string>
+    <string name="range_test_summary">四个简短练习，不到一分钟</string>
     <string name="range_test_step_format">第 %1$d 步，共 %2$d 步：%3$s · 剩余 %4$s</string>
     <string name="range_test_step_note_title">舒适的音</string>
     <string name="range_test_step_note_body">用“啊”唱一个轻松的音，大约在你说话的音高，并稳定地保持住。</string>

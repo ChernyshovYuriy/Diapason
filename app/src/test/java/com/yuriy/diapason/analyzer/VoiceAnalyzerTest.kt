@@ -203,10 +203,11 @@ class VoiceAnalyzerTest {
     @Test
     fun `persistent read errors end the session and report the mic as lost`() {
         // Every read fails, as when a phone call takes the microphone.
-        ShadowAudioRecord.setSource(object : ShadowAudioRecord.AudioRecordSource {
+        val failingSource = object : ShadowAudioRecord.AudioRecordSource {
             override fun readInShortArray(data: ShortArray, offset: Int, size: Int, blocking: Boolean) =
                 AudioRecord.ERROR_DEAD_OBJECT
-        })
+        }
+        ShadowAudioRecord.setSourceProvider { failingSource }
         val lost = CountDownLatch(1)
         val analyzer = VoiceAnalyzer(CoroutineScope(Dispatchers.Default))
         analyzer.onRecordingError = { lost.countDown() }

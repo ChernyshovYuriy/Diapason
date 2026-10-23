@@ -172,7 +172,7 @@ class ComparisonResultTest {
 
         assertNotNull(result.passaggio)
         assertEquals(380f, result.passaggio!!.beforeHz, 0.01f)
-        assertEquals(400f, result.passaggio!!.afterHz, 0.01f)
+        assertEquals(400f, result.passaggio.afterHz, 0.01f)
     }
 
     @Test
@@ -333,6 +333,6 @@ class ComparisonResultTest {
         assertFalse(result.detectedRangeWidened)
         assertNotNull(result.passaggio)
         assertEquals(0f, result.passaggio!!.deltaHz, 0.01f)
-        assertFalse(result.passaggio!!.isMeaningful)
+        assertFalse(result.passaggio.isMeaningful)
     }
 }

@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">Conceder permiso de micrófono</string>
     <string name="analyze_btn_start_range_test">Iniciar prueba de rango</string>
     <string name="analyze_btn_free_recording">Grabación libre</string>
-    <string name="range_test_duration_format">%1$d ejercicios cortos · unos %2$d segundos</string>
+    <string name="range_test_summary">Cuatro ejercicios cortos, menos de un minuto</string>
     <string name="range_test_step_format">Paso %1$d de %2$d: %3$s · quedan %4$s</string>
     <string name="range_test_step_note_title">Nota cómoda</string>
     <string name="range_test_step_note_body">Canta “a” en una nota fácil, más o menos a la altura de tu voz hablada, y sostenla de forma estable.</string>

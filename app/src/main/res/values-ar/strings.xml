@@ -12,7 +12,7 @@
     <string name="analyze_btn_grant_permission">السماح باستخدام الميكروفون</string>
     <string name="analyze_btn_start_range_test">ابدأ اختبار المدى</string>
     <string name="analyze_btn_free_recording">تسجيل حر</string>
-    <string name="range_test_duration_format">%1$d تمارين قصيرة · نحو %2$d ثانية</string>
+    <string name="range_test_summary">أربعة تمارين قصيرة، أقل من دقيقة</string>
     <string name="range_test_step_format">الخطوة %1$d من %2$d: %3$s · متبقٍّ %4$s</string>
     <string name="range_test_step_note_title">نغمة مريحة</string>
     <string name="range_test_step_note_body">غنِّ «آه» على نغمة سهلة، قريبة من طبقة كلامك، وثبّتها.</string>

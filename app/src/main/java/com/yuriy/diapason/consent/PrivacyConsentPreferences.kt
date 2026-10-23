@@ -1,6 +1,7 @@
 package com.yuriy.diapason.consent
 
 import android.content.Context
+import androidx.core.content.edit
 
 /**
  * Persists whether the user has agreed to the privacy policy on first launch
@@ -17,7 +18,7 @@ class PrivacyConsentPreferences(context: Context) {
 
     var granted: Boolean
         get() = prefs.getBoolean(KEY_GRANTED, false)
-        set(value) = prefs.edit().putBoolean(KEY_GRANTED, value).apply()
+        set(value) = prefs.edit { putBoolean(KEY_GRANTED, value) }
 
     companion object {
         private const val PREFS_NAME = "diapason_privacy_consent"

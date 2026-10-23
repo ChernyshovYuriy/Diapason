@@ -517,7 +517,6 @@ class WarmUpComparisonViewModel(application: Application) : AndroidViewModel(app
     }
 
     override fun onCleared() {
-        super.onCleared()
         timerJob?.cancel()
         abandonIfRecording()
     }

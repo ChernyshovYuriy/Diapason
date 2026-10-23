@@ -1,6 +1,7 @@
 package com.yuriy.diapason.reminder
 
 import android.content.Context
+import androidx.core.content.edit
 
 /**
  * Persists the user's choice about the "re-test in 30 days" reminder.
@@ -18,7 +19,7 @@ class ReminderPreferences(context: Context) {
 
     var optedIn: Boolean
         get() = prefs.getBoolean(KEY_OPTED_IN, false)
-        set(value) = prefs.edit().putBoolean(KEY_OPTED_IN, value).apply()
+        set(value) = prefs.edit { putBoolean(KEY_OPTED_IN, value) }
 
     /**
      * The opt-in card has been offered once. It's shown a single time — from the second
@@ -27,15 +28,15 @@ class ReminderPreferences(context: Context) {
      */
     var offerShown: Boolean
         get() = prefs.getBoolean(KEY_OFFER_SHOWN, false)
-        set(value) = prefs.edit().putBoolean(KEY_OFFER_SHOWN, value).apply()
+        set(value) = prefs.edit { putBoolean(KEY_OFFER_SHOWN, value) }
 
     /** Epoch millis when the next reminder fires, or 0 if none scheduled. */
     var scheduledAtMs: Long
         get() = prefs.getLong(KEY_SCHEDULED_AT_MS, 0L)
-        set(value) = prefs.edit().putLong(KEY_SCHEDULED_AT_MS, value).apply()
+        set(value) = prefs.edit { putLong(KEY_SCHEDULED_AT_MS, value) }
 
     fun clear() {
-        prefs.edit().clear().apply()
+        prefs.edit { clear() }
     }
 
     companion object {

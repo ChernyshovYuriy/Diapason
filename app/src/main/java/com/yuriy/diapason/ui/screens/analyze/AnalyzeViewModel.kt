@@ -454,7 +454,6 @@ class AnalyzeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     override fun onCleared() {
-        super.onCleared()
         // Deliberately discards the profile here even if enough samples had already
         // accumulated to classify — the user never chose to stop and save this
         // session, so nothing is persisted on their behalf. Confirmed with the author,

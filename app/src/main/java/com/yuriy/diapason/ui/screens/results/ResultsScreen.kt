@@ -63,6 +63,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -127,6 +128,7 @@ fun ResultsScreen(
     BackHandler(onBack = onBack)
 
     val context = LocalContext.current
+    val resources = LocalResources.current
     val topMatch = matches.firstOrNull()
     val reading = remember(matches) { VoiceTypeReader.read(matches) }
     // Several recordings say more than one: when they exist they lead, this take alongside.
@@ -136,7 +138,7 @@ fun ResultsScreen(
     }
     val topFachKey = remember(topMatch) {
         topMatch?.let {
-            runCatching { context.resources.getResourceEntryName(it.fach.nameRes) }.getOrNull()
+            runCatching { resources.getResourceEntryName(it.fach.nameRes) }.getOrNull()
         }
     }
 
@@ -147,7 +149,7 @@ fun ResultsScreen(
                 sessionCount = combined.sessionCount,
                 consistentCount = combined.consistentCount,
                 readingKey = combined.reading.familyRes.mapNotNull { res ->
-                    runCatching { context.resources.getResourceEntryName(res).removePrefix("fach_category_") }.getOrNull()
+                    runCatching { resources.getResourceEntryName(res).removePrefix("fach_category_") }.getOrNull()
                 }.joinToString("|"),
             )
         }
